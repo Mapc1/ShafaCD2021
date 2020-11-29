@@ -9,3 +9,8 @@
   
   - Fase 4: Módulo d: **[Marco Costa](https://www.github.com/Mapc1)** e **[Daniel](https://github.com/danieltazevedo)**.
   
+## Fases acabadas:
+  - [ ] Fase 1
+  - [ ] Fase 2
+  - [ ] Fase 3
+  - [ ] Fase 4
