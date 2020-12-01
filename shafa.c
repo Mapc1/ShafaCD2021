@@ -1,17 +1,8 @@
 #include <stdio.h>
 #include "modulo-d.h"
-void printHelp(){
-  printf(
-         "Shafa - Programa de compressão/descompressão\n\n"
-         "Comandos: shafa -m [t|f|c|d] [-b K|m|M] [-c r]\n"
-         "          -m [t|f|c|d]    Executa o módulo [t|f|c|d]\n"
-         "          -b [K|m|M]      Especifica o tamanho dos blocos para análise\n"
-         "          -d r            Descomprime o ficheiro a partir de um ficheiro .rle e outro .freq\n"
-         "          -c r            Força a compressão RLE\n"
-       );
-}
+#include "shafa.h"
 
 int main(int argc, char *argv[]){
-  if(argc == 1) printHelp();
+  if(argc == 1) fprintf(stdout, HELP);
   return 0;
 }
