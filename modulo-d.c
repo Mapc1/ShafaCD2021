@@ -4,13 +4,14 @@
 #include "modulo-d.h"
 
 void readRLECode(FILE *fpRLE, char *symbol, char *repetitions){
-  fread(symbol, 1, 1, fpRLE);
-  fread(repetitions, 1, 1, fpRLE);
+  *symbol = fgetc(fpRLE);
+  *repetitions = fgetc(fpRLE);
 }
 
 void decodeRLE(FILE *fpRLE, FILE *out){
   int i = 0;
-  char symbol, repetitions, buffer[BUFFSIZE] = "\0";
+  char repetitions;
+  char symbol, buffer[BUFFSIZE] = "\0";
 
   while(symbol != EOF){
     symbol = fgetc(fpRLE);

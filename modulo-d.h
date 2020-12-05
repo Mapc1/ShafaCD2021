@@ -2,7 +2,6 @@
 #define __MODULE_D__
 
 #define NSIMBOLOS 256
-#define BUFFSIZE 128
 
 typedef char symbolTable[256];
 
