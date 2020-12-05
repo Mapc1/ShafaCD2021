@@ -27,14 +27,14 @@ int * ler_bloco_ficheiro (FILE *fp, int valoresLidos)
     int i;    
 //    for (i = 0; i < size; i++) freq[i] = -1;
     int c = fgetc(fp);
-    while(c != EOF && c != 64) //64 = @ in ASCII
+    while(c != EOF && c != 64 && pos_atual < valoresLidos) //64 = @ in ASCII
         {
         if (c != 59) {   // 59 == ;
 
                             int comp_cod = ftell(fp); //Guarda posição atual
-                            for (i = 0; c == 48 || c == 49; i++) c = fgetc(fp);  //Conta qual o comprimento do código 
+                            for (i = comp_cod; c == 48 || c == 49; i++) c = fgetc(fp);  //Conta qual o comprimento do código 
                             fseek( fp, comp_cod, SEEK_SET ); //Volta a meter o apontador antes, no início do código
-                            comp_cod = comp_cod - i; //Tamanho da codificação
+                            comp_cod = i - comp_cod; //Tamanho da codificação
                             int *bitsTalvez = malloc( (1+comp_cod) * sizeof(int));  //Depois tens de fazer free()
                             //O array não precisa de ser char, porque só guarda 0's e 1's
                             //Guarda no array bitsTalvez a codificação
@@ -50,20 +50,20 @@ int * ler_bloco_ficheiro (FILE *fp, int valoresLidos)
                         }
         else { 
                 (freq[pos_atual] = NULL);
-                c = fgetc(fp);
              }
+                c = fgetc(fp);
         pos_atual++; 
         }
     return *freq;
 }
-
+//Esta main abre o ficheiro e guarda um array com a frequência de cada bloco, 1 de cada vez
 int main () {
 	//char c[15];
 	FILE *fp;
     int valoresLidos = 256;
-        int i;
-	//char *c;
-	if ((fp = fopen("blocos.txt", "r+")) == NULL) {
+    int tam_bloc;
+    //char *c;
+	if ((fp = fopen("aaa.txt.cod", "r+")) == NULL) {
         printf("Error! opening file");
         // Program exits if file pointer returns NULL.
 	   }
@@ -76,29 +76,20 @@ int main () {
 		//Número de blocos
 		int num_blocos;	
 		fscanf(fp, "@%d@", &num_blocos);
-        //printf("%d  número de blocos \n", num_blocos);
-        //ler blocos
-
-        //ler tamanho do bloco, 
-
-        //acho que só vai ser usada para ver as compressões
-        int tam_bloc;
-        fscanf(fp, "%d@", &tam_bloc);
-        while (i < num_blocos-1)
+        printf("  número de blocos %d \n", num_blocos);
+        while (num_blocos > 0)
         {
-        printf("\n Bloco atual: %d \n ", i);
-        //Faz scan do bloco e no fim imprime
-       // imprime_bloco(fp, tamanhos[i]);
-        //Corte entre 1 bloco e outro
-        fscanf(fp, "@");
-        i++;
-        }
-        printf("\n Bloco atual: %d \n ", i);
-        
-      //  imprime_bloco(fp, tamanhos[i]);
-         }
+            printf("\n Bloco atual (ao contrário): %d \n ", num_blocos);
+            fscanf(fp, "%d@", &tam_bloc);
+            printf("\n Tamanho bloco: %d \n ", tam_bloc);
+            ler_bloco_ficheiro(fp, 256);
 
-	fclose(fp);
+            num_blocos--;
+        }
+
+        
+         }
+    fclose(fp);
 
 	return 0;
     }
