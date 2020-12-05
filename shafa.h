@@ -7,5 +7,7 @@
              "          -b [K|m|M]      Especifica o tamanho dos blocos para análise\n"\
              "          -d r            Descomprime o ficheiro a partir de um ficheiro rle e outro freq\n"\
              "          -c r            Força a compressão RLE\n"
-             
+
+void writeFile(FILE *out, void *in, int nbytes);
+
 #endif //__SHAFA_H__
