@@ -27,6 +27,7 @@ Options *getOpts(int argc, char *argv[]){
         case 'c': opts->opts[2] = argv[i][0]; break;
         case 'd': opts->opts[3] = argv[i][0]; break;
         case 'o': opts->fileOUT = argv[i]; break;
+        default : fprintf(stdout, "ERRO!!\nA opção '-%c' não existe!\n", argv[i-1][1]);
       }
     }
     else opts->fileIN = argv[i];
