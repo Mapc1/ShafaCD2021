@@ -39,6 +39,22 @@ size_t tamanhoFicheiro (FILE *f){
    }
 } //Inclui o caracter  ?? \r ??
 
+
+void Bloco1_to_array(FILE *f, FicheiroInf fInf){
+    int i, j;
+    size_t tamanhoArray = fInf -> tamanhoBloco; 
+    char *bloco1;
+    for (i=0; i<tamanhoArray ; i++){
+        fread( (&bloco1[i]) , 1, 1, f);
+    }
+    bloco1[tamanhoArray] = '\0';
+    
+    for (j=0; j<tamanhoArray; j++){
+        printf("%c\n", bloco1[i]);
+    }
+
+}
+
 int main() {
     // Início da contagem do tempo de execução
     clock_t inicio = clock();
@@ -46,7 +62,7 @@ int main() {
     // Abertura dos ficheiros
 
     FILE *orig;
-    orig = fopen("../aaa.txt","rb"); // Ficheiro original
+    orig = fopen("aaa.txt","rb"); // Ficheiro original
 
     if (!orig) {
         printf("Erro ao abrir o ficheiro!\n"); // Caso haja erro na leitura do ficheiro original, o programa termina
@@ -57,7 +73,9 @@ int main() {
 
 
     FicheiroInf fInf = NBlocos(orig, 512, 1024);
-    printf("%ld, %ld, %ld, %d", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
+    printf("%ld, %ld, %ld, %d \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
+
+
 
 
     // Fechar os ficheiros
@@ -71,6 +89,9 @@ int main() {
  //   printf("Tempo de execução: %f segundos", ((double)(fim - inicio)) / CLOCKS_PER_SEC);
 //    return 0;
 }
+
+
+
 
 
 
