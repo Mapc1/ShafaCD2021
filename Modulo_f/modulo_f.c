@@ -32,7 +32,7 @@ size_t tamanhoFicheiro (FILE *f){
    if (!f) return 0;
    else {
       fseek(f, 0L, SEEK_END);
-      int tamanho = ftell(f); 
+      size_t tamanho = ftell(f); 
       return tamanho;
    }
 } //Inclui o caracter  ?? \r ??
