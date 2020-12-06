@@ -5,14 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-void imprime_bloco (int valoresLidos, int ** freq)
+void imprime_bloco (int valoresLidos, int ** freq, int * fim)
 {
 		int carater_atual;
         int ii;
-		for (carater_atual = 0; *(freq[carater_atual]) != '\0'; carater_atual++)
+		for (carater_atual = 0; (freq[carater_atual]) != fim; carater_atual++)
 		{
             printf ("carater de imprime %d é: ", carater_atual);
-            if (freq[carater_atual] == NULL)  printf ("NADA \n");
+            if (freq[carater_atual] == NULL || *(freq[carater_atual]) == NULL )  printf ("NADA \n");
             else { 
                 printf("\n imprime else \n ");
                    int *bitsTalvez= freq[carater_atual];
@@ -22,11 +22,11 @@ void imprime_bloco (int valoresLidos, int ** freq)
         }
 }
 //Guarda os códigos a partir de um ficheiro binário
-int * ler_bloco_ficheiro (FILE *fp, int valoresLidos)
+int * ler_bloco_ficheiro (FILE *fp, int valoresLidos, int * fim)
 {
     //[Endereços das codificações de cada char]  a codificação do 'c' freq[48] 
     int *freq[valoresLidos];
-    freq[valoresLidos] = malloc (valoresLidos * (sizeof (int*)));  //Codificação dos 256 valores
+    freq[valoresLidos] = malloc ((valoresLidos)* (sizeof (int*)));  //Codificação dos 256 valores
     int pos_atual=0;  //posição atual no array das codificações
     int i;    
 //    for (i = 0; i < size; i++) freq[i] = -1;
@@ -38,7 +38,7 @@ int * ler_bloco_ficheiro (FILE *fp, int valoresLidos)
         if (c != 59) {   // 59 == ;
                             int comp_cod = ftell(fp); //Guarda posição atual
                             for (i = comp_cod; c == 48 || c == 49; i++) c = fgetc(fp);  //Conta qual o comprimento do código 
-                            fseek( fp, comp_cod-1, SEEK_SET ); //Volta a meter o apontador antes, no início do código
+                            fseek( fp, comp_cod, SEEK_SET ); //Volta a meter o apontador antes, no início do código
                             comp_cod = i - comp_cod; //Tamanho da codificação
                             int *bitsTalvez = malloc( (1+comp_cod) * sizeof(int));  //Depois tens de fazer free()
                             //O array não precisa de ser char, porque só guarda 0's e 1's
@@ -63,14 +63,14 @@ int * ler_bloco_ficheiro (FILE *fp, int valoresLidos)
                 c = fgetc(fp);
         pos_atual++; 
         }
-        freq[pos_atual] ='\0';
+        freq[pos_atual] = fim ;
     return *freq;
 }
 //Esta main abre o ficheiro e guarda um array com a frequência de cada bloco, 1 de cada vez
 int main () {
 	//char c[15];
 	FILE *fp;
-    int valoresLidos = 70;
+    int valoresLidos = 80;
     int tam_bloc;
     int *freq[valoresLidos];
     //char *c;
@@ -93,8 +93,9 @@ int main () {
             printf("\n Bloco atual (ao contrário): %d \n ", num_blocos);
             fscanf(fp, "%d@", &tam_bloc);
             printf("\n Tamanho bloco: %d \n ", tam_bloc);
-           *freq = ler_bloco_ficheiro(fp, valoresLidos);
-            imprime_bloco(valoresLidos, freq);
+            int fim = 9;
+           *freq = ler_bloco_ficheiro(fp, valoresLidos, &fim);
+            imprime_bloco(valoresLidos, freq, &fim);
 
             num_blocos--;
 
