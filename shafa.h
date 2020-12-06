@@ -17,7 +17,7 @@ typedef struct {
                  //  order:
                  //        opt[0] -> module
                  //        opt[1] -> (-b) [M|m|k]
-                 //        opt[2] -> (-c) rf
+                 //        opt[2] -> (-c) r
                  //        opt[3] -> (-d) [r|s]
 } Options;
 
