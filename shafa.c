@@ -38,10 +38,10 @@ Options *getOpts(int argc, char *argv[]){
 
 char *removeSufix(char *src, char *sufx){
   int i, j;
-  char *dest;
+  char *dest = malloc(sizeof(strlen(src)));
   strcpy(dest, src);
 
-  for(i = 0; src[i] != '\0'; i++);
+  for(i = 0; src[i+1] != '\0'; i++);
   for(j = 0; sufx[j] != '\0'; j++);
   for(; i > 0 && j > 0; i--, j--)
       dest[i] = '\0';
