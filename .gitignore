@@ -1,3 +1,11 @@
+# Executable
+shafa
+
+# Other shit
+core
+.ccls*
+files*
+
 # Prerequisites
 *.d
 
