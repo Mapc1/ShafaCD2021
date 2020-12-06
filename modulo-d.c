@@ -34,17 +34,23 @@ void decodeRLE(FILE *fpRLE, FILE *out){
   writeFile(out, buffer, i);
 }
 
-void moduleDMain(int argc, char *argv[]){
-  char option = '\0';
-  FILE *fp = fopen("yay", "wb");
-  FILE *fin= fopen("files/aaa.txt.rle", "rb");
-  if(argc > 4 && strcmp(argv[4], "-d") == 0)
-    option = argv[5][0];
+void moduleDMain(Options *opts){
+  char option = '\0', *foutName, *fin2;
+  FILE *fout, *fin1 = fopen(opts->fileIN, "rb");
 
-  switch(option){
+  switch(opts->opts[3]){
     //case 's': decodeShafa();
-    case 'r': decodeRLE(fin, fp); break;
+    case 'r':
+      if(!opts->fileOUT)
+        foutName = removeSufix(opts->fileIN, ".rle");
+      else
+        foutName = opts->fileOUT;
+      fout = fopen(foutName, "wb");
+      decodeRLE(fin1, fout);
+      fclose(fout);
+      break;
     //case '\0': decodeNormal();
     default: fprintf(stderr, "Erro!! Opção esta opção não existe!\n");
   }
+  fclose(fin1);
 }

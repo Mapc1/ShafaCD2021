@@ -10,6 +10,12 @@
              "          -d r            Descomprime o ficheiro a partir de um ficheiro rle e outro freq\n"\
              "          -c r            Força a compressão RLE\n"
 
-void writeFile(FILE *out, void *in, int nbytes);
+typedef struct {
+  char *fileIN, *fileOUT;
+  char opts[4];
+} Options;
 
+Options *getOpts(int argc, char *argv[]);
+void writeFile(FILE *out, void *in, int nbytes);
+char *removeSufix(char *src, char *sufx);
 #endif //__SHAFA_H__

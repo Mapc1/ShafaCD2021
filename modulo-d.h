@@ -1,6 +1,8 @@
 #ifndef __MODULE_D__
 #define __MODULE_D__
 
+#include "shafa.h"
+
 #define NSIMBOLOS 256
 
 typedef char symbolTable[256];
@@ -10,6 +12,6 @@ typedef enum {
   NONE
 } Precomp;
 
-void moduleDMain(int argc, char *argv[]);
+void moduleDMain(Options *opts);
 void decodeRLE(FILE *fpRLE, FILE *out);
 #endif //__MODULE_D__
