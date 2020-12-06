@@ -7,7 +7,28 @@
 #include <stdlib.h>
 #include <time.h>
 
-long int tamanhoFicheiro (FILE *f){
+FicheiroInf NBlocos(FILE *f, size_t tamanhoBloco, size_t tamanhoMinimoUltimoBloco) { // tamanhoBloco vem em Bytes!!!
+    FicheiroInf fic = malloc(sizeof(struct ficheiroInf));
+    
+    fic -> tamanhoTotal = tamanhoFicheiro(f);
+
+    if (fic -> tamanhoTotal <= tamanhoBloco) { // Só temos um bloco
+        fic -> num_blocos = 1;
+        fic -> tamanhoUltimoBloco = fic -> tamanhoBloco = tamanhoBloco;
+    } else {
+        fic -> num_blocos = fic -> tamanhoTotal / tamanhoBloco;
+        size_t resto = fic -> tamanhoTotal % tamanhoBloco >= tamanhoMinimoUltimoBloco;
+        if (resto >= tamanhoMinimoUltimoBloco) tamanhoBloco ++;
+        fic -> tamanhoBloco = tamanhoMinimoUltimoBloco;
+        fic -> tamanhoUltimoBloco = resto;
+    }
+    
+
+
+    return fic;
+}
+
+size_t tamanhoFicheiro (FILE *f){
    if (!f) return 0;
    else {
       fseek(f, 0L, SEEK_END);
