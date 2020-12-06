@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "shafa.h"
 #include "modulo-d.h"
 
@@ -47,7 +48,7 @@ void moduleDMain(Options *opts){
         foutName = opts->fileOUT;
       fout = fopen(foutName, "wb");
       decodeRLE(fin1, fout);
-      free(foutName);
+      if (!opts->fileOUT) free(foutName);
       fclose(fout);
       break;
     //case '\0': decodeNormal();

@@ -65,5 +65,6 @@ int main(int argc, char *argv[]){
 //    case 'c':
     case 'd': moduleDMain(opts);
   }
+  free(opts);
   return 0;
 }
