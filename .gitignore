@@ -58,3 +58,18 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+# Editor-based HTTP Client requests
+/httpRequests/
+/.gitignore
+/misc.xml
+/vcs.xml
+
