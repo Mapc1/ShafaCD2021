@@ -1,7 +1,3 @@
-//
-// Created by goncalo on 06/12/20.
-//
-
 #include "modulo_f.h"
 #include <stdio.h>
 #include <stdlib.h>
