@@ -4,28 +4,30 @@
 #include "modulo-d.h"
 
 void readRLECode(FILE *fpRLE, char *symbol, char *repetitions){
-  *symbol = fgetc(fpRLE);
-  *repetitions = fgetc(fpRLE);
+  fread(symbol, 1, 1, fpRLE);
+  fread(repetitions, 1, 1, fpRLE);
 }
 
 void decodeRLE(FILE *fpRLE, FILE *out){
-  int i = 0;
+  int i = 0, bytesWritten = 1;
   char repetitions;
   char symbol, buffer[BUFFSIZE] = "\0";
 
-  while(symbol != EOF){
-    symbol = fgetc(fpRLE);
-    repetitions = 1;
-    if(symbol == 0)
-      readRLECode(fpRLE, &symbol, &repetitions);
-    for(; repetitions > 0 && i < BUFFSIZE; i++, repetitions--)
-      buffer[i] = symbol;
-    if(i >= BUFFSIZE){
-      writeFile(out, buffer, i);
-      i = 0;
-      if(repetitions > 0){
-        for(; repetitions > 0 || i > BUFFSIZE; i++, repetitions--)
-          buffer[i] = symbol;
+  while(bytesWritten){
+    bytesWritten = fread(&symbol, 1, 1, fpRLE);
+    if (bytesWritten){
+      repetitions = 1;
+      if(symbol == 0)
+        readRLECode(fpRLE, &symbol, &repetitions);
+      for(; repetitions > 0 && i < BUFFSIZE; i++, repetitions--)
+        buffer[i] = symbol;
+      if(i >= BUFFSIZE){
+        writeFile(out, buffer, i);
+        i = 0;
+        if(repetitions > 0){
+          for(; repetitions > 0 || i > BUFFSIZE; i++, repetitions--)
+            buffer[i] = symbol;
+        }
       }
     }
   }
@@ -34,8 +36,8 @@ void decodeRLE(FILE *fpRLE, FILE *out){
 
 void moduleDMain(int argc, char *argv[]){
   char option = '\0';
-  FILE *fp = fopen("yay", "w");
-  FILE *fin= fopen("files/aaa.txt.rle", "r");
+  FILE *fp = fopen("yay", "wb");
+  FILE *fin= fopen("files/aaa.txt.rle", "rb");
   if(argc > 4 && strcmp(argv[4], "-d") == 0)
     option = argv[5][0];
 
