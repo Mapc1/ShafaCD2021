@@ -7,6 +7,8 @@
 
 
 #define NumBytesLidos 1
+#define TAMANHO_BLOCO 512
+#define TAMANHO_MINIMO_ULTIMO_BLOCO 1024
 
 
 typedef struct ficheiroInf {
@@ -17,8 +19,13 @@ typedef struct ficheiroInf {
 } *FicheiroInf;
 
 FicheiroInf NBlocos(FILE *f, size_t tamanhoBloco, size_t tamanhoMinimoUltimoBloco);
+
 size_t tamanhoFicheiro (FILE *f);
-void Bloco1_to_array(FILE *f, FicheiroInf fInf);
+
+char *Bloco_to_array(FILE *f, FicheiroInf fInf, int num_bloco);
+
 size_t tamMax_Array (size_t tamanhoBloco, size_t tamanhoUltimoBloco);
+
+char compressao(FILE *orig, FicheiroInf fInf, FILE *rle);
 
 #endif //MODULO_F_MODULO_F_H
