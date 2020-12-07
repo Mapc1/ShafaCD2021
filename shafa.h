@@ -2,6 +2,7 @@
 #define __SHAFA_H__
 
 #define BUFFSIZE 1024
+#define NUMOPTS 4
 
 #define HELP "Shafa - Programa de compressão/descompressão\n\n"\
              "Comandos: shafa -m [t|f|c|d] [-b K|m|M] [-c r]\n"\
@@ -13,7 +14,7 @@
 typedef struct {
   char *fileIN,  //  input file from arguments
        *fileOUT; //  output file needs -o option otherwise fileOUT = '\0' and output is the standard
-  char opts[4];  //  Each opt[i] has an option or '\0';
+  char opts[NUMOPTS];  //  Each opt[i] has an option or '\0';
                  //  order:
                  //        opt[0] -> module
                  //        opt[1] -> (-b) [M|m|k]
