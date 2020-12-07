@@ -10,13 +10,12 @@ FicheiroInf NBlocos(FILE *f, size_t tamanhoBloco, size_t tamanhoMinimoUltimoBloc
     
     fic -> tamanhoTotal = tamanhoFicheiro(f);
     size_t resto = ( fic -> tamanhoTotal) % (tamanhoBloco);
-    printf("%ld\n", resto);
 
     if (fic -> tamanhoTotal <= tamanhoBloco + tamanhoMinimoUltimoBloco) { // Só temos um bloco
         fic -> num_blocos = 1;
         fic -> tamanhoUltimoBloco = fic -> tamanhoBloco = fic -> tamanhoTotal;
     } else {
-        fic->num_blocos = (int) fic->tamanhoTotal / tamanhoBloco;
+        fic->num_blocos = (int) (fic->tamanhoTotal / tamanhoBloco);
 
         if (resto >= tamanhoMinimoUltimoBloco) {
             fic -> tamanhoBloco++;
@@ -26,8 +25,6 @@ FicheiroInf NBlocos(FILE *f, size_t tamanhoBloco, size_t tamanhoMinimoUltimoBloc
             fic -> tamanhoUltimoBloco = fic -> tamanhoBloco + resto;
         }
     }
-    
-
 
     return fic;
 }
@@ -39,7 +36,7 @@ size_t tamanhoFicheiro (FILE *f){
       size_t tamanho = ftell(f);
       return tamanho;
    }
-} //Inclui o caracter  ?? \r ??
+} // Inclui o caracter  ?? \r ??
 
 
 size_t tamMax_Array (size_t tamanhoBloco, size_t tamanhoUltimoBloco){
@@ -49,15 +46,13 @@ size_t tamMax_Array (size_t tamanhoBloco, size_t tamanhoUltimoBloco){
 
 void Bloco1_to_array(FILE *f, FicheiroInf fInf){
 
-    int i, j;
+    int i;
     size_t tamanhoArray = tamMax_Array(fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco); //o buffer terá sempre o tamanho ideal; certifica-se que há espaço no mesmo, quando o Último Bloco é o maior
-    printf("Tamanho do array é : %ld", tamanhoArray);
-    char bloco1[tamanhoArray]; //bloco1 é o buffer
-    fread( (&bloco1[i]) , NumBytesLidos, tamanhoArray, f);
+    char bloco1[tamanhoArray]; // Bloco1 é o buffer
+    fseek(f, 0, SEEK_SET);
 
-    
-    for (j=0; j<tamanhoArray; j++){
-        printf("%u\n", bloco1[i]);
+    for (size_t i = 0; (fread(bloco1, NumBytesLidos, tamanhoArray, f)); ++i) {
+        printf("%c\n", bloco1[i]);
     }
 
 }
@@ -69,7 +64,7 @@ int main() {
     // Abertura dos ficheiros
 
     FILE *orig;
-    orig = fopen("aaa.txt","rb"); // Ficheiro original
+    orig = fopen("../aaa.txt","rb"); // Ficheiro original
 
     if (!orig) {
         printf("Erro ao abrir o ficheiro!\n"); // Caso haja erro na leitura do ficheiro original, o programa termina
@@ -80,7 +75,7 @@ int main() {
 
 
     FicheiroInf fInf = NBlocos(orig, 512, 1024);
-    printf("%ld, %ld, %ld, %d \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
+    printf("TamanhoTotal: %ld\nTamanhoBloco: %ld\nTamanhoUltimoBloco: %ld\nNum_Blocos: %d \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
 
  	Bloco1_to_array(orig,fInf);
 
@@ -90,11 +85,11 @@ int main() {
     fclose(orig);
 
     // Fim da contagem do tempo de execução
-//    clock_t fim = clock();
+    clock_t fim = clock();
 
     // Impressão no terminal das informações sobre este módulo
- //   printf("Tempo de execução: %f segundos", ((double)(fim - inicio)) / CLOCKS_PER_SEC);
-//    return 0;
+    printf("Tempo de execução: %f segundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC);
+    return 0;
 }
 
 
