@@ -1,3 +1,5 @@
+
+
 #include "modulo_f.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,12 +48,12 @@ size_t tamMax_Array (size_t tamanhoBloco, size_t tamanhoUltimoBloco){
 
 
 void Bloco1_to_array(FILE *f, FicheiroInf fInf){
+
     int i, j;
     size_t tamanhoArray = tamMax_Array(fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco); //o buffer terá sempre o tamanho ideal; certifica-se que há espaço no mesmo, quando o Último Bloco é o maior
-    unsigned char bloco1[tamanhoArray]; //bloco1 é o buffer
-    for (i=0; i<tamanhoArray ; i++){
-        fread( (&bloco1[i]) , sizeof(char), 1, f);
-    }
+    printf("Tamanho do array é : %ld", tamanhoArray);
+    char bloco1[tamanhoArray]; //bloco1 é o buffer
+    fread( (&bloco1[i]) , NumBytesLidos, tamanhoArray, f);
 
     
     for (j=0; j<tamanhoArray; j++){
