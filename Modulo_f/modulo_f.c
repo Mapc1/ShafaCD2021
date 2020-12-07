@@ -40,9 +40,14 @@ size_t tamanhoFicheiro (FILE *f){
 } //Inclui o caracter  ?? \r ??
 
 
+size_t tamMax_Array (size_t tamanhoBloco, size_t tamanhoUltimoBloco){
+	return tamanhoBloco >= tamanhoUltimoBloco ? tamanhoBloco : tamanhoUltimoBloco;
+}
+
+
 void Bloco1_to_array(FILE *f, FicheiroInf fInf){
     int i, j;
-    size_t tamanhoArray = fInf -> tamanhoBloco; 
+    size_t tamanhoArray = tamMax_Array(fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco); //o buffer terá sempre o tamanho ideal; certifica-se que há espaço no mesmo, quando o Último Bloco é o maior
     unsigned char bloco1[tamanhoArray]; //bloco1 é o buffer
     for (i=0; i<tamanhoArray ; i++){
         fread( (&bloco1[i]) , sizeof(char), 1, f);
