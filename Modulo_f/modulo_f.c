@@ -43,14 +43,14 @@ size_t tamanhoFicheiro (FILE *f){
 void Bloco1_to_array(FILE *f, FicheiroInf fInf){
     int i, j;
     size_t tamanhoArray = fInf -> tamanhoBloco; 
-    char *bloco1;
+    unsigned char bloco1[tamanhoArray]; //bloco1 é o buffer
     for (i=0; i<tamanhoArray ; i++){
-        fread( (&bloco1[i]) , 1, 1, f);
+        fread( (&bloco1[i]) , sizeof(char), 1, f);
     }
-    bloco1[tamanhoArray] = '\0';
+
     
     for (j=0; j<tamanhoArray; j++){
-        printf("%c\n", bloco1[i]);
+        printf("%u\n", bloco1[i]);
     }
 
 }
@@ -75,7 +75,7 @@ int main() {
     FicheiroInf fInf = NBlocos(orig, 512, 1024);
     printf("%ld, %ld, %ld, %d \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
 
-
+ 	Bloco1_to_array(orig,fInf);
 
 
     // Fechar os ficheiros
