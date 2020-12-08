@@ -178,7 +178,7 @@ void frequencias(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoF
 	}
 
 
-    fprintf(freq, "%c\n", '0');
+    fprintf(freq, "%s\n", "@0");
 
 }
 
@@ -226,6 +226,7 @@ int main() {
 
     // Impressão no terminal das informações sobre este módulo
     printf("Tempo de execução: %f segundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC); //O TEMPO DE EXECUÇÃO TERÁ DE SER APRESENTADO EM ms
+    return 0;
 }
 
 
