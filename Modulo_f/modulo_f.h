@@ -6,7 +6,6 @@
 #include <time.h>
 
 
-#define NumBytesLidos 1
 #define TAMANHO_BLOCO 512
 #define TAMANHO_MINIMO_ULTIMO_BLOCO 1024
 
@@ -26,6 +25,8 @@ char *Bloco_to_array(FILE *f, FicheiroInf fInf, int num_bloco);
 
 size_t tamMax_Array (size_t tamanhoBloco, size_t tamanhoUltimoBloco);
 
-char compressao(FILE *orig, FicheiroInf fInf, FILE *rle);
+double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, char compressaoForcada);
+
+void compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, size_t num_bloco);
 
 #endif //MODULO_F_MODULO_F_H
