@@ -128,6 +128,61 @@ void compressaoRLEBloco (FILE *orig, FicheiroInf fInf, FILE *rle, size_t num_blo
     free(Buffer);
 }
 
+void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, int numBloco){
+    size_t tamanhoBlocoAtual;
+    char *Buffer ;
+    long int freq_Simbolos[256]={0}; //inicializar frequências a 0
+    int i, j;
+
+    if (numBloco < (fInf-> num_blocos)){
+        tamanhoBlocoAtual = (fInf-> tamanhoBloco);
+    }else tamanhoBlocoAtual = (fInf-> tamanhoUltimoBloco);
+
+    if (tipoFicheiro == 'N'){
+        Buffer = Bloco_to_array(orig, fInf, numBloco);
+    }else if (tipoFicheiro == 'R') Buffer = Bloco_to_array(rle, fInf, numBloco);
+
+    //ANÁLISE DAS FREQUÊNCIAS //ALGO ESTÁ MAL AQUI
+    for(i = 0; i< 256; i++){
+    	for(j = 0; j< tamanhoBlocoAtual -1; j++){
+    		unsigned char buff = Buffer[j];
+    		if(buff == i+'a') freq_Simbolos[i] ++;  //dúvidas nesta análise....somar 'a' ????
+    	}
+    }
+
+	
+    //ESCRITA DO TAMANHO DO BLOCO (ESTÁ A FALHAR....) Por causa do size_t ????
+    fprintf(freq, "%c%ld%c", '@', tamanhoBlocoAtual , '@');
+
+
+    //ESCRITA DAS FREQUÊNCIAS NO FICHEIRO
+	for(i = 0; i< 256; i++){
+		fprintf(freq, "%c", ';');
+		if (freq_Simbolos[i] > 0 ) fprintf(freq, "%ld", freq_Simbolos[i]);
+    }
+
+
+    free(Buffer);
+
+}
+
+
+void frequencias(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro){     //tipoFicheiro = 'N' || tipoFicheiro = 'R' quando a função é invocada 
+    int bloco;
+
+    fprintf(freq, "%c%c%c%c", '@', tipoFicheiro, '@', '0'+(fInf->num_blocos)); //as informações iniciais de um ficheiro freq são sempre iguais;
+                                                                               //soma-se '0' para converter o int num char
+    
+    for (bloco = 1; bloco <= (fInf-> num_blocos); bloco ++ ){
+        frequencias_Bloco(orig,rle,fInf,freq,tipoFicheiro,bloco);
+	}
+
+
+    fprintf(freq, "%c\n", '0');
+
+}
+
+
 
 int main() {
     // NAO ESQUECER: GENERALIZAR A MAIN!!!!!!!!!!!!!!!!
@@ -147,7 +202,9 @@ int main() {
     }
 
     FILE *rle = fopen("aaa.txt.rle","wb"); // Ficheiro rle
-    // FILE *freq = fopen("ficheiroExemplo.txt.freq","wb"); // Ficheiro freq
+    FILE *freq = fopen("aaa.txt.freq","w"); // Ficheiro freq: Acho que não precisa de ser escrito em Binário
+                                            //CONFIRMAR ISTO!!!
+    										//NÃO É SEMPRE ASSIM QUE É GERADO : VER DISTINÇÃO ENTRE .freq e .rle.freq  !!!!!!!!!!!
 
 
     FicheiroInf fInf = NBlocos(orig, TAMANHO_BLOCO, TAMANHO_MINIMO_ULTIMO_BLOCO);
@@ -157,6 +214,9 @@ int main() {
 
     compressaoRLE(orig, fInf, rle, 0);
 
+
+    frequencias(orig,rle,fInf,freq,'N');
+
     // Fechar os ficheiros
 
     fclose(orig);
@@ -165,8 +225,7 @@ int main() {
     clock_t fim = clock();
 
     // Impressão no terminal das informações sobre este módulo
-    printf("Tempo de execução: %f segundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC);
-    return 0;
+    printf("Tempo de execução: %f segundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC); //O TEMPO DE EXECUÇÃO TERÁ DE SER APRESENTADO EM ms
 }
 
 
