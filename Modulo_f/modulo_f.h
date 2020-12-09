@@ -11,23 +11,21 @@
 
 
 typedef struct ficheiroInf {
-    size_t tamanhoTotal;
-    size_t tamanhoBloco;
-    size_t tamanhoUltimoBloco;
+    unsigned long long int tamanhoTotal;
+    unsigned long long int tamanhoBloco;
+    unsigned long long int tamanhoUltimoBloco;
     int num_blocos;
 } *FicheiroInf;
 
-FicheiroInf NBlocos(FILE *f, size_t tamanhoBloco, size_t tamanhoMinimoUltimoBloco);
+FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco);
 
-size_t tamanhoFicheiro (FILE *f);
+unsigned long long int tamanhoFicheiro (FILE *f);
 
-char *Bloco_to_array(FILE *f, FicheiroInf fInf, int num_bloco);
-
-size_t tamMax_Array (size_t tamanhoBloco, size_t tamanhoUltimoBloco);
+char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco);
 
 double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, char compressaoForcada);
 
-void compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, size_t num_bloco);
+void compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long long int num_bloco);
 
 void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, int numBloco);
 
