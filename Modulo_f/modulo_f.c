@@ -70,8 +70,7 @@ double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, char compressaoFor
 
     // Compressão forçada
 
-    if (compressaoForcada) for (num_bloco = 0; num_bloco < fInf -> num_blocos ; num_bloco++)
-            compressaoRLEBloco(orig, fInf, rle, num_bloco);
+    if (compressaoForcada) for (num_bloco = 0; num_bloco < fInf -> num_blocos ; num_bloco++) compressaoRLEBloco(orig, fInf, rle, num_bloco);
 
     else {
 
@@ -92,7 +91,6 @@ double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, char compressaoFor
         for (num_bloco = 1; num_bloco < fInf->num_blocos; num_bloco++) {
             compressaoRLEBloco(orig, fInf, rle, num_bloco);
         }
-
     }
 
     double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;
@@ -101,9 +99,16 @@ double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, char compressaoFor
     return TaxaCompressao;
 }
 
-void compressaoRLEBloco (FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long long int num_bloco) { // Assume-se que está função será chamada com num_bloco sucessivos...
+
+// Quando compensa fazer RLE ou é forçado o RLE, esta função cria um array com freq dos dois ficheiros
+// Else, a função frequencias, conta as frequencias por si mesma
+FreqsInf compressaoRLEBloco (FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long long int num_bloco) { // Assume-se que está função será chamada com num_bloco sucessivos...
     char *Buffer = Bloco_to_array(orig, fInf, num_bloco);
     int i = 0;
+    static struct freqsInf freq;
+    unsigned long long int static BufferFreqOrig[256];
+    unsigned long long int static BufferFreqRle[256];
+
     while (i < fInf -> tamanhoBloco) { // Analisar um símbolo de cada vez
         unsigned char num_repeticoes = 1;
         unsigned char simbolo = Buffer[i];
@@ -120,13 +125,24 @@ void compressaoRLEBloco (FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long 
         if (num_repeticoes >= 4 || simbolo == 0) { // O símbolo repete-se pelo menos 4 vezes ou o símbolo ser 0, logo aplicamos o padrão RLE
             unsigned char padraoRLE[3] = {0, simbolo, num_repeticoes}; // {0}{simbolo}{número_de_repetições}
             fwrite(padraoRLE, 3, 1, rle);
-
+            // Contagem das frequências dos símbolos do ficheiro RLE
+            BufferFreqRle[0]++;
+            BufferFreqRle[simbolo]++;
+            BufferFreqRle[num_repeticoes]++;
+            // Contagem das frequências dos símbolos do ficheiro orig
+            BufferFreqOrig[simbolo] += num_repeticoes;
         } else { // O símbolo não se repete pelo menos 4 vezes, logo não aplicamos o padrão RLE
             for (; num_repeticoes > 0; num_repeticoes--) fwrite(&simbolo, 1, 1, rle);
+            BufferFreqRle[simbolo] += num_repeticoes;
+            BufferFreqOrig[simbolo] += num_repeticoes;
         }
     }
     free(Buffer);
+
+    return &freq;
 }
+
+//// Dar free aos array das freq !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, int numBloco){
     unsigned long long int tamanhoBlocoAtual;
@@ -170,7 +186,7 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char
 void frequencias(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro){     //tipoFicheiro = 'N' || tipoFicheiro = 'R' quando a função é invocada 
     int bloco;
 
-    fprintf(freq, "%c%c%c%c", '@', tipoFicheiro, '@', '0'+(fInf->num_blocos)); //as informações iniciais de um ficheiro freq são sempre iguais;
+    fprintf(freq, "%c%c%c%c", '@', tipoFicheiro, '@', '0'+((int)fInf->num_blocos)); //as informações iniciais de um ficheiro freq são sempre iguais;
                                                                                //soma-se '0' para converter o int num char
     
     for (bloco = 1; bloco <= (fInf-> num_blocos); bloco ++ ){
@@ -208,7 +224,7 @@ int main() {
 
 
     FicheiroInf fInf = NBlocos(orig, TAMANHO_BLOCO, TAMANHO_MINIMO_ULTIMO_BLOCO);
-    printf("TamanhoTotal: %llu\nTamanhoBloco: %llu\nTamanhoUltimoBloco: %llu\nNum_Blocos: %d \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
+    printf("TamanhoTotal: %llu\nTamanhoBloco: %llu\nTamanhoUltimoBloco: %llu\nNum_Blocos: %lld \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
 
     // CompressãoRLE
 
