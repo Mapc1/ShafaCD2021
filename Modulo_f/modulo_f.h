@@ -6,26 +6,33 @@
 #include <time.h>
 
 
-#define NumBytesLidos 1
 #define TAMANHO_BLOCO 512
 #define TAMANHO_MINIMO_ULTIMO_BLOCO 1024
 
-
 typedef struct ficheiroInf {
-    size_t tamanhoTotal;
-    size_t tamanhoBloco;
-    size_t tamanhoUltimoBloco;
-    int num_blocos;
+    unsigned long long int tamanhoTotal;
+    unsigned long long int tamanhoBloco;
+    unsigned long long int tamanhoUltimoBloco;
+    unsigned long long int num_blocos;
 } *FicheiroInf;
 
-FicheiroInf NBlocos(FILE *f, size_t tamanhoBloco, size_t tamanhoMinimoUltimoBloco);
+typedef struct freqsInf { // Struct usada na função compressaoRLEBloco para ao comprimir o ficheiro original para rle, contar as frequências do símbolos do ficheiro original e do ficheiro rle
+    unsigned long long int *FicheiroOriginal;
+    unsigned long long int *FicheiroRLE;
+} *FreqsInf;
 
-size_t tamanhoFicheiro (FILE *f);
+FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco);
 
-char *Bloco_to_array(FILE *f, FicheiroInf fInf, int num_bloco);
+unsigned long long int tamanhoFicheiro (FILE *f);
 
-size_t tamMax_Array (size_t tamanhoBloco, size_t tamanhoUltimoBloco);
+char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco);
 
-char compressao(FILE *orig, FicheiroInf fInf, FILE *rle);
+double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, char compressaoForcada);
+
+FreqsInf compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long long int num_bloco);
+
+void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, int numBloco);
+
+void frequencias(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro);
 
 #endif //MODULO_F_MODULO_F_H
