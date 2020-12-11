@@ -5,6 +5,7 @@ shafa
 *.freq
 *.rle
 *.cod
+*.txt
 
 # Other shit
 core
