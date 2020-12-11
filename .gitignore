@@ -1,6 +1,11 @@
 # Executable
 shafa
 
+# Compression Files
+*.freq
+*.rle
+*.cod
+
 # Other shit
 core
 .ccls*
