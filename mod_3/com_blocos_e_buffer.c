@@ -32,7 +32,7 @@ char ** ler_bloco_ficheiro (char * buffer, int valoresLidos, char * fim) {
     //Depois alterar para ser só diferente de '@
     while((c == ';' || c == '0' || c == '1')  && pos_atual_freq < valoresLidos){ //64 = @ in ASCII
         //printf ("\n %d \n ", pos_atual);
-        printf ("\n carater de leitura %d é: %c", pos_atual_freq, c);
+   //     printf ("\n carater de leitura %d é: %c", pos_atual_freq, c);
         if (c != ';') {   // 59 == ;                   
             int comp_cod = pos_atual_bufo; //Guarda posição atual
             for (i = pos_atual_bufo; c == '0' || c == '1'; i++) c = buffer[i]; //Conta qual o comprimento do código 
@@ -49,8 +49,8 @@ char ** ler_bloco_ficheiro (char * buffer, int valoresLidos, char * fim) {
                 c = buffer[pos_atual_bufo];
             }
             (bitsTalvez[i]) = '\0';
-            printf (" -_- ");
-            for (i = 0; bitsTalvez[i] == '0' || bitsTalvez[i] == '1'; i++) printf("%c", bitsTalvez[i]); printf(" <- bits \n" );
+     //       printf (" -_- ");
+       //     for (i = 0; bitsTalvez[i] == '0' || bitsTalvez[i] == '1'; i++) printf("%c", bitsTalvez[i]); printf(" <- bits \n" );
             strcpy(freq[pos_atual_freq], bitsTalvez); 
             // (freq[pos_atual]) = bitsTalvez;
             //    c = fgetc(fp); //Ignorar o ; a seguir ao binário
@@ -73,11 +73,15 @@ void criaFIleRle(char **freq, char *buffer, char *fim, int tam) {
     FILE *rle = fopen ("aaa.txt.rle.shaf", "wb"); //criar o file
     int i = 0;
     char zero = '0';
-    while (i < 100 ) { // este 100 é apenas para teste, mudar depois
-            if (freq[buffer[i]] != NULL) fwrite (freq[buffer[i]],1, 1, rle); // para já ele só passa para binário os valores n repetidos mais de 4 vezes
-            i++;
+    while (i < tam && buffer[i] >= 0) { // este 100 é apenas para teste, mudar depois
+             // Aparecem números negativos, não sei porquê
+            if (freq[buffer[i]] != NULL) { 
+                                        fwrite (freq[buffer[i]],1, 1, rle); // para já ele só passa para binário os valores n repetidos mais de 4 vezes
+                                    //    printf(" %d \n", buffer[i] ); }
+            i++;    
     }
 }
+// abcbdbcbabdbcbdbcbabacdbacdaabcbdd
 
 //Função que guarda num buffer o ficheiro .rle
 void guardaRLE (char **freq, char fim) {
@@ -85,27 +89,29 @@ void guardaRLE (char **freq, char fim) {
     printf ("\n\n\n\n"); //apenas para separar dos outros testes
     FILE *rle = fopen ("aaa.txt.rle", "rb+");
     if ((rle == NULL)) printf("Error! opening file");
-    fseek(rle, 0L, SEEK_END); //ir ao fim do ficheiro para ver o seu tamanho
-    int tam = ftell(rle);
-    fseek(rle, 0L, SEEK_SET); //voltar ao ínicio
-    char buffer[tam];
-    fgets (buffer, sizeof (buffer), rle); //já que o buffer é do tamanho do file, podemos pô-lo todo de uma vez (mt provavelmente vamos mudar depois)
-    printf ("%u %u %u", buffer[0],buffer[1], buffer[2]); //apenas um teste
-    fclose(rle); 
-    printf ("\n"); 
-    criaFIleRle(freq, buffer, &fim, tam);
+    else {
+        fseek(rle, 0L, SEEK_END); //ir ao fim do ficheiro para ver o seu tamanho
+        int tam = ftell(rle);
+        fseek(rle, 0L, SEEK_SET); //voltar ao ínicio
+        char buffer[tam];
+        fgets (buffer, sizeof (buffer), rle); //já que o buffer é do tamanho do file, podemos pô-lo todo de uma vez (mt provavelmente vamos mudar depois)
+        printf ("%u %u %u", buffer[0],buffer[1], buffer[2]); //apenas um teste
+        fclose(rle); 
+        printf ("\n"); 
+        criaFIleRle(freq, buffer, &fim, tam);
+        }
 }
 
 
 //Se for o último bloco, isto podia ser diminuido
-int ** ler_PontoCod (FILE *fp, int valoresLidos) {   
+int ** ler_PontoCod (FILE *fp, int valoresLidos) {    //Este fp é .cod
     int tam = valoresLidos + valoresLidos*valoresLidos;
     char buffer[tam];
     fread(&buffer, sizeof(char), tam, fp);
     //Valor estúpido para controlar fim do array
     char fim = '?';
     char **freq = ler_bloco_ficheiro(buffer, valoresLidos, &fim);
-    imprime_bloco(valoresLidos, freq, &fim);
+   // imprime_bloco(valoresLidos, freq, &fim);
     guardaRLE(freq, fim); //basta pôr isto em comentário para n testar a minha função
 }
 
