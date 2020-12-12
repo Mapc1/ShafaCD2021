@@ -139,14 +139,17 @@ FreqsInf compressaoRLEBloco (FILE *orig, FicheiroInf fInf, FILE *rle, unsigned l
     }
     free(Buffer);
 
+    freq.FicheiroOriginal = &(BufferFreqOrig[256]);
+    freq.FicheiroRLE = &(BufferFreqRle[256]);
+
     return &freq;
 }
 
-//// Dar free aos array das freq !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, unsigned long long int numBloco){
     unsigned long long int tamanhoBlocoAtual;
-    FreqsInf aux_Freqs = compressaoRLEBloco (orig, fInf, rle,numBloco);
+    FreqsInf aux_Freqs =  malloc(sizeof(struct freqsInf)); 
+    aux_Freqs = compressaoRLEBloco (orig, fInf, rle,numBloco);
     /*char *Buffer ;
     long int freq_Simbolos[256]={0}; //inicializar frequências a 0*/
     int i;
@@ -175,12 +178,13 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char
     if (tipoFicheiro == 'N'){
     	for(i = 0; i< 256; i++){
 			fprintf(freq, "%c", ';');
-			if (aux_Freqs->FicheiroOriginal[i] > 0 ) fprintf(freq, "%lld", aux_Freqs -> FicheiroOriginal[i]);
+			if ((aux_Freqs->FicheiroOriginal[i]) > 0 ) fprintf(freq, "%llu", &(aux_Freqs -> FicheiroOriginal[i]));
     	}
-    }else if (tipoFicheiro == 'R'){
+    }
+    else if (tipoFicheiro == 'R'){
     	for(i = 0; i< 256; i++){
 			fprintf(freq, "%c", ';');
-			if (aux_Freqs->FicheiroRLE[i] > 0 ) fprintf(freq, "%lld", aux_Freqs -> FicheiroRLE[i]);
+			if ((aux_Freqs->FicheiroRLE[i]) > 0 ) fprintf(freq, "%llu", &(aux_Freqs -> FicheiroRLE[i]));
     	}
     }
 
