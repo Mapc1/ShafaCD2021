@@ -31,7 +31,7 @@ double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, char compressaoFor
 
 FreqsInf compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long long int num_bloco);
 
-void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, int numBloco);
+void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, unsigned long long int numBloco);
 
 void frequencias(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro);
 

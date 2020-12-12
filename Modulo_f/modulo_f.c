@@ -144,50 +144,56 @@ FreqsInf compressaoRLEBloco (FILE *orig, FicheiroInf fInf, FILE *rle, unsigned l
 
 //// Dar free aos array das freq !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, int numBloco){
+void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, unsigned long long int numBloco){
     unsigned long long int tamanhoBlocoAtual;
-    char *Buffer ;
-    long int freq_Simbolos[256]={0}; //inicializar frequências a 0
-    int i, j;
+    FreqsInf aux_Freqs = compressaoRLEBloco (orig, fInf, rle,numBloco);
+    /*char *Buffer ;
+    long int freq_Simbolos[256]={0}; //inicializar frequências a 0*/
+    int i;
 
     if (numBloco < (fInf-> num_blocos)){
         tamanhoBlocoAtual = (fInf-> tamanhoBloco);
     }else tamanhoBlocoAtual = (fInf-> tamanhoUltimoBloco);
 
-    if (tipoFicheiro == 'N'){
+    /*if (tipoFicheiro == 'N'){
         Buffer = Bloco_to_array(orig, fInf, numBloco);
     }else if (tipoFicheiro == 'R') Buffer = Bloco_to_array(rle, fInf, numBloco);
 
     //ANÁLISE DAS FREQUÊNCIAS //ALGO ESTÁ MAL AQUI
-    for(i = 0; i< 256; i++){
+    /*for(i = 0; i< 256; i++){
     	for(j = 0; j< tamanhoBlocoAtual -1; j++){
     		unsigned char buff = Buffer[j];
     		if(buff == i+'a') freq_Simbolos[i] ++;  //dúvidas nesta análise....somar 'a' ????
     	}
-    }
+    }*/
 
 	
-    //ESCRITA DO TAMANHO DO BLOCO (ESTÁ A FALHAR....) Por causa do unsigned long long int ????
     fprintf(freq, "%c%llu%c", '@', tamanhoBlocoAtual , '@');
 
 
     //ESCRITA DAS FREQUÊNCIAS NO FICHEIRO
-	for(i = 0; i< 256; i++){
-		fprintf(freq, "%c", ';');
-		if (freq_Simbolos[i] > 0 ) fprintf(freq, "%ld", freq_Simbolos[i]);
+    if (tipoFicheiro == 'N'){
+    	for(i = 0; i< 256; i++){
+			fprintf(freq, "%c", ';');
+			if (aux_Freqs->FicheiroOriginal[i] > 0 ) fprintf(freq, "%lld", aux_Freqs -> FicheiroOriginal[i]);
+    	}
+    }else if (tipoFicheiro == 'R'){
+    	for(i = 0; i< 256; i++){
+			fprintf(freq, "%c", ';');
+			if (aux_Freqs->FicheiroRLE[i] > 0 ) fprintf(freq, "%lld", aux_Freqs -> FicheiroRLE[i]);
+    	}
     }
 
-
-    free(Buffer);
+	//free(Buffer);
 
 }
 
 
-void frequencias(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro){     //tipoFicheiro = 'N' || tipoFicheiro = 'R' quando a função é invocada 
-    int bloco;
+void frequencias(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq,char tipoFicheiro){     //tipoFicheiro = 'N' || tipoFicheiro = 'R' quando a função é invocada 
+    unsigned long long int bloco;
 
     fprintf(freq, "%c%c%c%c", '@', tipoFicheiro, '@', '0'+((int)fInf->num_blocos)); //as informações iniciais de um ficheiro freq são sempre iguais;
-                                                                               //soma-se '0' para converter o int num char
+                                                                                    //soma-se '0' para converter o int num char
     
     for (bloco = 1; bloco <= (fInf-> num_blocos); bloco ++ ){
         frequencias_Bloco(orig,rle,fInf,freq,tipoFicheiro,bloco);
@@ -227,9 +233,6 @@ int main() {
     printf("TamanhoTotal: %llu\nTamanhoBloco: %llu\nTamanhoUltimoBloco: %llu\nNum_Blocos: %lld \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
 
     // CompressãoRLE
-
-    compressaoRLE(orig, fInf, rle, 0);
-
 
     frequencias(orig,rle,fInf,freq,'N');
 
