@@ -27,12 +27,10 @@ unsigned long long int tamanhoFicheiro (FILE *f);
 
 char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco);
 
-double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, char compressaoForcada);
+double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, char compressaoForcada);
 
 FreqsInf compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long long int num_bloco);
 
-void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro, unsigned long long int numBloco);
-
-void frequencias(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freq, char tipoFicheiro);
+void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, FILE *freqRLE, unsigned long long int numBloco);
 
 #endif //MODULO_F_MODULO_F_H
