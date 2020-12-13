@@ -3,6 +3,8 @@
 
 #define BUFFSIZE 1024
 #define NUMOPTS 4
+#define NSIMBOLOS 256
+#define CODE_SIZE 2
 
 #define HELP "Shafa - Programa de compressão/descompressão\n\n"\
              "Comandos: shafa -m [t|f|c|d] [-b K|m|M] [-c r]\n"\
