@@ -62,6 +62,8 @@ void getCodes(FILE *fpCOD, BlockData *block){
   ABin **tmp;
   unsigned char bit, gotCode = 0;
 
+  block->codes = createNode();
+
   for(int symbol = 0; symbol < NSIMBOLOS; symbol++){
     tmp = &(block->codes);
     fread(&bit, 1, 1, fpCOD);
@@ -86,28 +88,33 @@ void getCodes(FILE *fpCOD, BlockData *block){
   }
 }
 
-/*BlockData *readCOD(FILE *fpCOD){
-  BlockData *tmp, *block = malloc(sizeof(BlockData));
+BlockData *readCOD(FILE *fpCOD){
+  BlockData **tmp, *block;
   char buffer[BUFFSIZE];
   size_t totalBlocks;
-  fread(&stdout, 1, 1, fpCOD);
+  Precomp compression;
+
+  fseek(fpCOD, 1, SEEK_SET);
   readSection(fpCOD, buffer);
-  block->compression = buffer[0];
+  compression = (int) buffer[0];
 
   readSection(fpCOD, buffer);
-  totalBlocks = atoi(buffer);
+  totalBlocks = strtol(buffer, NULL,10);
 
-  tmp = block;
+  tmp = &block;
   for(int i = 0; i < totalBlocks; i++){
-    block->blockNum = i;
-    readSection(fpCOD, buffer);
-    block->blockSize = atoi(buffer);
-    getCodes(fpCOD, tmp);
-    tmp = tmp->next;
+      (*tmp) = malloc(sizeof(BlockData));
+      initBlock(*tmp);
+      (*tmp)->compress = compression;
+      (*tmp)->blockNum = i;
+      readSection(fpCOD, buffer);
+      (*tmp)->blockSize = strtol(buffer, NULL, 10);
+      getCodes(fpCOD, *tmp);
+      tmp = &((*tmp)->next);
   }
   return block;
 }
-*/
+
 void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
 
 }
@@ -115,6 +122,7 @@ void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
 void moduleDMain(Options *opts){
   char *foutName, *fin2;
   FILE *fout, *fin1 = fopen(opts->fileIN, "rb");
+  BlockData *blockInfo;
 
   switch(opts->opts[3]){
     case 's':
@@ -123,22 +131,16 @@ void moduleDMain(Options *opts){
       else foutName = opts->fileOUT;
       fout = fopen(foutName, "wb");
       //decodeShafa();
-      //readCOD(fin1);
-      BlockData *test = malloc(sizeof(BlockData));
-      initBlock(test);
+      blockInfo = readCOD(fin1);
       fseek(fin1, 10, SEEK_SET);
-      getCodes(fin1, test);
       if(!opts->fileOUT) free(foutName);
       fclose(fout);
       break;
     case 'r':
       if(!opts->fileOUT)
-        foutName = removeSufix(opts->fileIN, ".rle");
-      else
-        foutName = opts->fileOUT;
+        opts->fileOUT = removeSufix(opts->fileIN, ".rle");
       fout = fopen(foutName, "wb");
       decodeRLE(fin1, fout);
-      if (!opts->fileOUT) free(foutName);
       fclose(fout);
       break;
     //case '\0': decodeNormal();

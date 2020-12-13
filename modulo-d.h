@@ -17,7 +17,7 @@ typedef struct abin {
 
 typedef struct blockData{
   size_t blockNum, blockSize;
-  //char symbolMatrix[NSIMBOLOS*8][CODE_SIZE+2];
+  Precomp compress;
   ABin *codes;
   struct blockData *next;
 } BlockData;
