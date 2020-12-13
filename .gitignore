@@ -1,6 +1,10 @@
 # Executable
 shafa
 
+# clion stuff
+cmake-build-debug
+.idea
+
 # Compression Files
 *.freq
 *.rle
