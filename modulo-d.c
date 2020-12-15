@@ -115,8 +115,20 @@ BlockData *readCOD(FILE *fpCOD){
   return block;
 }
 
-void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
+//recebe um ficheiro do tipoo .cod e retorna 1 se tiver sido ultilizada a compressão rle 0 caso contrário
+int itsrle (FILE *f){
+    char s[2];
+    fgets(s,3,f);
+    int r=1;
+    if(s[1]=='N') r=0;
+  return r;
+}
 
+void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
+if(itsrle(fpCOD)==1) { //cria ficheiro do tipo rle
+}
+  else {//cria ficheiro do tipo original
+  }
 }
 
 void moduleDMain(Options *opts){
