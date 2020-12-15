@@ -117,7 +117,7 @@ BlockData *readCOD(FILE *fpCOD){
 
 //recebe um ficheiro do tipoo .cod e retorna 1 se tiver sido ultilizada a compressão rle 0 caso contrário
 int itsrle (FILE *f){
-    char s[2];
+    char s[3];
     fgets(s,3,f);
     int r=1;
     if(s[1]=='N') r=0;
