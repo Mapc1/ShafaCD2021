@@ -124,11 +124,59 @@ int itsrle (FILE *f){
   return r;
 }
 
-void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
-if(itsrle(fpCOD)==1) { //cria ficheiro do tipo rle
+//função que calcula o número de blocos do ficheiro
+int nblock (FILE *f) {
+int r,i=3,a=0;
+char c;
+fseek( f,3, SEEK_SET);
+c = fgetc(f);
+while( c != '@' ){
+          c = fgetc( f );
+          i++;          
 }
-  else {//cria ficheiro do tipo original
-  }
+char s[i-2];
+fseek( f,3, SEEK_SET);
+fgets(s,i,f);
+r=atoi(s);
+return r;
+}
+//função que calcula o numero de digitos de um numero
+int ndigit (int a) {
+int r=0;
+while(a!=0) {
+r++;
+a=a/10;
+}
+return r;
+}
+
+// função que recebe um ficheiro do tipo .cod e retorna um array com as tabelas do codigo sf de todos os blocos
+char *toarray (FILE *f) {
+int n,i=0;
+n=ndigit(nblock(f));
+n=n+4;
+char c; char *s;
+fseek( f,n, SEEK_SET);
+c = fgetc(f);
+while( c != '@' ){
+          c = fgetc( f );
+          n++;          
+}
+n++;
+fseek( f,n, SEEK_SET);
+while( c != EOF ){
+          c = fgetc( f );
+          i++;          
+}
+i--;
+fseek( f,n, SEEK_SET);
+s=malloc(i*sizeof(char));
+fgets(s,i,f);
+return s;
+}
+
+
+void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
 }
 
 void moduleDMain(Options *opts){
