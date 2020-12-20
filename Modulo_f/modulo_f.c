@@ -5,10 +5,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-
-FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco) { // tamanhoBloco vem em Bytes!!!
+FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco, char *nomeFicheiro) { // TamanhoBloco vem em Bytes!!!
     FicheiroInf fic = malloc(sizeof(struct ficheiroInf));
-    
+    fic -> nomeFicheiro = nomeFicheiro;
     fic -> tamanhoTotal = tamanhoFicheiro(f);
     unsigned long long int resto = (fic -> tamanhoTotal) % (tamanhoBloco);
 
@@ -40,13 +39,13 @@ unsigned long long int tamanhoFicheiro (FILE *f) {
 } // Inclui o caracter  ?? \r ??
 
 
-char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco) {
+unsigned char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco) {
     unsigned long long int tamanhoArray;
     // Verificar se o num_bloco é o ultimo e meter um buffer com um possível espaço irregular em relação aos outros blocos
     if (num_bloco == (fInf -> num_blocos) - 1) tamanhoArray = fInf -> tamanhoUltimoBloco;
     else tamanhoArray = fInf -> tamanhoBloco;
 
-    char *bloco = malloc(tamanhoArray * sizeof(char)); // Criação de um buffer para armazenar os blocos
+    unsigned char *bloco = malloc(tamanhoArray * sizeof(char)); // Criação de um buffer para armazenar os blocos
 
     fseek(f, (long) ((unsigned long long int) num_bloco * (fInf -> tamanhoBloco)), SEEK_SET); // Colocação do apontador de posição no inicio do bloco
 
@@ -58,18 +57,18 @@ char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco
 
 void escrita_freqs(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, int compr){
 
-	unsigned long long int num_bloco = 0;
+	unsigned long long int num_bloco;
 
 	if (compr == RLE_NAO) { // Não se faz a compressão RLE e apaga-se o ficheiro .rle
-            remove("aaa.txt.orig.rle");
+            remove(("%s.rle", fInf -> nomeFicheiro));
+            remove(("%s.rle.freq", fInf -> nomeFicheiro));
             fprintf(freqOrig, "@N@%lld", fInf->num_blocos);
             for (num_bloco = 0; num_bloco < fInf->num_blocos; num_bloco++) {
                   frequencias_Bloco(orig, rle, fInf, freqOrig, freqRLE, num_bloco);
             }
             fprintf(freqOrig, "@0\n");
             
-    }
-    else{
+    } else {
         	//compensa fazer RLE ou foi forçada
         	fprintf(freqOrig, "@N@%lld", fInf->num_blocos);
             fprintf(freqRLE, "@R@%lld", fInf->num_blocos);
@@ -128,7 +127,7 @@ double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FI
 // Quando compensa fazer RLE ou é forçado o RLE, esta função cria um array com freq dos dois ficheiros
 // Else, a função frequencias, conta as frequencias por si mesma
 FreqsInf compressaoRLEBloco (FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long long int num_bloco) { // Assume-se que está função será chamada com num_bloco sucessivos...
-    char *Buffer = Bloco_to_array(orig, fInf, num_bloco);
+    unsigned char *Buffer = Bloco_to_array(orig, fInf, num_bloco);
     int i = 0;
     unsigned long long int tamanhoBlocoAtual;
     FreqsInf freq = malloc(sizeof (struct freqsInf));
@@ -234,7 +233,7 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, 
         unsigned long long int BufferFreq[256] = {0}; // Inicializar o buffer a 0
 
         // Buffer com os símbolos
-        char *Buffer = Bloco_to_array(orig, fInf, numBloco);
+        unsigned char *Buffer = Bloco_to_array(orig, fInf, numBloco);
 
         // -> Contagem de símbolos
         for (i = 0; i < tamanhoBlocoAtual; i++) {
@@ -259,26 +258,27 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, 
 int main() {
     // NAO ESQUECER: GENERALIZAR A MAIN!!!!!!!!!!!!!!!!
 
-    // Generalizar o nome dos ficheiros!!!!!!!!!!!!
+    // Generalizar o nomeFicheiro dos ficheiros!!!!!!!!!!!!
 
     // Início da contagem do tempo de execução
     clock_t inicio = clock();
 
     // Abertura dos ficheiros
+    char nomeFicheiro[30] = "teste1.txt";
     FILE *orig;
-    orig = fopen("aaa.txt","rb"); // Ficheiro original
+    orig = fopen(nomeFicheiro,"rb"); // Ficheiro original
 
     if (!orig) {
         printf("Erro ao abrir o ficheiro!\n"); // Caso haja erro na leitura do ficheiro original, o programa termina
         exit(1);
     }
 
-    FILE *rle = fopen("aaa.txt.rle","wb"); // Ficheiro rle
-    FILE *freqOrig = fopen("aaa.txt.freq","w");
-    FILE *freqRLE = fopen("aaa.txt.rle.freq","w");
+    FILE *rle = fopen(("%s.rle", nomeFicheiro),"wb"); // Ficheiro rle
+    FILE *freqOrig = fopen(("%s.freq", nomeFicheiro),"w");
+    FILE *freqRLE = fopen(("%s.rle.freq", nomeFicheiro),"w");
 
 
-    FicheiroInf fInf = NBlocos(orig, TAMANHO_BLOCO, TAMANHO_MINIMO_ULTIMO_BLOCO);
+    FicheiroInf fInf = NBlocos(orig, TAMANHO_BLOCO, TAMANHO_MINIMO_ULTIMO_BLOCO, nomeFicheiro);
     printf("TamanhoTotal: %llu\nTamanhoBloco: %llu\nTamanhoUltimoBloco: %llu\nNum_Blocos: %lld \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
 
     // CompressãoRLE
@@ -288,6 +288,9 @@ int main() {
     // Fechar os ficheiros
 
     fclose(orig);
+    fclose(rle);
+    fclose(freqOrig);
+    fclose(freqRLE);
 
     // Fim da contagem do tempo de execução
     clock_t fim = clock();

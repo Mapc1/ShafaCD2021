@@ -12,6 +12,7 @@
 #define RLE_NAO 2
 
 typedef struct ficheiroInf {
+    char *nomeFicheiro;
     unsigned long long int tamanhoTotal;
     unsigned long long int tamanhoBloco;
     unsigned long long int tamanhoUltimoBloco;
@@ -23,11 +24,12 @@ typedef struct freqsInf { // Struct usada na função compressaoRLEBloco para ao
     unsigned long long int *FicheiroRLE;
 } *FreqsInf;
 
-FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco);
+FicheiroInf
+NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco, char *nomeFicheiro);
 
 unsigned long long int tamanhoFicheiro (FILE *f);
 
-char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco);
+unsigned char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco);
 
 void escrita_freqs(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, int compr);
 
