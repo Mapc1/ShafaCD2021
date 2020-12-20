@@ -136,7 +136,7 @@ void moduleDMain(Options *opts){
   FILE *fout, *fin1 = fopen(opts->fileIN, "rb");
   BlockData *blockInfo;
 
-  switch(opts->opts[3]){
+  switch(opts->optD){
     case 's':
       if (!opts->fileOUT)
         foutName = removeSufix(opts->fileIN, ".shafa");

@@ -9,7 +9,13 @@ int initOpts(Options *opts){
 
   opts->fileIN = NULL;
   opts->fileOUT = NULL;
-  strcpy(opts->opts, "\0\0\0\0");
+  opts->modT = 0;
+  opts->modD = 0;
+  opts->modF = 0;
+  opts->modC = 0;
+  opts->optB = '\0';
+  opts->optD = '\0';
+  opts->optC = '\0';
   return 1;
 }
 
@@ -22,10 +28,16 @@ Options *getOpts(int argc, char *argv[]){
     if(argv[i][0] == '-'){
       i++;
       switch(argv[i-1][1]){
-        case 'm': opts->opts[0] = argv[i][0]; break;
-        case 'b': opts->opts[1] = argv[i][0]; break;
-        case 'c': opts->opts[2] = argv[i][0]; break;
-        case 'd': opts->opts[3] = argv[i][0]; break;
+        case 'm': 
+          switch(argv[i][0]){
+            case 't': opts->modT = 1; break;
+            case 'd': opts->modD = 1; break;
+            case 'f': opts->modF = 1; break;
+            case 'c': opts->modC = 1; break;
+          }; break;
+        case 'b': opts->optB = argv[i][0]; break;
+        case 'c': opts->optC = argv[i][0]; break;
+        case 'd': opts->optD = argv[i][0]; break;
         case 'o': opts->fileOUT = argv[i]; break;
         default : fprintf(stdout, "ERRO!!\nA opção '-%c' não existe!\n", argv[i-1][1]);
       }
@@ -59,12 +71,10 @@ int main(int argc, char *argv[]){
   if(argc == 1) fprintf(stdout, HELP);
 
   opts = getOpts(argc, argv);
-  switch(opts->opts[0]){
-//    case 'f':
-//    case 't':
-//    case 'c':
-    case 'd': moduleDMain(opts);
-  }
+  //if(modT)
+  if(opts->modD) moduleDMain(opts);
+  //if(modF)
+  //if(modC)
   free(opts);
   return 0;
 }
