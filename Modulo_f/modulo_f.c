@@ -3,7 +3,22 @@
 #include "modulo_f.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+
+char *novoficheiro(char *tipoficheiro, FicheiroInf fInf) {
+
+    int i=0;
+    int j=0;
+    int k=0;
+    int tamanho_ficheiro = (int) (strlen(fInf -> nomeFicheiro) + strlen(tipoficheiro));
+    char *novoficheiro = malloc(sizeof(char) * tamanho_ficheiro);
+    while(i<tamanho_ficheiro){
+        while(j<strlen(fInf -> nomeFicheiro)) novoficheiro[i++] = (fInf -> nomeFicheiro)[j++];
+        while(k<strlen(tipoficheiro)) novoficheiro[i++] = tipoficheiro[k++];
+    }
+    return novoficheiro;
+}
 
 FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco, char *nomeFicheiro) { // TamanhoBloco vem em Bytes!!!
     FicheiroInf fic = malloc(sizeof(struct ficheiroInf));
@@ -60,8 +75,8 @@ void escrita_freqs(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE
 	unsigned long long int num_bloco;
 
 	if (compr == RLE_NAO) { // Não se faz a compressão RLE e apaga-se o ficheiro .rle
-            remove(("%s.rle", fInf -> nomeFicheiro));
-            remove(("%s.rle.freq", fInf -> nomeFicheiro));
+            remove(novoficheiro(".rle", fInf));
+            remove(novoficheiro(".rle.freq", fInf));
             fprintf(freqOrig, "@N@%lld", fInf->num_blocos);
             for (num_bloco = 0; num_bloco < fInf->num_blocos; num_bloco++) {
                   frequencias_Bloco(orig, rle, fInf, freqOrig, freqRLE, num_bloco);
@@ -272,13 +287,13 @@ int main() {
         printf("Erro ao abrir o ficheiro!\n"); // Caso haja erro na leitura do ficheiro original, o programa termina
         exit(1);
     }
-
-    FILE *rle = fopen(("%s.rle", nomeFicheiro),"wb"); // Ficheiro rle
-    FILE *freqOrig = fopen(("%s.freq", nomeFicheiro),"w");
-    FILE *freqRLE = fopen(("%s.rle.freq", nomeFicheiro),"w");
-
-
     FicheiroInf fInf = NBlocos(orig, TAMANHO_BLOCO, TAMANHO_MINIMO_ULTIMO_BLOCO, nomeFicheiro);
+
+    FILE *rle = fopen(novoficheiro(".rle", fInf),"wb"); // Ficheiro rle
+    FILE *freqOrig = fopen(novoficheiro(".freq", fInf),"w");
+    FILE *freqRLE = fopen(novoficheiro(".rle.freq", fInf),"w");
+
+
     printf("TamanhoTotal: %llu\nTamanhoBloco: %llu\nTamanhoUltimoBloco: %llu\nNum_Blocos: %lld \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
 
     // CompressãoRLE

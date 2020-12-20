@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 
 #define TAMANHO_BLOCO 512
@@ -24,8 +25,9 @@ typedef struct freqsInf { // Struct usada na função compressaoRLEBloco para ao
     unsigned long long int *FicheiroRLE;
 } *FreqsInf;
 
-FicheiroInf
-NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco, char *nomeFicheiro);
+FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco, char *nomeFicheiro);
+
+char *novoficheiro(char *tipoficheiro, FicheiroInf fInf);
 
 unsigned long long int tamanhoFicheiro (FILE *f);
 
