@@ -228,7 +228,32 @@ retirahead (s);
 }
 }
 
+//função que cria a matriz com (nº blocos) linhas e 256 colunas(nº simbolos)
+int **matrizSF (FILE *f) {
+int t;
+t=nblock(f);
+int **matriz;
+int i,j;
+int *aux;
+char *a;
+for (int i = 0; i < t; ++i) {matriz[i] = malloc (256 * sizeof (int));}
+a=toarray(f);
+while(i<t) {
+for(i=0;a[i]!='@';i++){}
+aux=tabelaSF(a,i-1);
+retira(a,i);
+for(i=0;a[i]!='@';i++){}
+retira(a,i);
+for(j=0;j<256;j++){
+matriz[i][j]=aux[j];
+}
+}
+return matriz;
+}
+
 void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
+  int **tab;
+  tab=matrizSF(fpCOD);
 }
 
 void moduleDMain(Options *opts){
