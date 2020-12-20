@@ -13,8 +13,8 @@ cmake-build-debug
 
 # Other shit
 core
-.ccls*
 files*
+.vscode
 
 # Prerequisites
 *.d

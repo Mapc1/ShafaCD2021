@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco) { // tamanhoBloco vem em Bytes!!!
     FicheiroInf fic = malloc(sizeof(struct ficheiroInf));
     
@@ -55,6 +56,32 @@ char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco
     return bloco;
 }
 
+void escrita_freqs(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, int compr){
+
+	unsigned long long int num_bloco = 0;
+
+	if (compr == RLE_NAO) { // Não se faz a compressão RLE e apaga-se o ficheiro .rle
+            remove("aaa.txt.orig.rle");
+            fprintf(freqOrig, "@N@%lld", fInf->num_blocos);
+            for (num_bloco = 0; num_bloco < fInf->num_blocos; num_bloco++) {
+                  frequencias_Bloco(orig, rle, fInf, freqOrig, freqRLE, num_bloco);
+            }
+            fprintf(freqOrig, "@0\n");
+            
+    }
+    else{
+        	//compensa fazer RLE ou foi forçada
+        	fprintf(freqOrig, "@N@%lld", fInf->num_blocos);
+            fprintf(freqRLE, "@R@%lld", fInf->num_blocos);
+            for (num_bloco = 0; num_bloco < fInf->num_blocos; num_bloco++) {
+                    frequencias_Bloco(orig, rle, fInf, freqOrig, freqRLE, num_bloco);
+            }
+            fprintf(freqOrig, "@0\n");
+            fprintf(freqRLE, "@0\n");
+    }
+
+}
+
 double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, char compressaoForcada) {
     /* -> Fazer compressão para o bloco 1
      * --> Identificar padrões de 4 ou +
@@ -70,36 +97,25 @@ double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FI
     // Compressão forçada
     if (compressaoForcada) {
         // -> Geração do ficheiro FREQ do ficheiro original e RLE
-
-        // As informações iniciais de um ficheiro freq são sempre iguais;
-        fprintf(freqOrig, "@N@%lld", fInf->num_blocos);
-        fprintf(freqRLE, "@R@%lld", fInf->num_blocos);
-        for (num_bloco = 0; num_bloco < fInf->num_blocos; num_bloco++) {
-            frequencias_Bloco(orig, rle, fInf, freqOrig, freqRLE, num_bloco);
-        }
-        fprintf(freqOrig, "@0\n");
-        fprintf(freqRLE, "@0\n");
-
+    	escrita_freqs(orig, fInf,rle, freqOrig, freqRLE, RLE_SIM);
     }
     else {
 
         // Bloco 1
-        compressaoRLEBloco(orig, fInf, rle, num_bloco);
+        frequencias_Bloco(orig, rle, fInf, freqOrig, freqRLE, num_bloco);
 
         // Taxa de compressão RLE do primeiro bloco
         double compressao_bloco1 = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoBloco;
         printf("Taxa de compressão do primeiro bloco: %lf\n", compressao_bloco1);
         if (compressao_bloco1 > 0.95) { // Não se faz a compressão RLE e apaga-se o ficheiro .rle
-            remove("aaa.txt.rle");
-            return 1; // A taxa de compressão é de 1, logo concluimos que não se fez a compressão RLE
+            escrita_freqs(orig, fInf,rle, freqOrig, freqRLE, RLE_NAO);
+        }
+        else{
+        	//compensa fazer RLE
+        	escrita_freqs(orig, fInf,rle, freqOrig, freqRLE, RLE_SIM);
         }
 
 
-        // Visto que compensa fazer a compressão rle para o primeiro bloco, fazemos para os restantes.
-
-        for (num_bloco = 1; num_bloco < fInf->num_blocos; num_bloco++) {
-            compressaoRLEBloco(orig, fInf, rle, num_bloco);
-        }
     }
 
     double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;

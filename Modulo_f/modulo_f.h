@@ -8,6 +8,8 @@
 
 #define TAMANHO_BLOCO 512
 #define TAMANHO_MINIMO_ULTIMO_BLOCO 1024
+#define RLE_SIM 1
+#define RLE_NAO 2
 
 typedef struct ficheiroInf {
     unsigned long long int tamanhoTotal;
@@ -26,6 +28,8 @@ FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long 
 unsigned long long int tamanhoFicheiro (FILE *f);
 
 char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int num_bloco);
+
+void escrita_freqs(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, int compr);
 
 double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, char compressaoForcada);
 
