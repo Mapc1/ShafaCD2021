@@ -216,7 +216,7 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, 
     if (freqRLE) { // Saber se é para gerar o ficheiro FREQ dos ficheiros original e do RLE ou se é só do ficheiro original
 
         fprintf(freqRLE, "%c%llu%c", '@', tamanhoBlocoAtual, '@');
-        FreqsInf aux_Freqs = compressaoRLEBloco(orig, fInf, rle, numBloco); // Buffer com as frequências do símbolos
+        FreqsInf aux_Freqs = compressaoRLEBloco(orig, fInf, rle, numBloco); // Buffer com as frequências dos símbolos
 
         // -> Geração do ficheiro FREQ do ficheiro original
         for (i = 0; i < 256; i++) { // Otimizar condições!!!!!
@@ -226,8 +226,7 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, 
             } else if (aux_Freqs->FicheiroOriginal[i] == aux_Freqs->FicheiroOriginal[i - 1]) fprintf(freqOrig, ";");
             else if (i != 255) fprintf(freqOrig, "%lld", (aux_Freqs->FicheiroOriginal[i]));
             else
-                fprintf(freqOrig, "%lld;",
-                        (aux_Freqs->FicheiroOriginal[i])); // (aux_Freqs->FicheiroOriginal[i] != aux_Freqs->FicheiroOriginal[i-1])
+                fprintf(freqOrig, "%lld;",(aux_Freqs->FicheiroOriginal[i])); // (aux_Freqs->FicheiroOriginal[i] != aux_Freqs->FicheiroOriginal[i-1])
         }
 
         // -> Geração do ficheiro FREQ do ficheiro RLE
@@ -238,8 +237,7 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, 
             } else if (aux_Freqs->FicheiroRLE[i] == aux_Freqs->FicheiroRLE[i - 1]) fprintf(freqRLE, ";");
             else if (i != 255) fprintf(freqRLE, "%lld", (aux_Freqs->FicheiroRLE[i]));
             else
-                fprintf(freqRLE, "%lld;",
-                        (aux_Freqs->FicheiroRLE[i])); // (aux_Freqs->FicheiroRLE[i] != aux_Freqs->FicheiroRLE[i-1])
+                fprintf(freqRLE, "%lld;",(aux_Freqs->FicheiroRLE[i])); // (aux_Freqs->FicheiroRLE[i] != aux_Freqs->FicheiroRLE[i-1])
         }
     } else { // Geração do ficheiro FREQ do original e contagem dos símbolos
         // OTIMIZAR C O PRIMEIRO BLOCO !!!!!!!!!!!
@@ -279,7 +277,7 @@ int main() {
     clock_t inicio = clock();
 
     // Abertura dos ficheiros
-    char nomeFicheiro[30] = "teste1.txt";
+    char nomeFicheiro[30] = "aaa.txt";
     FILE *orig;
     orig = fopen(nomeFicheiro,"rb"); // Ficheiro original
 
@@ -287,6 +285,7 @@ int main() {
         printf("Erro ao abrir o ficheiro!\n"); // Caso haja erro na leitura do ficheiro original, o programa termina
         exit(1);
     }
+
     FicheiroInf fInf = NBlocos(orig, TAMANHO_BLOCO, TAMANHO_MINIMO_ULTIMO_BLOCO, nomeFicheiro);
 
     FILE *rle = fopen(novoficheiro(".rle", fInf),"wb"); // Ficheiro rle
@@ -297,11 +296,10 @@ int main() {
     printf("TamanhoTotal: %llu\nTamanhoBloco: %llu\nTamanhoUltimoBloco: %llu\nNum_Blocos: %lld \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
 
     // CompressãoRLE
-    char compressaoForcada = 1;
+    char compressaoForcada = 1;  //1 se quisermos forçar compressão, senão 0 (ou outro número)
     compressaoRLE(orig, fInf, rle, freqOrig, freqRLE, compressaoForcada);
 
     // Fechar os ficheiros
-
     fclose(orig);
     fclose(rle);
     fclose(freqOrig);
