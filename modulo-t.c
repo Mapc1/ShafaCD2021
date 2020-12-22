@@ -154,28 +154,36 @@ LISTA metenalista ( int arr[] , LISTA L ) {
     int i;
 
     for ( i = 255 ; i >= 0 ; i-- )
-        L = inserecabeca ( L , i , arr[i] , NULL ); //o 2 significa que ainda não tem um código SF definido
+        L = inserecabeca ( L , i , arr[i] , NULL ) ;
 
-    return L;
+    return L;final[ii] = ';' ;
+        ii++ ;
 }
 
 int finalefree ( LISTA * L , char * final , int ii ) {
-    int i ;
+    int i ;                   // para percorrer cada codSF, que sao arrays de chars
     char * c ;
-    LISTA * Lp ;
+    LISTA * Lp ;              // é uma lista provisória que usamos apenas para gurdar o endereço do nodo em que estamos depois de lhe dar free
 
+    // perceorre a lista, colocando os codSF
     while ( L ) {
         c = (*L)->codSF ;
 
+        // percorremos o codSF de cada nodo, colocando char a char no array final
+        // de notar que se aquele nodo não tiver codSF, não é colocado nada
         for ( i = 0 ; c[i] ; i++ , ii++ )
             final[ii] = c[i] ;
         
+        // liberta o nodo que já obtivemos a informação
         *Lp = (*L)->prox ;
         free (*L) ;
         *L = *Lp ;
 
-        final[ii] = ';' ;
-        ii++ ;
+        // coloca o ; no final, para separar os valores, ela só não é colocada no último
+        if (L) {
+            final[ii] = ';' ;
+            ii++ ;
+        }
     }
 
     return ii ;
