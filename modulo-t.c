@@ -183,7 +183,7 @@ LISTA * freqread ( char * aa ) {
     return (&ll) ;
 }
 
-void moduleTMain ( char * frq ) {
+void moduleTMain ( FILE ff ) {
 
 /*
 @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@[frequência_símbolo_0_bloco_1]
@@ -196,31 +196,42 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     int j;                                                   // índice do array frq no primeiro for
     int i;                                                   // índice do array frq no segundo for
     LISTA * freq;                                            // array onde vamos colocar as frequências
+    char * final ;
 
-   // este for serve apenas para sabermos qual o endereço onde podemos ir para o segundo for
-   // este for está a "saltar" as informações dos 2 primeiros separadores de (@),
-   // faz com que o for seguinte veja apenas a informação de cada um dos blocos
-    for ( j = 0 ; na < 3 ; j++ )
-        if (frq[j] == '@') 
-            na++;
+    // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
+    char * frq;
+    frq = // . . .
+
+    // este é o que nos indica se é uma codificação rle ou nao, 
+    // só precisamos deste char no fim, para colocar no array que dará origem ao ficheiro cod
+    char rn = frq[1] ;
+
+    // indica-nos o número de blocos
+    int nb ;
+    nb = atoi ( &frq[3] ) ;
 
     // este for serve para vermos um bloco de cada vez. Ele acaba quando temos "@0"
-    for ( i = j ; frq[i+1] != '0' ; i++ ) {
+    for ( i = 3 ; frq[i+1] != '0' ; i++ ) {
         i++;                                                 // avança para a informação do tamanho do bloco, que vamos ignorar
-        freq = freqread ( frq );                             // pegar nesta parte do array de char e transforma-la numa lista ligada de inteiros
+        int tb = atoi ( &frq[i] ) ;                          // o tamanho do bloco
         for ( ; frq[i] != '@' ; i++ );                       // vemos quando acaba a informação do tamanho do bloco, que estamos a ignorar
+        freq = freqread ( frq );                             // pegar nesta parte do array de char e transforma-la numa lista ligada de inteiros
         
-    // fazer uma ordenação eficiente da lista através das frequenâncias
-    freq = MergeSort ( freq , 1 ) ;
+        // fazer uma ordenação eficiente da lista através das frequências
+        freq = MergeSort ( freq , 1 ) ;
 
-    //atribuir códigos Shannon-Fannon aos símbolos
-    ShannonFannon ( freq , freq ) ;
+        //atribuir códigos Shannon-Fannon aos símbolos
+        ShannonFannon ( freq , freq ) ;
 
-    //ordenar a lista em função dos simbolos
-    freq = MergeSort ( freq , 2 ) ;
+        //ordenar a lista em função dos simbolos
+        freq = MergeSort ( freq , 2 ) ;
+
+        //
 
 // @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@<0|1>*;[…];<0|1>*@[tamanho_bloco_2]@<0|1>*;[…];<0|1>*@[…]@0 
 
     // no fim de tudo, é necessário desfazer a lista ligada
     }
+
+    //função que transforma o array de chars que temos num ficheiro
 }
