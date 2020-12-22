@@ -23,26 +23,31 @@ int soma (int freq [],int i,int j) {
 }
 */
 
-char * changeData (char *buffer,int size) {
-  int i = 0,j,arroba = 0,index = 0;
-    while (buffer[index] != '\0') {
-      if ( ((arroba % 2) == 0) && (arroba != 0) ) {
-        for (;buffer[index] != '@';index++);buffer[index] = ';';
-        for (j = index;j < size;j++) {buffer[j] = buffer[j+1];}
-        arroba++;i = index;
-      }
-      else {
-        for (;(buffer[i] != '@') && (buffer[i] != '\0');) {
-          for (j = i;j < size;j++) {buffer[j] = buffer[j+1];}
+char * changeData ( char * buffer , int size ) {
+    int i = 0 , j , arroba = 0 , index = 0 ;
+
+    while ( buffer[index] != '\0' ) {
+
+        if ( ((arroba % 2) == 0) && (arroba != 0) ) {
+            for ( ; buffer[index] != '@' ; index++ ) ;
+            buffer[index] = ';';
+            for (j = index;j < size;j++)
+                buffer[j] = buffer[j+1] ;
+            arroba++ ;
+            i = index;
         }
-        arroba++;
-        for (i = 0;buffer[i] == '@';) {
-          for (j = i;j < size;j++) {buffer[j] = buffer[j+1];}
+        else {
+            while ((buffer[i] != '@') && (buffer[i] != '\0'))
+                for ( j = i ; j < size ; j++ )
+                    buffer[j] = buffer[j+1] ;
+            arroba++;
+            for ( i = 0 ; buffer[i] == '@' ; )
+                for ( j = i ; j < size ; j++ )
+                    buffer[j] = buffer[j+1];
         }
-      }
     }
     return buffer;
-  }
+}
 
 
 const char * detectfreq (char * freq) {
@@ -71,7 +76,7 @@ const char * detectfreq (char * freq) {
     buffer[size] = '\0';
 
 
-    changeData ( buffer , size ) ;
+    buffer = changeData ( buffer , size ) ;
 
 /* Print it ! */
     printf("%s", buffer);
