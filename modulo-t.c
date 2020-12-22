@@ -22,9 +22,8 @@ LISTA inserecabeca ( LISTA L , int s , int f , char * c ) {
 int somal ( LISTA * l , LISTA * l2 ) {
     int s = 0 ;
 
-    for ( ; l != l2 ; *l=(*l)->prox ) {
+    for ( ; l != l2 ; *l=(*l)->prox )
         s += (*l)->frequ ;
-    }
 
     s += (*l2)->frequ ;
 
@@ -60,7 +59,7 @@ char * addSF ( char * c , char d ) {
 
     c[i] = d ;
 
-    return c;
+    return c ;
 }
 
 void ShannonFannon ( LISTA * l ,  LISTA * l2 ) {
@@ -81,7 +80,7 @@ void ShannonFannon ( LISTA * l ,  LISTA * l2 ) {
 
 /* Funde duas listas ordenadas uma com a outra, formando outra lista ordenada
    Faz isso avançando em cada uma das listas e colocando elementos na lista maior  */
-LISTA SortedMerge ( LISTA a , LISTA b ) { 
+LISTA SortedMerge ( LISTA a , LISTA b , int fl ) { 
     LISTA result = NULL; 
   
     // Quando uma das listas é vazia
@@ -92,22 +91,23 @@ LISTA SortedMerge ( LISTA a , LISTA b ) {
   
     // Vai fundindo as listas, usando recorrência
     // Escolhe o valor maior para colocar e avança nessa lista
-    if ( a->frequ > b->frequ ) { 
+    if ( ( fl == 1 && a->frequ > b->frequ ) || ( fl == 2 && a->simbolo < b->simbolo ) ) { 
         result = a; 
-        result->prox = SortedMerge(a->prox, b); 
-    } 
+        result->prox = SortedMerge ( a->prox , b , fl ) ; 
+    }
     else { 
         result = b; 
-        result->prox = SortedMerge(a, b->prox); 
-    } 
-    return (result); 
+        result->prox = SortedMerge ( a , b->prox , fl ) ; 
+    }
+
+    return result ; 
 }
 
 /* Separa a lista em duas metades e retorna as duas listas usando parâmetros de referência
    Se o comprimento da lista for ímpar, o nodo extra vai para a primeira lista
    Usa a estratégia de avançar um apontador duas vezes mais rápido que o outro,
    de modo a um chegar ao meio quando o outro chega ao fim.  */
-void Divisao ( LISTA source , LISTA * a , LISTA * b ) { 
+void Divisao ( LISTA source , LISTA * a , LISTA * b , int fl ) { 
     LISTA l2; 
     LISTA l1; 
     l1 = source; 
@@ -128,7 +128,7 @@ void Divisao ( LISTA source , LISTA * a , LISTA * b ) {
     l1->prox = NULL;
 } 
 
-void MergeSort ( LISTA * L ) {
+LISTA * MergeSort ( LISTA * L , int fl ) {
     LISTA * a; 
     LISTA * b; 
 
@@ -138,14 +138,16 @@ void MergeSort ( LISTA * L ) {
     } 
   
     // Dividimos a lista em duas sublistas
-    Divisao( *L , a , b ); 
+    Divisao ( *L , a , b , fl ) ; 
   
     // Fazemos a MergeSort de cada uma das sublistas
-    MergeSort(a); 
-    MergeSort(b); 
+    MergeSort ( a , fl ) ; 
+    MergeSort ( b , fl ) ; 
   
     // No fim, fundimos as duas listas ordenadas uma com a outra
-    *L = SortedMerge( *a , *b ); 
+    *L = SortedMerge ( *a , *b , fl ) ;
+
+    return L ;
 }
 
 LISTA metenalista ( int * arr , LISTA L ) {
@@ -209,10 +211,15 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         for ( ; frq[i] != '@' ; i++ );                       // vemos quando acaba a informação do tamanho do bloco, que estamos a ignorar
         
     // fazer uma ordenação eficiente da lista através das frequenâncias
-    MergeSort ( freq );
+    freq = MergeSort ( freq , 1 ) ;
 
     //atribuir códigos Shannon-Fannon aos símbolos
-    ShannonFannon ( freq , freq );
+    ShannonFannon ( freq , freq ) ;
+
+    //ordenar a lista em função dos simbolos
+    freq = MergeSort ( freq , 2 ) ;
+
+// @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@<0|1>*;[…];<0|1>*@[tamanho_bloco_2]@<0|1>*;[…];<0|1>*@[…]@0 
 
     // no fim de tudo, é necessário desfazer a lista ligada
     }
