@@ -4,18 +4,21 @@
 #include "shafa.h"
 #include <stdlib.h>
 
-#define NSIMBOLOS 256
-#define CODE_SIZE 2
-
 typedef enum {
   RLE = 'R',
   NONE = 'N'
 } Precomp;
 
+typedef struct abin {
+  unsigned char c;
+  struct abin *left;
+  struct abin *right;
+} ABin;
+
 typedef struct blockData{
-  Precomp compression;
   size_t blockNum, blockSize;
-  char symbolMatrix[NSIMBOLOS*8][CODE_SIZE+2];
+  Precomp compress;
+  ABin *codes;
   struct blockData *next;
 } BlockData;
 

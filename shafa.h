@@ -3,6 +3,8 @@
 
 #define BUFFSIZE 1024
 #define NUMOPTS 4
+#define NSIMBOLOS 256
+#define CODE_SIZE 2
 
 #define HELP "Shafa - Programa de compressão/descompressão\n\n"\
              "Comandos: shafa -m [t|f|c|d] [-b K|m|M] [-c r]\n"\
@@ -14,12 +16,8 @@
 typedef struct {
   char *fileIN,  //  input file from arguments
        *fileOUT; //  output file needs -o option otherwise fileOUT = '\0' and output is the standard
-  char opts[NUMOPTS];  //  Each opt[i] has an option or '\0';
-                 //  order:
-                 //        opt[0] -> module
-                 //        opt[1] -> (-b) [M|m|k]
-                 //        opt[2] -> (-c) r
-                 //        opt[3] -> (-d) [r|s]
+  int modT, modD, modF, modC;
+  char optB, optC, optD; //The various possible options
 } Options;
 
 // Parses arguments into a Options struct

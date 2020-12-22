@@ -1,6 +1,10 @@
 # Executable
 shafa
 
+# clion stuff
+cmake-build-debug
+.idea
+
 # Compression Files
 *.freq
 *.rle
@@ -9,8 +13,8 @@ shafa
 
 # Other shit
 core
-.ccls*
 files*
+.vscode
 
 # Prerequisites
 *.d
