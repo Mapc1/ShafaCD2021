@@ -107,7 +107,7 @@ LISTA SortedMerge ( LISTA a , LISTA b , int fl ) {
    Se o comprimento da lista for ímpar, o nodo extra vai para a primeira lista
    Usa a estratégia de avançar um apontador duas vezes mais rápido que o outro,
    de modo a um chegar ao meio quando o outro chega ao fim.  */
-void Divisao ( LISTA source , LISTA * a , LISTA * b , int fl ) { 
+void Divisao ( LISTA source , LISTA * a , LISTA * b ) { 
     LISTA l2; 
     LISTA l1; 
     l1 = source; 
@@ -134,11 +134,11 @@ LISTA * MergeSort ( LISTA * L , int fl ) {
 
     // Caso a lista tenha 0 ou 1 elementos, fica igual
     if (( *L == NULL ) || ( (*L)->prox == NULL )) { 
-        return;
+        return L ;
     } 
   
     // Dividimos a lista em duas sublistas
-    Divisao ( *L , a , b , fl ) ; 
+    Divisao ( *L , a , b ) ; 
   
     // Fazemos a MergeSort de cada uma das sublistas
     MergeSort ( a , fl ) ; 
@@ -150,13 +150,35 @@ LISTA * MergeSort ( LISTA * L , int fl ) {
     return L ;
 }
 
-LISTA metenalista ( int * arr , LISTA L ) {
+LISTA metenalista ( int arr[] , LISTA L ) {
     int i;
 
     for ( i = 255 ; i >= 0 ; i-- )
         L = inserecabeca ( L , i , arr[i] , NULL ); //o 2 significa que ainda não tem um código SF definido
 
     return L;
+}
+
+int finalefree ( LISTA * L , char * final , int ii ) {
+    int i ;
+    char * c ;
+    LISTA * Lp ;
+
+    while ( L ) {
+        c = (*L)->codSF ;
+
+        for ( i = 0 ; c[i] ; i++ , ii++ )
+            final[ii] = c[i] ;
+        
+        *Lp = (*L)->prox ;
+        free (*L) ;
+        *L = *Lp ;
+
+        final[ii] = ';' ;
+        ii++ ;
+    }
+
+    return ii ;
 }
 
 LISTA * freqread ( char * aa ) {
@@ -183,7 +205,7 @@ LISTA * freqread ( char * aa ) {
     return (&ll) ;
 }
 
-void moduleTMain ( FILE ff ) {
+void moduleTMain ( FILE ff ) { //acho que entram mais coisas para além do ff, depois vê isso por favor
 
 /*
 @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@[frequência_símbolo_0_bloco_1]
@@ -192,45 +214,55 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 ;[frequência_símbolo_255_bloco_2]@[…]@0
 */
 
-    int na = 0;                                              // numero de @
-    int j;                                                   // índice do array frq no primeiro for
-    int i;                                                   // índice do array frq no segundo for
-    LISTA * freq;                                            // array onde vamos colocar as frequências
-    char * final ;
+    int i , ii ;                                             // índice do array frq e do final, respetivamente
+    LISTA * l ;                                              // lista onde vamos colocar as frequências e codigos SF
+    char * final ;                                           // array que vai dar origem ao ficheiro cod final
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
     char * frq;
     frq = // . . .
 
-    // este é o que nos indica se é uma codificação rle ou nao, 
-    // só precisamos deste char no fim, para colocar no array que dará origem ao ficheiro cod
-    char rn = frq[1] ;
+    //coloca as informações iniciais no array final
+    final[0] = '@' ;
+    final[1] = frq[i] ;
+    final[2] = '@' ;
+    for ( ii = 3 ; frq[ii] != '@' ; ii++ )
+        final[ii] = frq[ii] ;
 
-    // indica-nos o número de blocos
-    int nb ;
-    nb = atoi ( &frq[3] ) ;
+    ii++ ;
+    final[ii] = '@' ;
 
-    // este for serve para vermos um bloco de cada vez. Ele acaba quando temos "@0"
-    for ( i = 3 ; frq[i+1] != '0' ; i++ ) {
-        i++;                                                 // avança para a informação do tamanho do bloco, que vamos ignorar
-        int tb = atoi ( &frq[i] ) ;                          // o tamanho do bloco
-        for ( ; frq[i] != '@' ; i++ );                       // vemos quando acaba a informação do tamanho do bloco, que estamos a ignorar
-        freq = freqread ( frq );                             // pegar nesta parte do array de char e transforma-la numa lista ligada de inteiros
+    i = ii ;
+    // este while serve para vermos um bloco de cada vez. Ele acaba quando temos "@0"
+    while ( frq[i+1] != '0' ) {
+
+        // avança para a informação do tamanho do bloco
+        i++; ii++;
+
+        // põe a informação do tamanho do bloco no array final
+        for ( ; frq[i] != '@' ; i++ , ii++ )
+            final[ii] = frq[i] ;
+
+        // pegar nesta parte do array de char e transforma-la numa lista ligada de inteiros
+        l = freqread ( &frq[i] );
         
         // fazer uma ordenação eficiente da lista através das frequências
-        freq = MergeSort ( freq , 1 ) ;
+        l = MergeSort ( l , 1 ) ;
 
-        //atribuir códigos Shannon-Fannon aos símbolos
-        ShannonFannon ( freq , freq ) ;
+        // atribuir códigos Shannon-Fannon aos símbolos
+        ShannonFannon ( l , l ) ;
 
-        //ordenar a lista em função dos simbolos
-        freq = MergeSort ( freq , 2 ) ;
+        // ordenar a lista em função dos simbolos
+        l = MergeSort ( l , 2 ) ;
 
-        //
+        // função que mete os códigos SF no array final e dá free da lista
+        ii = finalefree ( l , final , ii ) ;
+
+        ii++ ;
+        final[ii] = '@' ;
 
 // @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@<0|1>*;[…];<0|1>*@[tamanho_bloco_2]@<0|1>*;[…];<0|1>*@[…]@0 
 
-    // no fim de tudo, é necessário desfazer a lista ligada
     }
 
     //função que transforma o array de chars que temos num ficheiro

@@ -35,14 +35,16 @@ void ShannonFannon ( LISTA * l ,  LISTA * l2 ) ;
 
 LISTA SortedMerge ( LISTA a , LISTA b , int fl ) ;
 
-void Divisao ( LISTA source , LISTA * a , LISTA * b , int fl ) ;
+void Divisao ( LISTA source , LISTA * a , LISTA * b ) ;
 
-void MergeSort ( LISTA * L , int fl ) ;
+LISTA * MergeSort ( LISTA * L , int fl ) ;
 
 LISTA metenalista ( int * arr , LISTA L ) ;
 
+int finalefree ( LISTA * L , char * final , int ii ) ;
+
 LISTA * freqread ( char * aa ) ;
 
-void moduleTMain ( char * frq ) ;
+void moduleTMain ( FILE ff ) ;
 
 #endif
