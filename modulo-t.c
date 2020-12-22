@@ -211,6 +211,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     // fazer uma ordenação eficiente da lista através das frequenâncias
     MergeSort ( freq );
 
+    //atribuir códigos Shannon-Fannon aos símbolos
     ShannonFannon ( freq , freq );
 
     // no fim de tudo, é necessário desfazer a lista ligada
