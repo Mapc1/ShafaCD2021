@@ -150,7 +150,7 @@ a=a/10;
 return r;
 }
 
-// função que recebe um ficheiro do tipo .cod e retorna um array com as tabelas do codigo sf de todos os blocos
+// função que recebe um ficheiro do tipo .cod e retorna uma string com as tabelas do codigo sf de todos os blocos
 char *toarray (FILE *f) {
 int n,i=0;
 n=ndigit(nblock(f));
@@ -175,8 +175,85 @@ fgets(s,i,f);
 return s;
 }
 
+//função que recebe uma string e devolve uma string com os elementos entre i e f
+char *partstring (char *s,int i,int f) {
+   char *r;
+   int a,t;
+   t=f-i;
+   r=malloc(t*sizeof(char));
+   for(a=0;a<t && i<=f;a++) {
+   r[a]=s[i];
+   i++;
+   }
+  return r;
+} 
+
+//função que recebe uma string e devolve a tabela SF do primeiro bloco
+int *tabelaSF (char *a,int N) {
+  int i,ind=0,last=0,end=0;
+  int *r;
+  char *aux;
+  r=malloc(256*sizeof(int));
+  for(i=0;i<N;i++){
+    while(a[i]!=';'&& a[i]!='\0') {
+      end++; 
+      i++; }    
+    if(last==end++){
+      r[ind]=-1;
+      }
+    else {
+      aux=partstring(a,last,end);
+    r[ind]=atoi(aux);
+    }
+    ind++;
+    last=end;
+    }
+  return r;
+}
+
+//função que recebe uma string e retira a cabeça da string
+void retirahead (char s[]) {
+int i=0;
+while (s[i+1]!='\0') {
+  s[i]=s[i+1];
+  i++;
+}
+}
+
+//função que recebe uma string e retira os N primeiros elementos da string
+void retira (char s[],int N) {
+int i;
+for(i=0;i<N;i++) {
+retirahead (s);
+}
+}
+
+//função que cria a matriz com (nº blocos) linhas e 256 colunas(nº simbolos)
+int **matrizSF (FILE *f) {
+int t;
+t=nblock(f);
+int **matriz;
+int i,j;
+int *aux;
+char *a;
+for (int i = 0; i < t; ++i) {matriz[i] = malloc (256 * sizeof (int));}
+a=toarray(f);
+while(i<t) {
+for(i=0;a[i]!='@';i++){}
+aux=tabelaSF(a,i-1);
+retira(a,i);
+for(i=0;a[i]!='@';i++){}
+retira(a,i);
+for(j=0;j<256;j++){
+matriz[i][j]=aux[j];
+}
+}
+return matriz;
+}
 
 void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
+  int **tab;
+  tab=matrizSF(fpCOD);
 }
 
 void moduleDMain(Options *opts){

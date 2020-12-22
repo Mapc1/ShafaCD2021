@@ -21,20 +21,30 @@ typedef struct lista {
     struct lista * prox;
 } *LISTA;
 
-LISTA tornastruct ( char * arr );
+LISTA crialista () ;
 
-LISTA insere_cabeca(LISTA L, void *valor);
+LISTA insere_cabeca ( LISTA L , void * valor ) ;
 
-LISTA SortedMerge( LISTA a, LISTA b);
+int somal ( LISTA * l , LISTA * l2 ) ;
 
-void Divisao( LISTA source , LISTA * a , LISTA * b );
+LISTA * melhordivisao ( LISTA * l , LISTA * l2 ) ;
 
-void MergeSort( LISTA * L );
+char * addSF ( char * c , char d ) ;
 
-LISTA metenalista ( int * arr , LISTA L );
+void ShannonFannon ( LISTA * l ,  LISTA * l2 ) ;
 
-LISTA * freqread ( char * aa );
+LISTA SortedMerge ( LISTA a , LISTA b , int fl ) ;
 
-void moduleTMain ( char * frq );
+void Divisao ( LISTA source , LISTA * a , LISTA * b ) ;
+
+LISTA * MergeSort ( LISTA * L , int fl ) ;
+
+LISTA metenalista ( int * arr , LISTA L ) ;
+
+int finalefree ( LISTA * L , char * final , int ii ) ;
+
+LISTA * freqread ( char * aa ) ;
+
+void moduleTMain ( FILE ff ) ;
 
 #endif
