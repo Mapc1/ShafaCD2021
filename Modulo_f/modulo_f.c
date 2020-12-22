@@ -60,7 +60,7 @@ unsigned char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int 
     if (num_bloco == (fInf -> num_blocos) - 1) tamanhoArray = fInf -> tamanhoUltimoBloco;
     else tamanhoArray = fInf -> tamanhoBloco;
 
-    unsigned char *bloco = malloc(tamanhoArray * sizeof(char)); // Criação de um buffer para armazenar os blocos
+    unsigned char *bloco = malloc(tamanhoArray * sizeof(unsigned char)); // Criação de um buffer para armazenar os blocos
 
     fseek(f, (long) ((unsigned long long int) num_bloco * (fInf -> tamanhoBloco)), SEEK_SET); // Colocação do apontador de posição no inicio do bloco
 
@@ -96,7 +96,7 @@ void escrita_freqs(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE
 
 }
 
-double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, char compressaoForcada) {
+void compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, char compressaoForcada) {
     /* -> Fazer compressão para o bloco 1
      * --> Identificar padrões de 4 ou +
      * --> Identificar 0's
@@ -128,14 +128,7 @@ double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FI
         	//compensa fazer RLE
         	escrita_freqs(orig, fInf,rle, freqOrig, freqRLE, RLE_SIM);
         }
-
-
     }
-
-    double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;
-    printf("Taxa de compressão: %lf\n", TaxaCompressao);
-
-    return TaxaCompressao;
 }
 
 
@@ -185,9 +178,9 @@ FreqsInf compressaoRLEBloco (FILE *orig, FicheiroInf fInf, FILE *rle, unsigned l
             // Contagem das frequências dos símbolos do ficheiro orig
             BufferFreqOrig[simbolo] += num_repeticoes;
         } else { // O símbolo não se repete pelo menos 4 vezes, logo não aplicamos o padrão RLE
-            for (; num_repeticoes > 0; num_repeticoes--) fwrite(&simbolo, 1, 1, rle);
             BufferFreqRle[simbolo] += num_repeticoes;
             BufferFreqOrig[simbolo] += num_repeticoes;
+            for (; num_repeticoes > 0; num_repeticoes--) fwrite(&simbolo, 1, 1, rle);
         }
     }
     free(Buffer);
@@ -277,7 +270,7 @@ int main() {
     clock_t inicio = clock();
 
     // Abertura dos ficheiros
-    char nomeFicheiro[30] = "aaa.txt";
+    char nomeFicheiro[30] = "CornerCase.txt";
     FILE *orig;
     orig = fopen(nomeFicheiro,"rb"); // Ficheiro original
 
@@ -293,8 +286,6 @@ int main() {
     FILE *freqRLE = fopen(novoficheiro(".rle.freq", fInf),"w");
 
 
-    printf("TamanhoTotal: %llu\nTamanhoBloco: %llu\nTamanhoUltimoBloco: %llu\nNum_Blocos: %lld \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
-
     // CompressãoRLE
     char compressaoForcada = 1;  //1 se quisermos forçar compressão, senão 0 (ou outro número)
     compressaoRLE(orig, fInf, rle, freqOrig, freqRLE, compressaoForcada);
@@ -308,7 +299,13 @@ int main() {
     // Fim da contagem do tempo de execução
     clock_t fim = clock();
 
+    printf("TamanhoTotal: %llu\nTamanhoBloco: %llu\nTamanhoUltimoBloco: %llu\nNum_Blocos: %lld \n", fInf -> tamanhoTotal, fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco, fInf -> num_blocos);
+
     // Impressão no terminal das informações sobre este módulo
-    printf("Tempo de execução: %f segundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC); //O TEMPO DE EXECUÇÃO TERÁ DE SER APRESENTADO EM ms
+    printf("Tempo de execução: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC*1000); //O TEMPO DE EXECUÇÃO TERÁ DE SER APRESENTADO EM ms
+
+    double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;
+    printf("Taxa de compressão: %lf\n", TaxaCompressao);
+
     return 0;
 }

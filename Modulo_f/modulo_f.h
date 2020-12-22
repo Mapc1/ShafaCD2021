@@ -12,6 +12,8 @@
 #define RLE_SIM 1
 #define RLE_NAO 2
 
+typedef unsigned char Byte;
+
 typedef struct ficheiroInf {
     char *nomeFicheiro;
     unsigned long long int tamanhoTotal;
@@ -35,7 +37,7 @@ unsigned char *Bloco_to_array(FILE *f, FicheiroInf fInf, unsigned long long int 
 
 void escrita_freqs(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, int compr);
 
-double compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, char compressaoForcada);
+void compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freqOrig, FILE *freqRLE, char compressaoForcada);
 
 FreqsInf compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, unsigned long long int num_bloco);
 
