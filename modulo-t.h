@@ -33,11 +33,11 @@ char * addSF ( char * c , char d ) ;
 
 void ShannonFannon ( LISTA * l ,  LISTA * l2 ) ;
 
-LISTA SortedMerge ( LISTA a , LISTA b) ;
+LISTA SortedMerge ( LISTA a , LISTA b , int fl ) ;
 
-void Divisao ( LISTA source , LISTA * a , LISTA * b ) ;
+void Divisao ( LISTA source , LISTA * a , LISTA * b , int fl ) ;
 
-void MergeSort ( LISTA * L ) ;
+void MergeSort ( LISTA * L , int fl ) ;
 
 LISTA metenalista ( int * arr , LISTA L ) ;
 
