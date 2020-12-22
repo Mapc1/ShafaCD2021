@@ -193,11 +193,11 @@ int *tabelaSF (char *a,int N) {
   int i,ind=0,last=0,end=0;
   int *r;
   char *aux;
-  r=malloc(256*sizeof(int));
+  r=(int *)malloc(256*sizeof(int));
   for(i=0;i<N;i++){
-    while(a[i]!=';'&& a[i]!='\0') {
+    while((a[i]!=';') && (a[i]!='@')) {
       end++; 
-      i++; }    
+      i++;}    
     if(last==end++){
       r[ind]=-1;
       }
@@ -229,31 +229,30 @@ retirahead (s);
 }
 
 //função que cria a matriz com (nº blocos) linhas e 256 colunas(nº simbolos)
-int **matrizSF (FILE *f) {
-int t;
-t=nblock(f);
-int **matriz;
-int i,j;
+void matrizSF (FILE *f,int matriz[][256],int t) {
+int i,j,m;
 int *aux;
 char *a;
-for (int i = 0; i < t; ++i) {matriz[i] = malloc (256 * sizeof (int));}
 a=toarray(f);
+i=0;
 while(i<t) {
-for(i=0;a[i]!='@';i++){}
-aux=tabelaSF(a,i-1);
-retira(a,i);
-for(i=0;a[i]!='@';i++){}
-retira(a,i);
+for(m=0;a[m]!='@';m++){}
+aux=tabelaSF(a,m+1);
+retira(a,m+1);
+for(m=0;a[m]!='@';m++){}
+retira(a,m+1);
 for(j=0;j<256;j++){
 matriz[i][j]=aux[j];
 }
+i++;
 }
-return matriz;
 }
 
 void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
-  int **tab;
-  tab=matrizSF(fpCOD);
+  int t;
+  t=nblock(f);
+  int matriz[t][256];
+  matrizSF(f,matriz,t);
 }
 
 void moduleDMain(Options *opts){
