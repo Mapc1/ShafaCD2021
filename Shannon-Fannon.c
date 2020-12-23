@@ -24,31 +24,28 @@ int soma (int freq [],int i,int j) {
 */
 
 char * changeData ( char * buffer , int size ) {
-    int i = 0 , j , arroba = 0 , index = 0 ;
+  int i,j,arroba = 0,index = 0;
+  char *test;
+  test = malloc(size * sizeof(char));
 
-    while ( buffer[index] != '\0' ) {
-
-        if ( ((arroba % 2) == 0) && (arroba != 0) ) {
-            for ( ; buffer[index] != '@' ; index++ ) ;
-            buffer[index] = ';';
-            for (j = index;j < size;j++)
-                buffer[j] = buffer[j+1] ;
-            arroba++ ;
-            i = index;
-        }
-        else {
-            while ((buffer[i] != '@') && (buffer[i] != '\0'))
-                for ( j = i ; j < size ; j++ )
-                    buffer[j] = buffer[j+1] ;
-            arroba++;
-            for ( i = 0 ; buffer[i] == '@' ; )
-                for ( j = i ; j < size ; j++ )
-                    buffer[j] = buffer[j+1];
-        }
+  for (i = 0;buffer[i] != '\0';i++) {
+    if ( ((arroba % 2) == 0) && (arroba != 0) ) {
+      if (buffer[i] == '@') {
+        arroba++;
+        test[index] = ';';printf("%c",test[index]);
+        index++;
+      }
+      else {
+        test [index] = buffer[i];printf("%c",buffer[i]);
+        index++;
+      }
     }
-    return buffer;
-}
-
+    else {
+      if (buffer[i] == '@') arroba++; 
+    }
+  }
+  return test;
+} 
 
 const char * detectfreq (char * freq) {
 
