@@ -14,8 +14,8 @@ char *novoficheiro(char *tipoficheiro, FicheiroInf fInf) {
     int tamanho_ficheiro = (int) (strlen(fInf -> nomeFicheiro) + strlen(tipoficheiro));
     char *novoficheiro = malloc(sizeof(char) * tamanho_ficheiro);
     while(i<tamanho_ficheiro){
-        while(j<strlen(fInf -> nomeFicheiro)) novoficheiro[i++] = (fInf -> nomeFicheiro)[j++];
-        while(k<strlen(tipoficheiro)) novoficheiro[i++] = tipoficheiro[k++];
+        while((fInf -> nomeFicheiro)[j] != '\0') novoficheiro[i++] = (fInf -> nomeFicheiro)[j++];
+        while(tipoficheiro[k] != '\0') novoficheiro[i++] = tipoficheiro[k++];
     }
     return novoficheiro;
 }
@@ -256,6 +256,17 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, 
 }
 
 
+void ficheiros_gerados(FILE *rle, FILE *freqOrig, FILE *freqRLE, FicheiroInf fInf){
+	char *freqs_Original = novoficheiro(".freq", fInf); 
+	char *fich_RLE = novoficheiro(".rle", fInf);
+	char *freqs_fich_RLE = novoficheiro(".rle.freq", fInf);
+	if(freqOrig) printf("%s,",freqs_Original);
+	if(rle) printf(" %s,",fich_RLE); //??? ver dúvida da main
+	if(freqRLE) printf(" %s\n",freqs_fich_RLE);
+
+}
+
+
 
 int main() {
     // NAO ESQUECER: GENERALIZAR A MAIN!!!!!!!!!!!!!!!!
@@ -265,7 +276,8 @@ int main() {
     clock_t inicio = clock();
 
     // Abertura dos ficheiros
-    char nomeFicheiro[30] = "CornerCase.txt"; // Argv[1]
+    char nomeFicheiro[30] = "teste_All1.txt"; // Argv[1] //Aumentado devido a alguns nomes dos testes
+
     FILE *orig;
     orig = fopen(nomeFicheiro,"rb"); // Ficheiro original
 
@@ -282,7 +294,7 @@ int main() {
 
 
     // CompressãoRLE
-    char compressaoForcada = 1;  //1 se quisermos forçar compressão, senão 0 (ou outro número)
+    char compressaoForcada = 1;  //1 se quisermos forçar compressão, senão 2 
     compressaoRLE(orig, fInf, rle, freqOrig, freqRLE, compressaoForcada);
 
 
@@ -299,9 +311,13 @@ int main() {
     printf("Tamanho dos blocos analisados no ficheiro original: %llu/%llu\n", fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco);
     double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;
     printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf -> nomeFicheiro, TaxaCompressao);
-    printf("Tamanho dos blocos analisados no ficheiro RLE: 57444/1620 bytes"); // Ver isto dps!!!!!!!!!!!
+    printf("Tamanho dos blocos analisados no ficheiro RLE: 57444/1620 bytes\n"); // Ver isto dps!!!!!!!!!!!
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
-    printf("Ficheiros gerados: "); // Colocar aqui os ficheiro gerados
+    printf("Ficheiros gerados: ");
+    ficheiros_gerados(rle, freqOrig, freqRLE, fInf);
+    //DÚVIDA: A indicação de que o ficheiro RLE também foi gerado(se for gerado), também deve aparecer na consola?????
+
+
 
 
     // Fechar os ficheiros
