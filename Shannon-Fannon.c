@@ -21,7 +21,6 @@ int soma (int freq [],int i,int j) {
     for (index = i;index <= j;index++) sum += freq[index];
     return sum;
 }
-*/
 
 char * changeData ( char * buffer , int size ) {
   int i,j,arroba = 0,index = 0;
@@ -45,42 +44,58 @@ char * changeData ( char * buffer , int size ) {
     }
   }
   return test;
-} 
+}
+*/ 
 
-const char * detectfreq (char * freq) {
+char * detectfreq (char * freq) { // Função que lê o conteúdo do ficheiro e passa-o para um array de char(string).
 
-    char *buffer = NULL;
-    size_t size = 0;
-    int i,j,arroba = 0;
+    char *buffer = NULL; // Variável que guardará a string.
+    size_t size = 0; // Variável que representa o tamanho para a string buffer.
+    int i = 0; // Variável para dar print (remover quando for necessário).
 
-/* Open your_file in read-only mode */
-    FILE *fp = fopen(freq, "r");
+    FILE *fp = fopen(freq, "r"); // Abrir o ficheiro para leitura.
 
-/* Get the buffer size */
-    fseek(fp, 0, SEEK_END); /* Go to end of file */
-    size = ftell(fp); /* How many bytes did we pass ? */
+    // As próximas duas linhas servem para a mandar o ficheiro para EOF.Isto serve para determinar o tamanho da nossa string
+    // e o ftell serve para nos dizer quantos caracteres o nosso ficheiro possui para dar um tamanho à string.
+    
+    fseek(fp, 0, SEEK_END);
+    size = ftell(fp); 
 
-/* Set position of stream to the beginning */
-    rewind(fp);
-    fseek(fp,3,SEEK_SET);
-/* Allocate the buffer (no need to initialize it with calloc) */
-    buffer = malloc((size + 1) * sizeof(*buffer)); /* size + 1 byte for the \0 */
+    rewind(fp); // O ficheiro volta para o SEEK_SET,ou seja,o inicio do ficheiro,para o voltar a ler.
 
-/* Read the file into the buffer */
-    fread(buffer, size, 1, fp); /* Read 1 chunk of size bytes from fp into buffer */
-
-/* NULL-terminate the buffer */
-    buffer[size] = '\0';
+    buffer = malloc((size + 1) * sizeof(*buffer)); // Usando o size,determinamos o tamanho da nossa string,ou então,buffer.Usamos para o malloc para alocar espaço e sizeof para determinar o tamanho de cada elemento do buffer.
 
 
-    buffer = changeData ( buffer , size ) ;
+    fread(buffer, size, 1, fp); // A partir do nosso file,iremos ler um 1 bloco de size bytes para cada incrementação de buffer.
 
-/* Print it ! */
-    printf("%s", buffer);
+    buffer[size] = '\0'; // Colocar o último elemento ('\0') no array,para indicar o final.
+
+    // Imprimir a string(simples verificação).
+
+    for (i = 0;buffer[i] != '\0';i++) {
+        printf("%c",buffer[i]);
+    }
+
+    // Fechar o ficheiro.
 
     fclose(fp);
 
+    //Devolver a string.
+
     return buffer;
+}
+
+FILE * writeFile (char * freq) { // Função que escreve uma string num ficheiro.
+
+    FILE * fp;
+
+    fp = fopen("Drag Test","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
+
+    fputs (freq,fp); // fputs é uma função que irá colocar o conteúdo de uma string no ficheiro,neste caso,a string freq para o ficheiro fp.
+
+    fclose(fp); // Fechar o ficheiro fp.
+
+    return (fp); // Retornar fp.
 }
 
 void main () {
