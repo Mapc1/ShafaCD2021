@@ -22,12 +22,20 @@ typedef struct ficheiroInf {
     unsigned long long int num_blocos;
 } *FicheiroInf;
 
+
+typedef struct ficheiro_RLE_Inf {
+    unsigned long long int tamanhoBloco_RLE;
+    unsigned long long int tamanhoUltimoBloco_RLE;
+} *Ficheiro_RLE_Inf;
+
 typedef struct freqsInf { // Struct usada na função compressaoRLEBloco para ao comprimir o ficheiro original para rle, contar as frequências do símbolos do ficheiro original e do ficheiro rle
     unsigned long long int *FicheiroOriginal;
     unsigned long long int *FicheiroRLE;
 } *FreqsInf;
 
 FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long long int tamanhoMinimoUltimoBloco, char *nomeFicheiro);
+
+Ficheiro_RLE_Inf NBlocos_RLE(double TaxaCompressao, FicheiroInf fInf, FILE *rle);
 
 char *novoficheiro(char *tipoficheiro, FicheiroInf fInf);
 
@@ -44,5 +52,7 @@ FreqsInf compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, unsigned lo
 void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, FILE *freqRLE, unsigned long long int numBloco);
 
 void ficheiros_gerados(FILE *rle, FILE *freqOrig, FILE *freqRLE, FicheiroInf fInf);
+
+
 
 #endif //MODULO_F_MODULO_F_H

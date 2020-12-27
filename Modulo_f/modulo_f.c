@@ -44,6 +44,16 @@ FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long 
     return fic;
 }
 
+
+Ficheiro_RLE_Inf NBlocos_RLE(double TaxaCompressao, FicheiroInf fInf, FILE *rle){
+ 	Ficheiro_RLE_Inf fic_RLE = malloc(sizeof(struct ficheiro_RLE_Inf));
+ 	unsigned long long int tamanhoTotal_RLE = tamanhoFicheiro(rle);
+ 	unsigned long long int tamanhoBloco_RLE =  (int)((fInf->tamanhoBloco)*TaxaCompressao);
+ 	fic_RLE -> tamanhoBloco_RLE =  tamanhoBloco_RLE;
+ 	fic_RLE -> tamanhoUltimoBloco_RLE = tamanhoTotal_RLE - ((fInf->num_blocos)-1)*tamanhoBloco_RLE;
+ 	return fic_RLE;
+}
+
 unsigned long long int tamanhoFicheiro (FILE *f) {
    if (!f) return 0;
    else {
@@ -268,6 +278,7 @@ void ficheiros_gerados(FILE *rle, FILE *freqOrig, FILE *freqRLE, FicheiroInf fIn
 
 
 
+
 int main() {
     // NAO ESQUECER: GENERALIZAR A MAIN!!!!!!!!!!!!!!!!
 
@@ -297,26 +308,28 @@ int main() {
     char compressaoForcada = 1;  //1 se quisermos forçar compressão, senão 2 
     compressaoRLE(orig, fInf, rle, freqOrig, freqRLE, compressaoForcada);
 
-
+    
     // Fim da contagem do tempo de execução
     clock_t fim = clock();
 
 
 
     // Informações a aparecer na consola:
-
     printf("Miguel Martins, a93280, Gonçalo Soares, a93286, MIEI/CD, data\n");
     printf("Módulo: f (cálculo das frequências dos símbolos)\n");
     printf("Número de blocos: %llu\n", fInf -> num_blocos);
     printf("Tamanho dos blocos analisados no ficheiro original: %llu/%llu\n", fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco);
-    double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;
-    printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf -> nomeFicheiro, TaxaCompressao);
-    printf("Tamanho dos blocos analisados no ficheiro RLE: 57444/1620 bytes\n"); // Ver isto dps!!!!!!!!!!!
+	double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;   //Qunatas casas decimais????
+    Ficheiro_RLE_Inf fRLE_Inf = NBlocos_RLE(TaxaCompressao, fInf, rle);    
+    printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf -> nomeFicheiro, TaxaCompressao*100);    
+    printf("Tamanho dos blocos analisados no ficheiro RLE: %llu/%llu\n", fRLE_Inf -> tamanhoBloco_RLE, fRLE_Inf -> tamanhoUltimoBloco_RLE);      // Ver isto dps!!!!!!!!!!!
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
     printf("Ficheiros gerados: ");
     ficheiros_gerados(rle, freqOrig, freqRLE, fInf);
     //DÚVIDA: A indicação de que o ficheiro RLE também foi gerado(se for gerado), também deve aparecer na consola?????
 
+
+    
 
 
 
