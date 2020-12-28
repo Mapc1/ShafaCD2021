@@ -214,6 +214,9 @@ void moduleDMain(Options *opts){
         decodeRLE(fpRLE, fout);
         fclose(fout);
       }
+      else if(opts->fileOUT != NULL) {
+        rename(rleNAME, opts->fileOUT);
+      }
       break;
     default: fprintf(stderr, "Erro!! Esta opção não existe!\n");
   }
