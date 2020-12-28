@@ -250,10 +250,11 @@ i++;
 
 void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
   int t;
-  t=nblock(f);
+  t=nblock(fpCOD);
   int matriz[t][256];
-  matrizSF(f,matriz,t);
+  matrizSF(fpCOD,matriz,t);
 }
+
 
 void moduleDMain(Options *opts){
   char *foutName, *fin2;
