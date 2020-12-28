@@ -10,7 +10,7 @@
 #define TAMANHO_BLOCO 512
 #define TAMANHO_MINIMO_ULTIMO_BLOCO 1024
 #define RLE_SIM 1
-#define RLE_NAO 2
+#define RLE_NAO 0
 
 typedef unsigned char Byte;
 

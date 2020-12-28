@@ -17,6 +17,8 @@ char *novoficheiro(char *tipoficheiro, FicheiroInf fInf) {
         while((fInf -> nomeFicheiro)[j] != '\0') novoficheiro[i++] = (fInf -> nomeFicheiro)[j++];
         while(tipoficheiro[k] != '\0') novoficheiro[i++] = tipoficheiro[k++];
     }
+    novoficheiro[i] = 0;
+
     return novoficheiro;
 }
 
@@ -48,7 +50,7 @@ FicheiroInf NBlocos(FILE *f, unsigned long long int tamanhoBloco, unsigned long 
 Ficheiro_RLE_Inf NBlocos_RLE(double TaxaCompressao, FicheiroInf fInf, FILE *rle){
  	Ficheiro_RLE_Inf fic_RLE = malloc(sizeof(struct ficheiro_RLE_Inf));
  	unsigned long long int tamanhoTotal_RLE = tamanhoFicheiro(rle);
- 	unsigned long long int tamanhoBloco_RLE =  (int)((fInf->tamanhoBloco)*TaxaCompressao);
+ 	unsigned long long int tamanhoBloco_RLE =  (int)(((double)(fInf->tamanhoBloco))*TaxaCompressao);
  	fic_RLE -> tamanhoBloco_RLE =  tamanhoBloco_RLE;
  	fic_RLE -> tamanhoUltimoBloco_RLE = tamanhoTotal_RLE - ((fInf->num_blocos)-1)*tamanhoBloco_RLE;
  	return fic_RLE;
@@ -305,7 +307,7 @@ int main() {
 
 
     // CompressãoRLE
-    char compressaoForcada = 1;  //1 se quisermos forçar compressão, senão 2 
+    char compressaoForcada = 0;  // 1 se quisermos forçar compressão, senão 0
     compressaoRLE(orig, fInf, rle, freqOrig, freqRLE, compressaoForcada);
 
     
@@ -319,9 +321,9 @@ int main() {
     printf("Módulo: f (cálculo das frequências dos símbolos)\n");
     printf("Número de blocos: %llu\n", fInf -> num_blocos);
     printf("Tamanho dos blocos analisados no ficheiro original: %llu/%llu\n", fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco);
-	double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;   //Qunatas casas decimais????
+	double TaxaCompressao = (double)tamanhoFicheiro(rle) / (double)fInf -> tamanhoTotal;
     Ficheiro_RLE_Inf fRLE_Inf = NBlocos_RLE(TaxaCompressao, fInf, rle);    
-    printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf -> nomeFicheiro, TaxaCompressao*100);    
+    printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf -> nomeFicheiro, (TaxaCompressao > 1 ? 0:((1-TaxaCompressao) * 100)));
     printf("Tamanho dos blocos analisados no ficheiro RLE: %llu/%llu\n", fRLE_Inf -> tamanhoBloco_RLE, fRLE_Inf -> tamanhoUltimoBloco_RLE);      // Ver isto dps!!!!!!!!!!!
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
     printf("Ficheiros gerados: ");
