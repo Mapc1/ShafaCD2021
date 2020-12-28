@@ -23,7 +23,7 @@ void decodeRLE(FILE *fpRLE, FILE *out){
       for(; repetitions > 0 && i < BUFFSIZE; i++, repetitions--)
         buffer[i] = symbol;
       if(i >= BUFFSIZE){
-        writeFile(out, buffer, i);
+        fwrite(buffer, 1, i, out);
         i = 0;
         if(repetitions > 0){
           for(; repetitions > 0 || i > BUFFSIZE; i++, repetitions--)
@@ -32,7 +32,7 @@ void decodeRLE(FILE *fpRLE, FILE *out){
       }
     }
   }
-  writeFile(out, buffer, i);
+  fwrite(buffer, 1, i, out);
 }
 
 void readSection(FILE *fp, char *str){
@@ -115,70 +115,107 @@ BlockData *readCOD(FILE *fpCOD){
   return block;
 }
 
-void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
- BlockData *d=readCOD(fpCOD);
- unsigned char byte, sectionbuffer[BUFFSIZE],buffer[BUFFSIZE];
- ABin *tmp;
- tmp = d->codes;
- int tam,nblock,a=0,t;
- fseek(fpSF,1,SEEK_SET);
- readSection(fpSF,sectionbuffer);
- nblock=strtoll(sectionbuffer,NULL,10);
- for(int i=1;i<nblock;i++) {
-   readSection(fpSF,sectionbuffer);
-   tam=strtoll(sectionbuffer,NULL,10);
-   for(int o=1;o<tam;o++) {
-     fread(&byte,1,1,fpSF);
-     for(int index=0;index<8;index++) {
-       t=(byte & (1 << (7-(index)))); //>> index);
-     if(t) {
-      tmp=tmp->right;
-     }
-     else {
-       tmp=tmp->left;
-     }
-     if(tmp->left==NULL && tmp->right==NULL) {
-      buffer[a]=tmp->c;
-      tmp=d->codes;
-      a++;
-      if(a==BUFFSIZE) {
-        fwrite(buffer,1,BUFFSIZE,fout);
-      }
-     }
-     }
-   }
- readSection(fpSF,buffer);
- }
+void freeBlockData (BlockData *block){
+  BlockData *tmp;
+  while(!block){
+    tmp = block->next;
+    free(block);
+    block = tmp;
+  }
 }
 
+Precomp decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
+  BlockData *aux, *block = readCOD(fpCOD);
+  Precomp compression = block->compress;
+  unsigned char byte;
+  char sectionbuffer[BUFFSIZE],buffer[BUFFSIZE];
+  ABin *tmp;
+  tmp = block->codes;
+  int tam,nblock, decodedBytes = 0, a = 0;
+  
+  fseek(fpSF,1,SEEK_SET);
+  readSection(fpSF,sectionbuffer);
+  nblock=strtoll(sectionbuffer,NULL,10);
+ 
+  aux = block;
+
+  for(int i=0;i<nblock;i++) {
+    readSection(fpSF,sectionbuffer);
+    tam=strtoll(sectionbuffer,NULL,10);
+    for(int o = 0; o < tam; o++) {
+      fread(&byte,1,1,fpSF);
+      for(int index=0; index<8 && (decodedBytes < aux->blockSize); index++) {
+        if((byte & (1 << (7-index)))) {
+          tmp=tmp->right;
+        }
+        else {
+          tmp=tmp->left;
+        }
+        if(tmp->left==NULL && tmp->right==NULL) {
+          buffer[a]=tmp->c;
+          tmp=aux->codes;
+          decodedBytes++;
+          a++;
+          if(a==BUFFSIZE) {
+            fwrite(buffer, 1, a,fout);
+            a = 0;
+          }
+        }
+      }
+    }
+    decodedBytes = 0;
+    aux = aux->next;
+    fseek(fpSF, 1, SEEK_CUR);
+  }
+
+  if(a > 0) fwrite(buffer, 1, a, fout);
+  free(block);
+  return compression;
+}
 
 void moduleDMain(Options *opts){
-  char *foutName;
-  FILE *fout, *fin1 = fopen(opts->fileIN, "rb"), *fin2;
-  //BlockData *blockInfo;
+  char *codNAME, *rleNAME;
+  FILE *fout, *fpRLE, *fin = fopen(opts->fileIN, "rb"), *fin2;
+  Precomp compression;
 
   switch(opts->optD){
     case 's':
       if (!opts->fileOUT)
-        foutName = removeSufix(opts->fileIN, ".shafa");
-      else foutName = opts->fileOUT;
-      fout = fopen(foutName, "wb");
-      fin2=fopen("aaa.txt.shaf","rb");
-      decodeShafa(fin2,fin1 ,fout);
-      //blockInfo = readCOD(fin1);
-      fseek(fin1, 10, SEEK_SET);
-      if(!opts->fileOUT) free(foutName);
+        opts->fileOUT = removeSufix(opts->fileIN, ".shaf"); 
+      fout = fopen(opts->fileOUT, "wb"); 
+      codNAME = removeSufix(opts->fileIN, ".shaf");
+      strcat(codNAME, ".cod");
+      fin2 = fopen(codNAME,"rb");
+      decodeShafa(fin, fin2, fout); 
       fclose(fout);
+      if(opts->fileOUT) free(opts->fileOUT);
       break;
+    
     case 'r':
       if(!opts->fileOUT)
         opts->fileOUT = removeSufix(opts->fileIN, ".rle");
-      fout = fopen(foutName, "wb");
-      decodeRLE(fin1, fout);
+      fout = fopen(opts->fileOUT, "wb");
+      decodeRLE(fin, fout);
       fclose(fout);
       break;
-    //case '\0': decodeNormal();
-    default: fprintf(stderr, "Erro!! Opção esta opção não existe!\n");
+
+    case '\0':      
+      codNAME = removeSufix(opts->fileIN, ".shaf");
+      strcat(codNAME, ".cod");
+      fin2 = fopen(codNAME,"rb");
+      rleNAME = removeSufix(codNAME, ".cod");
+      fpRLE = fopen(rleNAME, "wb+");
+      compression = decodeShafa(fin, fin2, fpRLE); 
+      if(compression == RLE){
+        fseek(fpRLE, 0, SEEK_SET);
+        if(!opts->fileOUT)
+          opts->fileOUT = removeSufix(rleNAME, ".rle");
+        fout = fopen(opts->fileOUT, "wb");
+        decodeRLE(fpRLE, fout);
+        fclose(fout);
+      }
+      break;
+    default: fprintf(stderr, "Erro!! Esta opção não existe!\n");
   }
-  fclose(fin1);
+  fclose(fin);
 }
