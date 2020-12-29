@@ -6,24 +6,6 @@
 #include <string.h>
 #include <time.h>
 
-/*
-char *nomeficheiro(char *tipoficheiro, FicheiroInf fInf) {
-
-    int i=0;
-    int j=0;
-    int k=0;
-    int tamanho_ficheiro = (int) (strlen(fInf -> nomeFicheiro) + strlen(tipoficheiro));
-    char *nomeFicheiroExtensao = malloc(sizeof(char) * tamanho_ficheiro);
-    while(i<tamanho_ficheiro){
-        while((fInf -> nomeFicheiro)[j] != '\0') nomeFicheiroExtensao[i++] = (fInf -> nomeFicheiro)[j++];
-        while(tipoficheiro[k] != '\0') nomeFicheiroExtensao[i++] = tipoficheiro[k++];
-    }
-    nomeFicheiroExtensao[i] = 0;
-
-    return nomeFicheiroExtensao;
-}
-*/
-
 char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao) {
 	size_t length = strlen(nomeFicheiro) + strlen(extensao) + 1;
 	char *concat = malloc(sizeof(char) * length);
@@ -34,12 +16,11 @@ char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao) {
 }
 
 
-
 FicheiroInf NBlocos(FILE *f, char *nomeFicheiro, unsigned long int tamanhoBloco) { // TamanhoBloco vem em Bytes!!!
     FicheiroInf fic = malloc(sizeof(struct ficheiroInf));
     fic -> tamanhoBloco = tamanhoBloco;
     fic -> nomeFicheiro = nomeFicheiro;
-    fic -> numBloco = fsize(f, NULL, &(fic -> tamanhoBloco), &(fic -> tamanhoUltimoBloco));
+    fic -> numBloco = (unsigned long long int) fsize(f, NULL, &(fic -> tamanhoBloco), &(fic -> tamanhoUltimoBloco));
     fic -> tamanhoTotal = (fic -> numBloco - 1) * (fic -> tamanhoBloco) + (fic -> tamanhoUltimoBloco);
     
     return fic;
@@ -108,7 +89,7 @@ FicheiroRleInf compressaoRLE(FILE *orig, FicheiroInf fInf, FILE *rle, FILE *freq
 
         // Taxa de compressão RLE do primeiro bloco
         double compressao_bloco1 = (double)(fInf -> numBloco > 1 ? RleInf.tamanhoBlocoRleAcumulado:RleInf.tamanhoUltimoBlocoRle) / (double)fInf -> tamanhoBloco;
-        if (compressao_bloco1 < 0.95) {
+        if (compressao_bloco1 > 0.95) {
             escrita_freqs(orig, fInf, rle, freqOrig, freqRLE, NULL, RLE_NAO);
             return NULL;
         }
@@ -141,7 +122,7 @@ FreqsInf compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, FicheiroRle
         tamanhoBlocoAtual = (fInf->tamanhoBloco);
     } else tamanhoBlocoAtual = fInf->tamanhoUltimoBloco;
 
-    int i = 0;
+    unsigned long long int i = 0;
     while (i < tamanhoBlocoAtual) { // Analisar um símbolo de cada vez
         Byte num_repeticoes = 1;
         Byte simbolo = Buffer[i];
@@ -191,7 +172,7 @@ FreqsInf compressaoRLEBloco(FILE *orig, FicheiroInf fInf, FILE *rle, FicheiroRle
 
 void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, FILE *freqRLE, FicheiroRleInf RleInf, unsigned long long int numBloco) {
     unsigned long long int tamanhoBlocoAtual;
-    int i;
+    unsigned long long int i;
 
     if (numBloco < fInf->numBloco - 1) {
         tamanhoBlocoAtual = (fInf->tamanhoBloco);
@@ -261,7 +242,7 @@ void ficheiros_gerados(FicheiroInf fInf, FicheiroRleInf RleInf) {
 	char *freqs_RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle.freq");
 	printf("%s", freqs_Original);
 	if (RleInf) printf(", %s, %s", RLE, freqs_RLE);
-
+	printf("\n");
 }
 
 
@@ -272,14 +253,12 @@ void data() {
 }
 
 
-int main() {
-    // NAO ESQUECER: GENERALIZAR A MAIN!!!!!!!!!!!!!!!!
 
+int moduloF(unsigned long tamanhoBloco,char *nomeFicheiro, char compressaoForcada){
 
-    // Início da contagem do tempo de execução
+	// Início da contagem do tempo de execução
     clock_t inicio = clock();
 
-    char nomeFicheiro[30] = "teste_All1.txt"; // Argv[1] // Aumentado devido a alguns nomes dos testes
 
     // Abertura dos ficheiros
     FILE *orig;
@@ -290,14 +269,13 @@ int main() {
         exit(1);
     }
 
-    FicheiroInf fInf = NBlocos(orig, nomeFicheiro, 0);
+    FicheiroInf fInf = NBlocos(orig, nomeFicheiro, tamanhoBloco);
 
     FILE *rle = fopen(nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle"),"wb"); // Ficheiro rle
     FILE *freqOrig = fopen(nomeFicheiroExtensao(fInf -> nomeFicheiro,".freq"),"w");
     FILE *freqRLE = fopen(nomeFicheiroExtensao(fInf -> nomeFicheiro,".rle.freq"),"w");
 
     // CompressãoRLE
-    char compressaoForcada = 0;  // 1 se quisermos forçar compressão, senão 0
     FicheiroRleInf RleInf = compressaoRLE(orig, fInf, rle, freqOrig, freqRLE, compressaoForcada);
     
     // Fim da contagem do tempo de execução
@@ -322,11 +300,23 @@ int main() {
     printf("Ficheiros gerados: ");
     ficheiros_gerados(fInf, RleInf);
 
-    // Fechar os ficheiros
+    // Fechar os ficheiros    
     fclose(orig);
-    fclose(rle);
+	fclose(rle);
     fclose(freqOrig);
     fclose(freqRLE);
+
+    return 0;
+
+}
+
+int main() {
+     
+	char nomeFicheiro[30] = "teste_Chars2.txt"; // Argv[1] // Aumentado devido a alguns nomes dos testes
+	char compressaoForcada = 0;  // 1 se quisermos forçar compressão, senão 0
+	unsigned long tamanhoBloco = 0;
+	moduloF(tamanhoBloco, nomeFicheiro, compressaoForcada);
+    
 
     return 0;
 }

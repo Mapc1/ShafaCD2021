@@ -7,8 +7,6 @@
 #include <time.h>
 #include "fsize.h"
 
-#define TAMANHO_BLOCO 512
-#define TAMANHO_MINIMO_ULTIMO_BLOCO 1024
 #define RLE_SIM 1
 #define RLE_NAO 0
 
@@ -19,7 +17,7 @@ typedef struct ficheiroInf {
     unsigned long long int tamanhoTotal;
     unsigned long int tamanhoBloco;
     long int tamanhoUltimoBloco;
-    long long int numBloco;
+    unsigned long long int numBloco;
 } *FicheiroInf;
 
 
@@ -33,15 +31,11 @@ typedef struct freqsInf { // Struct usada na função compressaoRLEBloco para ao
     unsigned long long int *FicheiroRLE;
 } *FreqsInf;
 
-void data();
-
 char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao);
 
 FicheiroInf NBlocos(FILE *f, char *nomeFicheiro, unsigned long int tamanhoBloco);
 
 FicheiroRleInf NBlocosRle(double TaxaCompressao, FicheiroInf fInf, FILE *rle);
-
-char *novoficheiro(char *tipoficheiro, FicheiroInf fInf);
 
 unsigned long long int tamanhoFicheiro (FILE *f);
 
@@ -59,6 +53,10 @@ void frequencias_Bloco(FILE *orig, FILE *rle, FicheiroInf fInf, FILE *freqOrig, 
                        FicheiroRleInf RleInf, unsigned long long int numBloco);
 
 void ficheiros_gerados(FicheiroInf fInf, FicheiroRleInf RleInf);
+
+void data();
+
+int moduloF(unsigned long tamanhoBloco,char *nomeFicheiro, char compressaoForcada);
 
 
 
