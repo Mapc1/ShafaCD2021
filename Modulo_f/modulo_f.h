@@ -33,7 +33,11 @@ typedef struct freqsInf { // Struct usada na função compressaoRLEBloco para ao
     unsigned long long int *FicheiroRLE;
 } *FreqsInf;
 
-FicheiroInf NBlocos(FILE *f, char *nomeFicheiro);
+void data();
+
+char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao);
+
+FicheiroInf NBlocos(FILE *f, char *nomeFicheiro, unsigned long int tamanhoBloco);
 
 FicheiroRleInf NBlocosRle(double TaxaCompressao, FicheiroInf fInf, FILE *rle);
 

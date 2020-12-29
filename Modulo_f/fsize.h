@@ -1,5 +1,5 @@
 
-long long fsize(FILE *fp_in, unsigned char *filename, unsigned long *the_block_size, long *size_of_last_block, long FSIZE_DEFAULT_BLOCK_SIZE);
+long long fsize(FILE *fp_in, unsigned char *filename, unsigned long *the_block_size, long *size_of_last_block);
 
 /*
 Function fsize() to get the size of files and the number of blocks contained
@@ -39,7 +39,7 @@ This code is open source and free to use as long as the original author is ident
 (c) 2020, Bruno A.F. Dias - University of Minho, Informatics Department
 */
 
-// #define FSIZE_DEFAULT_BLOCK_SIZE 65536       // Default block size = 64 KBytes
+#define FSIZE_DEFAULT_BLOCK_SIZE 65536          // Default block size = 64 KBytes
 #define FSIZE_MIN_BLOCK_SIZE 1024               // Min block size = 1024 Bytes
 #define FSIZE_MAX_BLOCK_SIZE 67108864           // Max block size = 64 MBytes
 #define FSIZE_MAX_NUMBER_OF_BLOCKS 4294967296   // Max number of blocks that can be returned = 2^32 blocks
@@ -49,7 +49,7 @@ This code is open source and free to use as long as the original author is ident
 #define FSIZE_ERROR_IN_FILE -3                  // Error: Opening or reading file
 #define FSIZE_ERROR_IN_FTELL -1L                // Error: When using ftell()
 
-long long fsize(FILE *fp_in, unsigned char *filename, unsigned long *the_block_size, long *size_of_last_block, long FSIZE_DEFAULT_BLOCK_SIZE)
+long long fsize(FILE *fp_in, unsigned char *filename, unsigned long *the_block_size, long *size_of_last_block)
 {
     unsigned long long total;
     long long n_blocks;
