@@ -55,11 +55,15 @@ char * detectfreq (char * freq) { // Função que lê o conteúdo do ficheiro e 
 
     FILE *fp = fopen(freq, "r"); // Abrir o ficheiro para leitura.
 
-    // As próximas duas linhas servem para a mandar o ficheiro para EOF.Isto serve para determinar o tamanho da nossa string
+    // As próximas linhas servem para a mandar o ficheiro para EOF.Isto serve para determinar o tamanho da nossa string
     // e o ftell serve para nos dizer quantos caracteres o nosso ficheiro possui para dar um tamanho à string.
     
-    fseek(fp, 0, SEEK_END);
-    size = ftell(fp); 
+    while (1) {
+      c = fgetc(fp);
+      if( feof(fp) ) { 
+         break ;
+      }
+    }
 
     rewind(fp); // O ficheiro volta para o SEEK_SET,ou seja,o inicio do ficheiro,para o voltar a ler.
 
