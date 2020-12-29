@@ -19,7 +19,7 @@ LISTA inserecabeca ( LISTA L , int s , int f , char * c ) {
     return novo;
 }
 
-char * detectfreq (char * freq) { // Função que lê o conteúdo do ficheiro e passa-o para um array de char(string).
+char * detectfreq ( char * freq ) { // Função que lê o conteúdo do ficheiro e passa-o para um array de char(string).
 
     char *buffer = NULL; // Variável que guardará a string.
     size_t size = 0; // Variável que representa o tamanho para a string buffer.
@@ -51,7 +51,7 @@ char * detectfreq (char * freq) { // Função que lê o conteúdo do ficheiro e 
     return buffer;
 }
 
-FILE * writeFile (char * freq) { // Função que escreve uma string num ficheiro.
+FILE * writeFile ( char * freq ) { // Função que escreve uma string num ficheiro.
 
     FILE * fp;
 
@@ -267,7 +267,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 ;[frequência_símbolo_255_bloco_2]@[…]@0
 */
 
-    FILE *cod;                                               // ficheiro final que o programa dá
+    FILE * cod ;                                             // ficheiro final que o programa dá
     int i , ii ;                                             // índice do array frq e do final, respetivamente
     LISTA * l ;                                              // lista onde vamos colocar as frequências e codigos SF
     char * final ;                                           // array que vai dar origem ao ficheiro cod final
@@ -323,7 +323,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
     //função que transforma o array de chars que temos num ficheiro
    
-   cod = writeFile(final);
+   cod = writeFile ( final ) ;
     
    return cod;
     
