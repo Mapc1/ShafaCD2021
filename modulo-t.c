@@ -19,6 +19,51 @@ LISTA inserecabeca ( LISTA L , int s , int f , char * c ) {
     return novo;
 }
 
+char * detectfreq (char * freq) { // Função que lê o conteúdo do ficheiro e passa-o para um array de char(string).
+
+    char *buffer = NULL; // Variável que guardará a string.
+    size_t size = 0; // Variável que representa o tamanho para a string buffer.
+    int i = 0; // Variável para dar print (remover quando for necessário).
+
+    FILE *fp = fopen(freq, "r"); // Abrir o ficheiro para leitura.
+
+    // As próximas linhas servem para a mandar o ficheiro para EOF.Isto serve para determinar o tamanho da nossa string
+    // e o ftell serve para nos dizer quantos caracteres o nosso ficheiro possui para dar um tamanho à string.
+    
+    while (!feof(fp)) c = fgetc(fp);
+    
+    size = ftell(fp); // Tamanho da string necessário.
+
+    rewind(fp); // O ficheiro volta para o SEEK_SET,ou seja,o inicio do ficheiro,para o voltar a ler.
+
+    buffer = malloc((size + 1) * sizeof(*buffer)); // Usando o size,determinamos o tamanho da nossa string,ou então,buffer.Usamos para o malloc para alocar espaço e sizeof para determinar o tamanho de cada elemento do buffer.
+
+    fread(buffer, size, 1, fp); // A partir do nosso file,iremos ler um 1 bloco de size bytes para cada incrementação de buffer.
+
+    buffer[size] = '\0'; // Colocar o último elemento ('\0') no array,para indicar o final.
+
+    // Fechar o ficheiro.
+
+    fclose(fp);
+
+    //Devolver a string.
+
+    return buffer;
+}
+
+FILE * writeFile (char * freq) { // Função que escreve uma string num ficheiro.
+
+    FILE * fp;
+
+    // fp = fopen("Test","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
+
+    fputs (freq,fp); // fputs é uma função que irá colocar o conteúdo de uma string no ficheiro,neste caso,a string freq para o ficheiro fp.
+
+    fclose(fp); // Fechar o ficheiro fp.
+
+    return (fp); // Retornar fp.
+}
+
 int somal ( LISTA * l , LISTA * l2 ) {
     int s = 0 ;
 
@@ -213,7 +258,7 @@ LISTA * freqread ( char * aa ) {
     return (&ll) ;
 }
 
-void moduleTMain ( FILE ff ) { //acho que entram mais coisas para além do ff, depois vê isso por favor
+FILE * moduleTMain ( char * ff ) { //ff é o nome fo ficheiro .freq que usamos como argumento.
 
 /*
 @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@[frequência_símbolo_0_bloco_1]
@@ -222,22 +267,22 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 ;[frequência_símbolo_255_bloco_2]@[…]@0
 */
 
+    FILE *cod;                                               // ficheiro final que o programa dá
     int i , ii ;                                             // índice do array frq e do final, respetivamente
     LISTA * l ;                                              // lista onde vamos colocar as frequências e codigos SF
     char * final ;                                           // array que vai dar origem ao ficheiro cod final
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
     char * frq;
-    frq = // . . .
+    frq = detectfreq(ff);
 
     //coloca as informações iniciais no array final
     final[0] = '@' ;
-    final[1] = frq[i] ;
+    final[1] = frq[1] ;
     final[2] = '@' ;
     for ( ii = 3 ; frq[ii] != '@' ; ii++ )
         final[ii] = frq[ii] ;
 
-    ii++ ;
     final[ii] = '@' ;
 
     i = ii ;
@@ -268,10 +313,18 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
         ii++ ;
         final[ii] = '@' ;
-
+        
 // @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@<0|1>*;[…];<0|1>*@[tamanho_bloco_2]@<0|1>*;[…];<0|1>*@[…]@0 
 
     }
+    
+    ii++;
+    final[ii] = '0';
 
     //função que transforma o array de chars que temos num ficheiro
+   
+   cod = writeFile(final);
+    
+   return cod;
+    
 }
