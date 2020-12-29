@@ -58,17 +58,13 @@ char * detectfreq (char * freq) { // Função que lê o conteúdo do ficheiro e 
     // As próximas linhas servem para a mandar o ficheiro para EOF.Isto serve para determinar o tamanho da nossa string
     // e o ftell serve para nos dizer quantos caracteres o nosso ficheiro possui para dar um tamanho à string.
     
-    while (1) {
-      c = fgetc(fp);
-      if( feof(fp) ) { 
-         break ;
-      }
-    }
+    while (!feof(fp)) c = fgetc(fp);
+    
+    size = ftell(fp); // Tamanho da string necessário.
 
     rewind(fp); // O ficheiro volta para o SEEK_SET,ou seja,o inicio do ficheiro,para o voltar a ler.
 
     buffer = malloc((size + 1) * sizeof(*buffer)); // Usando o size,determinamos o tamanho da nossa string,ou então,buffer.Usamos para o malloc para alocar espaço e sizeof para determinar o tamanho de cada elemento do buffer.
-
 
     fread(buffer, size, 1, fp); // A partir do nosso file,iremos ler um 1 bloco de size bytes para cada incrementação de buffer.
 
