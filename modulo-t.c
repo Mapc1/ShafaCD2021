@@ -201,8 +201,7 @@ LISTA metenalista ( int arr[] , LISTA L ) {
     for ( i = 255 ; i >= 0 ; i-- )
         L = inserecabeca ( L , i , arr[i] , NULL ) ;
 
-    return L;final[ii] = ';' ;
-        ii++ ;
+    return L;
 }
 
 int finalefree ( LISTA * L , char * final , int ii ) {
