@@ -1,5 +1,5 @@
 
-long long fsize(FILE *fp_in, char *filename, unsigned long *the_block_size, long *size_of_last_block); //UNSIGNED CHAR(NO DO PROFESSOR)
+long long fsize(FILE *fp_in, unsigned char *filename, unsigned long *the_block_size, long *size_of_last_block); //UNSIGNED CHAR(NO DO PROFESSOR)
 
 /*
 Function fsize() to get the size of files and the number of blocks contained
@@ -49,7 +49,7 @@ This code is open source and free to use as long as the original author is ident
 #define FSIZE_ERROR_IN_FILE -3                  // Error: Opening or reading file
 #define FSIZE_ERROR_IN_FTELL -1L                // Error: When using ftell()
 
-long long fsize(FILE *fp_in, char *filename, unsigned long *the_block_size, long *size_of_last_block)
+long long fsize(FILE *fp_in, unsigned char *filename, unsigned long *the_block_size, long *size_of_last_block)
 {
     unsigned long long total;
     long long n_blocks;
@@ -75,8 +75,8 @@ long long fsize(FILE *fp_in, char *filename, unsigned long *the_block_size, long
 
     fseek_error = fseek(fp, 0L, SEEK_END);
     if (!fseek_error)
-    { total = ftell(fp);
-      if ((long int)total == FSIZE_ERROR_IN_FTELL) return (FSIZE_ERROR_IN_FILE);
+    { total = ftell(fp); //unsigned long long
+      if (total == FSIZE_ERROR_IN_FTELL) return (FSIZE_ERROR_IN_FILE);
       n_blocks = total/block_size;
       if (n_blocks*block_size == total) *size_of_last_block = block_size;
       else
