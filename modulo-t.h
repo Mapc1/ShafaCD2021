@@ -27,7 +27,7 @@ LISTA insere_cabeca ( LISTA L , void * valor ) ;
 
 char * detectfreq ( char * freq ) ;
 
-FILE * writeFile ( char * freq ) ;
+FILE * escreveFile ( char * freq ) ;
 
 int somal ( LISTA * l , LISTA * l2 ) ;
 
@@ -47,7 +47,7 @@ LISTA metenalista ( int * arr , LISTA L ) ;
 
 int finalefree ( LISTA * L , char * final , int ii ) ;
 
-LISTA * freqread ( char * aa ) ;
+int * freqread ( char * aa ) ;
 
 FILE * moduleTMain ( char * ff ) ;
 
