@@ -23,7 +23,6 @@ char * detectfreq ( char * freq ) { // Função que lê o conteúdo do ficheiro 
 
     char *buffer = NULL; // Variável que guardará a string.
     size_t size = 0; // Variável que representa o tamanho para a string buffer.
-    int i = 0; // Variável para dar print (remover quando for necessário).
 
     FILE *fp = fopen(freq, "r"); // Abrir o ficheiro para leitura.
 

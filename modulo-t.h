@@ -49,6 +49,6 @@ int finalefree ( LISTA * L , char * final , int ii ) ;
 
 LISTA * freqread ( char * aa ) ;
 
-void moduleTMain ( FILE ff ) ;
+FILE * moduleTMain ( FILE ff ) ;
 
 #endif
