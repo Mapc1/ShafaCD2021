@@ -41,7 +41,7 @@ LISTA SortedMerge ( LISTA a , LISTA b , int fl ) ;
 
 void Divisao ( LISTA source , LISTA * a , LISTA * b ) ;
 
-LISTA * MergeSort ( LISTA * L , int fl ) ;
+void MergeSort ( LISTA * L , int fl ) ;
 
 LISTA metenalista ( int * arr , LISTA L ) ;
 
