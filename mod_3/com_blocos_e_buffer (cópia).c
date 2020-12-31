@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
 
 //Converte [01110101101] num valor entre 0 e 257
 char converteByteEstupido (char *byte) {
@@ -75,7 +74,6 @@ char ** ler_bloco_ficheiro (char * buffer, int valoresLidos, char * fim, int * c
     return freq;
 }
 
-
 //buffer contêm ficheiro .txt
 //fptr .shaf, no fim para guardar o buffer
 
@@ -85,92 +83,6 @@ char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao) {
     if (!concat) return NULL; // Malloc error
     snprintf(concat, length, "%s%s", nomeFicheiro, extensao);
     return concat;
-}
-
-
-int tam_fich (FILE *fp)
-{   int tam = 0;
-    char c;
-    while (!feof(fp))
-        {
-      c = fgetc(fp);
-      tam++;
-    }
-      rewind(fp);
-      return tam;
- }
-
- int ordena_cod(char * buffer, int * pos_buffer, int * tamanhos, int * bloc_atual, char * result)
-{
-    int pos_at = *pos_buffer;
-    int tamanho_result = pos_at;
-    //char * copia;
-//    result = malloc((257+257*257 )*  sizeof(char));
-          //  freq[pos_atual_freq] = malloc( comp_cod * sizeof(char));
-    int copia_at = 0;
-    pos_at++;
-    char c = buffer[pos_at];
-    tamanhos[*bloc_atual] = 0;
-    int i;
-    for (i = pos_at; c >= 48 && c <= 57 ; i++)   c = buffer[i];
-    i = i-2 - pos_at;
-
-    c = buffer[pos_at];
-    while (c >= 48 && c <= 57) { 
-                (tamanhos[*bloc_atual]) += (c-48) * pow(10,i); pos_at++; c = buffer[pos_at];i--; }
-    pos_at++;
-    c = buffer[pos_at];
-    while (c != '@' && c != '\0')
-    {
-        result[copia_at] = c;
-        copia_at++;
-        pos_at++;
-    c = buffer[pos_at];
-    }
-    result[copia_at] = '\0';
-    *pos_buffer = pos_at;
-    return pos_at-tamanho_result;
-            
-}
-
-void  strcpyMinha(char * copias, char *temp)
-{
-    int i;
-    for (i = 0; (temp[i]) != '\0'; i++ ) 
-    copias[i] = temp[i]; 
-} 
-char ** le_PontoCod ( int * tamanhos, FILE * fp, int num_bloc, int tam_ficheiro)
-{ 
-    char **copias = malloc(num_bloc * sizeof (char*));
-    int pos_buffer = 0;
-    int bloc_atual = 0; 
-    int tam_cada_bloco;
-    tam_ficheiro++;
-   char buffer[tam_ficheiro];
-   char *temp;
-    temp = malloc((257+257*257 )*  sizeof(char));
-            fread(&buffer, sizeof(char), tam_ficheiro, fp);
-   while (bloc_atual < num_bloc)
-        {
-             tam_cada_bloco = ordena_cod (buffer, &pos_buffer, tamanhos, &bloc_atual, temp);
-            copias[bloc_atual] = malloc( tam_cada_bloco * sizeof(char));
-            strcpyMinha(copias[bloc_atual],temp); 
-            bloc_atual++;
-        }
-        return copias;
-}
-
-//Se for o último bloco, isto podia ser diminuido
-char ** usa_PontoCod (char * buffer, int valoresLidos, int * comp_cod_bloc) {    //Este fp é .cod
-    //int tam = valoresLidos + valoresLidos*valoresLidos;
-    //char buffer[tam];
-    //fread(&buffer, sizeof(char), tam, fp);
-    //Valor estúpido para controlar fim do array
-    char fim = '?';
-    char **freq = ler_bloco_ficheiro(buffer, valoresLidos, &fim, comp_cod_bloc);
-   // imprime_bloco(valoresLidos, freq, &fim);
-//    guardaRLE(freq, fim); //basta pôr isto em comentário para n testar a minha função
-    return freq;
 }
 
 void PontoShafa (char* buffer, FILE *fptr, char **freq, int tam_buffer){
@@ -203,7 +115,6 @@ void PontoShafa (char* buffer, FILE *fptr, char **freq, int tam_buffer){
 
 }
 
-/*
 //Se for o último bloco, isto podia ser diminuido
 char ** ler_PontoCod (FILE *fp, int valoresLidos, int * comp_cod_bloc) {    //Este fp é .cod
     int tam = valoresLidos + valoresLidos*valoresLidos;
@@ -213,7 +124,7 @@ char ** ler_PontoCod (FILE *fp, int valoresLidos, int * comp_cod_bloc) {    //Es
     char fim = '?';
     char **freq = ler_bloco_ficheiro(buffer, valoresLidos, &fim, comp_cod_bloc);
     return freq;
-} */
+}
 
 
 //Esta main abre o ficheiro e guarda um array com a frequência de cada bloco, 1 de cada vez
@@ -235,71 +146,43 @@ int main () {
     }
     else {
 		//Ler tipo de ficheiro
-        int tam_ficheiro_cod = tam_fich(fp);
 		char tipo;
-        int bloco_atual = 0;
 		fscanf(fp, "@%c", &tipo);
 		if (tipo == 'N') printf("Normal");
 		else printf("Reles");
-        //printf("@%c@", tipo);
 		//Número de blocos
 		int num_blocos;	
-		fscanf(fp, "@%d", &num_blocos);
+		fscanf(fp, "@%d@", &num_blocos);
         printf("  número de blocos %d \n", num_blocos);
         //int num_bloc_temp = num_blocos;
-        
-  //      fwrite(&num_blocos, sizeof(int),1, fp); 
-//        fprintf(fptr, "OLA");  //NAO ESTA A DAR, NÃO ESCREVE NO FICHEIRO
         fprintf(fptr, "@%d", num_blocos);
-        // .cod
-        int  tamanhos_cod[num_blocos];
-        int num_blocos_MT = 2;
-        char **arr_cods =le_PontoCod (tamanhos_cod, fp, num_blocos, tam_ficheiro_cod);
-        char **arr_Oris= malloc(num_blocos_MT * sizeof (char*));
-//            int comp_cod_bloc = ftell(fp);
-        while (bloco_atual < num_blocos) {
-            //Ler ficheiros originais
-            int blocoMTatual;
-            if (num_blocos_MT + bloco_atual > num_blocos) num_blocos_MT = num_blocos-bloco_atual;
-            for (blocoMTatual = 0; blocoMTatual < num_blocos_MT; blocoMTatual++)
-                    {
-                        int tamanhoBlocoMTAtual = tamanhos_cod[bloco_atual+blocoMTatual]+1;
-                      char  buffer[tamanhoBlocoMTAtual];
-                      fread(&buffer, sizeof(char), tamanhoBlocoMTAtual-1, fpOrigi);
-                      buffer[tamanhoBlocoMTAtual] = '\0';
-            arr_Oris[blocoMTatual] = malloc( tamanhoBlocoMTAtual * sizeof(char));
-                    strcpy(arr_Oris[blocoMTatual],buffer); 
-                    //arr_Oris[blocoMTatual] = &buffer;
-                    }
-
-            printf("\n Bloco atual %d \n ", bloco_atual);
+        int comp_cod_bloc = ftell(fp);
+        while (num_blocos > 0) {
+            printf("\n Bloco atual (ao contrário): %d \n ", num_blocos);
             //informação para ler o ficheiro original
-            tam_bloc = tamanhos_cod[bloco_atual];
+            fscanf(fp, "%d@", &tam_bloc);
             printf("\n Tamanho bloco: %d \n ", tam_bloc);
             //Count digits of tam_bloc
             int count = 0;
             int temp = tam_bloc;
-               while (temp != 0) {
-                        temp /= 10;     // n = n/10
-                        ++count;
-                    }
-            //comp_cod_bloc += count+1; 
-            char ** freq = usa_PontoCod(arr_cods[bloco_atual], valoresLidos, &tamanhos_cod[bloco_atual]);
-                         PontoShafa(arr_Oris[bloco_atual], fptr, freq, tam_bloc); 
-            bloco_atual++;
+            while (temp != 0) {
+                temp /= 10;     // n = n/10
+                ++count;
+            }
+            comp_cod_bloc += count+1; 
+            char ** freq = ler_PontoCod(fp, valoresLidos, &comp_cod_bloc);
+            num_blocos--;
             //Guarda ficheiro original, primeiro bloco
             char buffer [tam_bloc+1];
-          /* Com ler um bloco de .txt de cada vez  
-          fread(&buffer, sizeof(char), tam_bloc, fpOrigi);
-             buffer[tam_bloc+1] = '\0';
-             printf("   \n     antes .shaf     \n");
-             PontoShafa(buffer, fptr, freq, tam_bloc+1);*/ 
-           //  for (int i = 0; i < num_blocos_MT; i++)   
-           
-            //fseek(fp, comp_cod_bloc, SEEK_SET);
-        
-            }
+            fread(&buffer, sizeof(char), tam_bloc, fpOrigi);
+            buffer[tam_bloc+1] = '\0';
+            PontoShafa(buffer, fptr, freq, tam_bloc+1); 
+            fseek(fp, comp_cod_bloc, SEEK_SET);
+        }
     }
+    fclose(fp);
+    fclose(fptr);
+    fclose(fpOrigi);
     clock_t fim = clock();
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
 	return 0;
