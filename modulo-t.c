@@ -21,16 +21,18 @@ LISTA inserecabeca ( LISTA L , int s , int f , char * c ) {
 
 char * detectfreq ( char * freq ) { // Função que lê o conteúdo do ficheiro e passa-o para um array de char(string).
 
+    char c ; // Variável que lê o conteúdo do ficheiro (valor de comparação para EOF)
     char *buffer = NULL; // Variável que guardará a string.
     size_t size = 0; // Variável que representa o tamanho para a string buffer.
-    int i = 0; // Variável para dar print (remover quando for necessário).
 
     FILE *fp = fopen(freq, "r"); // Abrir o ficheiro para leitura.
 
     // As próximas linhas servem para a mandar o ficheiro para EOF.Isto serve para determinar o tamanho da nossa string
     // e o ftell serve para nos dizer quantos caracteres o nosso ficheiro possui para dar um tamanho à string.
     
-    while (!feof(fp)) c = fgetc(fp);
+    do {
+        c = fgetc(fp) ;
+    } while ( c != EOF ) ;
     
     size = ftell(fp); // Tamanho da string necessário.
 
@@ -38,9 +40,9 @@ char * detectfreq ( char * freq ) { // Função que lê o conteúdo do ficheiro 
 
     buffer = malloc((size + 1) * sizeof(*buffer)); // Usando o size,determinamos o tamanho da nossa string,ou então,buffer.Usamos para o malloc para alocar espaço e sizeof para determinar o tamanho de cada elemento do buffer.
 
-    fread(buffer, size, 1, fp); // A partir do nosso file,iremos ler um 1 bloco de size bytes para cada incrementação de buffer.
+    fread ( buffer , size , 1 , fp ) ; // A partir do nosso file,iremos ler um 1 bloco de size bytes para cada incrementação de buffer.
 
-    buffer[size] = '\0'; // Colocar o último elemento ('\0') no array,para indicar o final.
+    buffer[size] = '\0' ; // Colocar o último elemento ('\0') no array,para indicar o final.
 
     // Fechar o ficheiro.
 
@@ -51,11 +53,11 @@ char * detectfreq ( char * freq ) { // Função que lê o conteúdo do ficheiro 
     return buffer;
 }
 
-FILE * writeFile ( char * freq ) { // Função que escreve uma string num ficheiro.
+FILE * escreveFile ( char * freq ) { // Função que escreve uma string num ficheiro.
 
     FILE * fp;
 
-    // fp = fopen("Test","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
+    fp = fopen("Test","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
 
     fputs (freq,fp); // fputs é uma função que irá colocar o conteúdo de uma string no ficheiro,neste caso,a string freq para o ficheiro fp.
 
@@ -173,13 +175,13 @@ void Divisao ( LISTA source , LISTA * a , LISTA * b ) {
     l1->prox = NULL;
 } 
 
-LISTA * MergeSort ( LISTA * L , int fl ) {
-    LISTA * a; 
-    LISTA * b; 
+void MergeSort ( LISTA * L , int fl ) {
+    LISTA * a = NULL ; 
+    LISTA * b = NULL; 
 
     // Caso a lista tenha 0 ou 1 elementos, fica igual
     if (( *L == NULL ) || ( (*L)->prox == NULL )) { 
-        return L ;
+        return ;
     } 
   
     // Dividimos a lista em duas sublistas
@@ -192,7 +194,6 @@ LISTA * MergeSort ( LISTA * L , int fl ) {
     // No fim, fundimos as duas listas ordenadas uma com a outra
     *L = SortedMerge ( *a , *b , fl ) ;
 
-    return L ;
 }
 
 LISTA metenalista ( int arr[] , LISTA L ) {
@@ -207,7 +208,7 @@ LISTA metenalista ( int arr[] , LISTA L ) {
 int finalefree ( LISTA * L , char * final , int ii ) {
     int i ;                   // para percorrer cada codSF, que sao arrays de chars
     char * c ;
-    LISTA * Lp ;              // é uma lista provisória que usamos apenas para gurdar o endereço do nodo em que estamos depois de lhe dar free
+    LISTA * Lp = NULL ;       // é uma lista provisória que usamos apenas para gurdar o endereço do nodo em que estamos depois de lhe dar free
 
     // perceorre a lista, colocando os codSF
     while ( L ) {
@@ -233,13 +234,13 @@ int finalefree ( LISTA * L , char * final , int ii ) {
     return ii ;
 }
 
-LISTA * freqread ( char * aa ) {
-    char * a ;
+int * freqread ( char * aa ) {
+    char * a = NULL ;
     int val = 1 ;
     char * p ;
     int arrobacheck = 0 ;
     int i , j ;
-    int * arr ;
+    int * arr = NULL ;
     strcpy( a , aa );
     for ( i = 0 , j = 0 ; val != 0 ; i++ ) {
         for ( ; a[i] == ';' || a[i] == '@' ; i++ , j++ ) {
@@ -251,10 +252,7 @@ LISTA * freqread ( char * aa ) {
         } 
     }
 
-    LISTA ll = crialista() ;
-    ll = metenalista ( arr , ll ) ;
-
-    return (&ll) ;
+    return arr ;
 }
 
 FILE * moduleTMain ( char * ff ) { //ff é o nome fo ficheiro .freq que usamos como argumento.
@@ -269,7 +267,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     FILE * cod ;                                             // ficheiro final que o programa dá
     int i , ii ;                                             // índice do array frq e do final, respetivamente
     LISTA * l ;                                              // lista onde vamos colocar as frequências e codigos SF
-    char * final ;                                           // array que vai dar origem ao ficheiro cod final
+    char * final = NULL ;                                    // array que vai dar origem ao ficheiro cod final
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
     char * frq;
@@ -296,16 +294,20 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
             final[ii] = frq[i] ;
 
         // pegar nesta parte do array de char e transforma-la numa lista ligada de inteiros
-        l = freqread ( &frq[i] );
+        int * arr ;
+        arr = freqread ( &frq[i] );
+
+        LISTA ll = crialista() ;
+        ll = metenalista ( arr , ll ) ;
         
         // fazer uma ordenação eficiente da lista através das frequências
-        l = MergeSort ( l , 1 ) ;
+        MergeSort ( l , 1 ) ;
 
         // atribuir códigos Shannon-Fannon aos símbolos
         ShannonFannon ( l , l ) ;
 
         // ordenar a lista em função dos simbolos
-        l = MergeSort ( l , 2 ) ;
+        MergeSort ( l , 2 ) ;
 
         // função que mete os códigos SF no array final e dá free da lista
         ii = finalefree ( l , final , ii ) ;
@@ -322,7 +324,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
     //função que transforma o array de chars que temos num ficheiro
    
-   cod = writeFile ( final ) ;
+   cod = escreveFile ( final ) ;
     
    return cod;
     
