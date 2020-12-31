@@ -61,10 +61,6 @@ char *removeSufix(char *src, char *sufx){
   return dest;
 }
 
-void writeFile(FILE *out, void *in, int nbytes){
-  fwrite(in, 1, nbytes, out);
-}
-
 int main(int argc, char *argv[]){
   Options *opts;
 

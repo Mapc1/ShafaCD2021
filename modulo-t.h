@@ -25,6 +25,10 @@ LISTA crialista () ;
 
 LISTA insere_cabeca ( LISTA L , void * valor ) ;
 
+char * detectfreq ( char * freq ) ;
+
+FILE * writeFile ( char * freq ) ;
+
 int somal ( LISTA * l , LISTA * l2 ) ;
 
 LISTA * melhordivisao ( LISTA * l , LISTA * l2 ) ;

@@ -23,7 +23,7 @@ void decodeRLE(FILE *fpRLE, FILE *out){
       for(; repetitions > 0 && i < BUFFSIZE; i++, repetitions--)
         buffer[i] = symbol;
       if(i >= BUFFSIZE){
-        writeFile(out, buffer, i);
+        fwrite(buffer, 1, i, out);
         i = 0;
         if(repetitions > 0){
           for(; repetitions > 0 || i > BUFFSIZE; i++, repetitions--)
@@ -32,7 +32,7 @@ void decodeRLE(FILE *fpRLE, FILE *out){
       }
     }
   }
-  writeFile(out, buffer, i);
+  fwrite(buffer, 1, i, out);
 }
 
 void readSection(FILE *fp, char *str){
@@ -115,172 +115,110 @@ BlockData *readCOD(FILE *fpCOD){
   return block;
 }
 
-//recebe um ficheiro do tipoo .cod e retorna 1 se tiver sido ultilizada a compressão rle 0 caso contrário
-int itsrle (FILE *f){
-    char s[3];
-    fgets(s,3,f);
-    int r=1;
-    if(s[1]=='N') r=0;
-  return r;
+void freeBlockData (BlockData *block){
+  BlockData *tmp;
+  while(!block){
+    tmp = block->next;
+    free(block);
+    block = tmp;
+  }
 }
 
-//função que calcula o número de blocos do ficheiro
-int nblock (FILE *f) {
-int r,i=3,a=0;
-char c;
-fseek( f,3, SEEK_SET);
-c = fgetc(f);
-while( c != '@' ){
-          c = fgetc( f );
-          i++;          
-}
-char s[i-2];
-fseek( f,3, SEEK_SET);
-fgets(s,i,f);
-r=atoi(s);
-return r;
-}
-//função que calcula o numero de digitos de um numero
-int ndigit (int a) {
-int r=0;
-while(a!=0) {
-r++;
-a=a/10;
-}
-return r;
-}
+Precomp decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
+  BlockData *aux, *block = readCOD(fpCOD);
+  Precomp compression = block->compress;
+  unsigned char byte;
+  char sectionbuffer[BUFFSIZE],buffer[BUFFSIZE];
+  ABin *tmp;
+  tmp = block->codes;
+  int tam,nblock, decodedBytes = 0, a = 0;
+  
+  fseek(fpSF,1,SEEK_SET);
+  readSection(fpSF,sectionbuffer);
+  nblock=strtoll(sectionbuffer,NULL,10);
+ 
+  aux = block;
 
-// função que recebe um ficheiro do tipo .cod e retorna uma string com as tabelas do codigo sf de todos os blocos
-char *toarray (FILE *f) {
-int n,i=0;
-n=ndigit(nblock(f));
-n=n+4;
-char c; char *s;
-fseek( f,n, SEEK_SET);
-c = fgetc(f);
-while( c != '@' ){
-          c = fgetc( f );
-          n++;          
-}
-n++;
-fseek( f,n, SEEK_SET);
-while( c != EOF ){
-          c = fgetc( f );
-          i++;          
-}
-i--;
-fseek( f,n, SEEK_SET);
-s=malloc(i*sizeof(char));
-fgets(s,i,f);
-return s;
-}
-
-//função que recebe uma string e devolve uma string com os elementos entre i e f
-char *partstring (char *s,int i,int f) {
-   char *r;
-   int a,t;
-   t=f-i;
-   r=malloc(t*sizeof(char));
-   for(a=0;a<t && i<=f;a++) {
-   r[a]=s[i];
-   i++;
-   }
-  return r;
-} 
-
-//função que recebe uma string e devolve a tabela SF do primeiro bloco
-int *tabelaSF (char *a,int N) {
-  int i,ind=0,last=0,end=0;
-  int *r;
-  char *aux;
-  r=(int *)malloc(256*sizeof(int));
-  for(i=0;i<N;i++){
-    while((a[i]!=';') && (a[i]!='@')) {
-      end++; 
-      i++;}    
-    if(last==end++){
-      r[ind]=-1;
+  for(int i=0;i<nblock;i++) {
+    readSection(fpSF,sectionbuffer);
+    tam=strtoll(sectionbuffer,NULL,10);
+    for(int o = 0; o < tam; o++) {
+      fread(&byte,1,1,fpSF);
+      for(int index=0; index<8 && (decodedBytes < aux->blockSize); index++) {
+        if((byte & (1 << (7-index)))) {
+          tmp=tmp->right;
+        }
+        else {
+          tmp=tmp->left;
+        }
+        if(tmp->left==NULL && tmp->right==NULL) {
+          buffer[a]=tmp->c;
+          tmp=aux->codes;
+          decodedBytes++;
+          a++;
+          if(a==BUFFSIZE) {
+            fwrite(buffer, 1, a,fout);
+            a = 0;
+          }
+        }
       }
-    else {
-      aux=partstring(a,last,end);
-    r[ind]=atoi(aux);
     }
-    ind++;
-    last=end;
-    }
-  return r;
-}
+    decodedBytes = 0;
+    aux = aux->next;
+    fseek(fpSF, 1, SEEK_CUR);
+  }
 
-//função que recebe uma string e retira a cabeça da string
-void retirahead (char s[]) {
-int i=0;
-while (s[i+1]!='\0') {
-  s[i]=s[i+1];
-  i++;
-}
-}
-
-//função que recebe uma string e retira os N primeiros elementos da string
-void retira (char s[],int N) {
-int i;
-for(i=0;i<N;i++) {
-retirahead (s);
-}
-}
-
-//função que cria a matriz com (nº blocos) linhas e 256 colunas(nº simbolos)
-void matrizSF (FILE *f,int matriz[][256],int t) {
-int i,j,m;
-int *aux;
-char *a;
-a=toarray(f);
-i=0;
-while(i<t) {
-for(m=0;a[m]!='@';m++){}
-aux=tabelaSF(a,m+1);
-retira(a,m+1);
-for(m=0;a[m]!='@';m++){}
-retira(a,m+1);
-for(j=0;j<256;j++){
-matriz[i][j]=aux[j];
-}
-i++;
-}
-}
-
-void decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
-  int t;
-  t=nblock(f);
-  int matriz[t][256];
-  matrizSF(f,matriz,t);
+  if(a > 0) fwrite(buffer, 1, a, fout);
+  free(block);
+  return compression;
 }
 
 void moduleDMain(Options *opts){
-  char *foutName, *fin2;
-  FILE *fout, *fin1 = fopen(opts->fileIN, "rb");
-  BlockData *blockInfo;
+  char *codNAME, *rleNAME;
+  FILE *fout, *fpRLE, *fin = fopen(opts->fileIN, "rb"), *fin2;
+  Precomp compression;
 
   switch(opts->optD){
     case 's':
       if (!opts->fileOUT)
-        foutName = removeSufix(opts->fileIN, ".shafa");
-      else foutName = opts->fileOUT;
-      fout = fopen(foutName, "wb");
-      //decodeShafa();
-      blockInfo = readCOD(fin1);
-      fseek(fin1, 10, SEEK_SET);
-      if(!opts->fileOUT) free(foutName);
+        opts->fileOUT = removeSufix(opts->fileIN, ".shaf"); 
+      fout = fopen(opts->fileOUT, "wb"); 
+      codNAME = removeSufix(opts->fileIN, ".shaf");
+      strcat(codNAME, ".cod");
+      fin2 = fopen(codNAME,"rb");
+      decodeShafa(fin, fin2, fout); 
       fclose(fout);
+      if(opts->fileOUT) free(opts->fileOUT);
       break;
+    
     case 'r':
       if(!opts->fileOUT)
         opts->fileOUT = removeSufix(opts->fileIN, ".rle");
-      fout = fopen(foutName, "wb");
-      decodeRLE(fin1, fout);
+      fout = fopen(opts->fileOUT, "wb");
+      decodeRLE(fin, fout);
       fclose(fout);
       break;
-    //case '\0': decodeNormal();
-    default: fprintf(stderr, "Erro!! Opção esta opção não existe!\n");
+
+    case '\0':      
+      codNAME = removeSufix(opts->fileIN, ".shaf");
+      strcat(codNAME, ".cod");
+      fin2 = fopen(codNAME,"rb");
+      rleNAME = removeSufix(codNAME, ".cod");
+      fpRLE = fopen(rleNAME, "wb+");
+      compression = decodeShafa(fin, fin2, fpRLE); 
+      if(compression == RLE){
+        fseek(fpRLE, 0, SEEK_SET);
+        if(!opts->fileOUT)
+          opts->fileOUT = removeSufix(rleNAME, ".rle");
+        fout = fopen(opts->fileOUT, "wb");
+        decodeRLE(fpRLE, fout);
+        fclose(fout);
+      }
+      else if(opts->fileOUT != NULL) {
+        rename(rleNAME, opts->fileOUT);
+      }
+      break;
+    default: fprintf(stderr, "Erro!! Esta opção não existe!\n");
   }
-  fclose(fin1);
+  fclose(fin);
 }
