@@ -27,7 +27,7 @@ LISTA insere_cabeca ( LISTA L , void * valor ) ;
 
 char * detectfreq ( char * freq ) ;
 
-FILE * writeFile ( char * freq ) ;
+FILE * escreveFile ( char * freq ) ;
 
 int somal ( LISTA * l , LISTA * l2 ) ;
 
@@ -41,14 +41,14 @@ LISTA SortedMerge ( LISTA a , LISTA b , int fl ) ;
 
 void Divisao ( LISTA source , LISTA * a , LISTA * b ) ;
 
-LISTA * MergeSort ( LISTA * L , int fl ) ;
+void MergeSort ( LISTA * L , int fl ) ;
 
 LISTA metenalista ( int * arr , LISTA L ) ;
 
 int finalefree ( LISTA * L , char * final , int ii ) ;
 
-LISTA * freqread ( char * aa ) ;
+int * freqread ( char * aa ) ;
 
-void moduleTMain ( FILE ff ) ;
+FILE * moduleTMain ( char * ff ) ;
 
 #endif
