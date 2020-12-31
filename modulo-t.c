@@ -178,7 +178,7 @@ void MergeSort ( LISTA * L , int fl ) {
 
     // Caso a lista tenha 0 ou 1 elementos, fica igual
     if (( *L == NULL ) || ( (*L)->prox == NULL )) { 
-        return L ;
+        break ;
     } 
   
     // Dividimos a lista em duas sublistas
@@ -191,7 +191,6 @@ void MergeSort ( LISTA * L , int fl ) {
     // No fim, fundimos as duas listas ordenadas uma com a outra
     *L = SortedMerge ( *a , *b , fl ) ;
 
-    return L ;
 }
 
 LISTA metenalista ( int arr[] , LISTA L ) {
