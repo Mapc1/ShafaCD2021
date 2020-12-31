@@ -172,7 +172,7 @@ void Divisao ( LISTA source , LISTA * a , LISTA * b ) {
     l1->prox = NULL;
 } 
 
-LISTA * MergeSort ( LISTA * L , int fl ) {
+void MergeSort ( LISTA * L , int fl ) {
     LISTA * a; 
     LISTA * b; 
 
@@ -298,13 +298,13 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         l = freqread ( &frq[i] );
         
         // fazer uma ordenação eficiente da lista através das frequências
-        l = MergeSort ( l , 1 ) ;
+        MergeSort ( l , 1 ) ;
 
         // atribuir códigos Shannon-Fannon aos símbolos
         ShannonFannon ( l , l ) ;
 
         // ordenar a lista em função dos simbolos
-        l = MergeSort ( l , 2 ) ;
+        MergeSort ( l , 2 ) ;
 
         // função que mete os códigos SF no array final e dá free da lista
         ii = finalefree ( l , final , ii ) ;
