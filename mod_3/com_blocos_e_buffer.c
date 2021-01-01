@@ -173,7 +173,7 @@ char ** usa_PontoCod (char * buffer, int valoresLidos, int * comp_cod_bloc) {   
     return freq;
 }
 
-void PontoShafa (char* buffer, FILE *fptr, char **freq, int tam_buffer){
+void PontoShafa (unsigned char* buffer, FILE *fptr, char **freq, int tam_buffer){
     int atual;
     char c;
     char *result = malloc (256 * sizeof (char));
@@ -187,6 +187,7 @@ void PontoShafa (char* buffer, FILE *fptr, char **freq, int tam_buffer){
             result = realloc (result, 2*size);
             size *= 2;
         }
+        printf("%d \n", atual);
         result = nomeFicheiroExtensao (result, freq[buffer[atual]]);
         //strcat (result, freq[buffer[atual]]);
     }
@@ -224,12 +225,12 @@ int main () {
     int tam_bloc;
     int *freq[valoresLidos];
     int i;
-	if ((fp = fopen("aaa.txt.cod", "r+")) == NULL)  printf("Error! opening file");         // Program exits if file pointer returns NULL.
+	if ((fp = fopen("Shakespeare.txt.cod", "r+")) == NULL)  printf("Error! opening file");         // Program exits if file pointer returns NULL.
     if ((fptr = fopen("aaaM.shaf","wb")) == NULL){
        printf("Error! opening file");
        return 0;
     }
-    if ((fpOrigi = fopen("aaa.txt","r")) == NULL){
+    if ((fpOrigi = fopen("Shakespeare.txt","r")) == NULL){
        printf("Error! opening file");
        return 0;
     }
@@ -264,7 +265,7 @@ int main () {
             for (blocoMTatual = 0; blocoMTatual < num_blocos_MT; blocoMTatual++)
                     {
                         int tamanhoBlocoMTAtual = tamanhos_cod[bloco_atual+blocoMTatual]+1;
-                      char  buffer[tamanhoBlocoMTAtual];
+                      unsigned char buffer[tamanhoBlocoMTAtual];
                       fread(&buffer, sizeof(char), tamanhoBlocoMTAtual-1, fpOrigi);
                       buffer[tamanhoBlocoMTAtual] = '\0';
             arr_Oris[blocoMTatual] = malloc( tamanhoBlocoMTAtual * sizeof(char));
