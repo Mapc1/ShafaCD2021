@@ -299,7 +299,7 @@ void moduleDMain(Options *opts){
   FILE *fout, *fpDecodedSF, *fin, *fin2;
   FileData *fileData;
   struct timespec begin, end;
-  double elapsed;
+  int elapsed;
 
   fin = fopen(opts->fileIN, "rb");
 
@@ -355,9 +355,9 @@ void moduleDMain(Options *opts){
     default: fprintf(stderr, "Erro!! Esta opção não existe!\n");
   }
   clock_gettime(CLOCK_MONOTONIC, &end);
-  elapsed = (end.tv_sec - begin.tv_sec) + ((end.tv_nsec - begin.tv_nsec) / BILLION);
-  
-  fprintf(stdout, "Tempo de execução do módulo (milissegundos): %.3lf\n", elapsed);
+  elapsed = ((end.tv_sec - begin.tv_sec) + (end.tv_nsec - begin.tv_nsec) / 1000000000.0) * 1000;
+
+  fprintf(stdout, "Tempo de execução do módulo (milissegundos): %d\n", elapsed);
   fprintf(stdout, "Ficheiro gerado: %s\n", opts->fileOUT);
 
   fclose(fin);
