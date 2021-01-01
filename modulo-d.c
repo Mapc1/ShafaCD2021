@@ -308,7 +308,7 @@ void moduleDMain(Options *opts){
   data();
   printf("Módulo: d (descodificação dum ficheiro shaf/rle)\n");
   
-  clock_gettime(CLOCK_REALTIME, &begin);
+  clock_gettime(CLOCK_MONOTONIC, &begin);
 
   switch(opts->optD){
     case 's':
@@ -354,11 +354,10 @@ void moduleDMain(Options *opts){
 
     default: fprintf(stderr, "Erro!! Esta opção não existe!\n");
   }
-
-  elapsed = (end.tv_sec - begin.tv_sec) + (end.tv_nsec - begin.tv_nsec) / BILLION;
-
-  clock_gettime(CLOCK_REALTIME, &end);
-  fprintf(stdout, "Tempo de execução do módulo (milissegundos): %lf\n", elapsed);
+  clock_gettime(CLOCK_MONOTONIC, &end);
+  elapsed = (end.tv_sec - begin.tv_sec) + ((end.tv_nsec - begin.tv_nsec) / BILLION);
+  
+  fprintf(stdout, "Tempo de execução do módulo (milissegundos): %.3lf\n", elapsed);
   fprintf(stdout, "Ficheiro gerado: %s\n", opts->fileOUT);
 
   fclose(fin);
