@@ -7,6 +7,7 @@
 #include <math.h>
 
 //Converte [01110101101] num valor entre 0 e 257
+//Diogo muda nome
 char converteByteEstupido (char *byte) {
     char devolve = 0;
     int teste = 0;
@@ -20,7 +21,7 @@ char converteByteEstupido (char *byte) {
     }    
     return devolve;
 }
-
+//Jorge
 void converteListaArray (char* array_final, char *result) {
     //pos_atual no array_final
     int i;
@@ -36,7 +37,7 @@ void converteListaArray (char* array_final, char *result) {
          if (i == tam) return;
     }
 }
-
+//Diogo
 //Guarda os códigos a partir de um ficheiro ASCII
 char ** ler_bloco_ficheiro (char * buffer, int valoresLidos, char * fim, int * comp_cod_bloc) {
     //[Endereços das codificações de cada char]  a codificação do 'c' freq[0] 
@@ -79,15 +80,25 @@ char ** ler_bloco_ficheiro (char * buffer, int valoresLidos, char * fim, int * c
 //buffer contêm ficheiro .txt
 //fptr .shaf, no fim para guardar o buffer
 
-char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao) {
-    size_t length = strlen(nomeFicheiro) + strlen(extensao) + 1;
+int strlen1(char * arr, int bool)
+{
+    int i;
+    for ( i = 0; arr[i] != '\0'; i++)
+ if (bool) printf(" %c %d \n ", arr[i+1], i)       ;
+        return i;
+}
+//Miguel e Gonçalo, se calhar dar include da deles
+char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao, int i) {
+    size_t length = strlen(extensao) + 3;
+    length += strlen1(nomeFicheiro, i);
     char *concat = malloc(sizeof(char) * length);
     if (!concat) return NULL; // Malloc error
     snprintf(concat, length, "%s%s", nomeFicheiro, extensao);
+
     return concat;
 }
 
-
+//Diogo/Tomás, mas alterar
 int tam_fich (FILE *fp)
 {   int tam = 0;
     char c;
@@ -100,6 +111,7 @@ int tam_fich (FILE *fp)
       return tam;
  }
 
+//Diogo
  int ordena_cod(char * buffer, int * pos_buffer, int * tamanhos, int * bloc_atual, char * result)
 {
     int pos_at = *pos_buffer;
@@ -139,6 +151,7 @@ void  strcpyMinha(char * copias, char *temp)
     for (i = 0; (temp[i]) != '\0'; i++ ) 
     copias[i] = temp[i]; 
 } 
+//Diogo
 char ** le_PontoCod ( int * tamanhos, FILE * fp, int num_bloc, int tam_ficheiro)
 { 
     char **copias = malloc(num_bloc * sizeof (char*));
@@ -161,6 +174,7 @@ char ** le_PontoCod ( int * tamanhos, FILE * fp, int num_bloc, int tam_ficheiro)
 }
 
 //Se for o último bloco, isto podia ser diminuido
+//Diogo
 char ** usa_PontoCod (char * buffer, int valoresLidos, int * comp_cod_bloc) {    //Este fp é .cod
     //int tam = valoresLidos + valoresLidos*valoresLidos;
     //char buffer[tam];
@@ -172,11 +186,12 @@ char ** usa_PontoCod (char * buffer, int valoresLidos, int * comp_cod_bloc) {   
 //    guardaRLE(freq, fim); //basta pôr isto em comentário para n testar a minha função
     return freq;
 }
-
+//Jorge
 void PontoShafa (unsigned char* buffer, FILE *fptr, char **freq, int tam_buffer){
     int atual;
     char c;
     char *result = malloc (256 * sizeof (char));
+    long long int pos_result = 1;
     int size = 256;
     int resposta; 
     tam_buffer--;
@@ -187,9 +202,14 @@ void PontoShafa (unsigned char* buffer, FILE *fptr, char **freq, int tam_buffer)
             result = realloc (result, 2*size);
             size *= 2;
         }
-        printf("%d \n", atual);
-        result = nomeFicheiroExtensao (result, freq[buffer[atual]]);
-        //strcat (result, freq[buffer[atual]]);
+            printf("%d \n", atual);
+        if (atual > 65281) 
+                    printf ("  \n gdb é fixe \n"); 
+    int bool;
+    if (atual > 65281) bool = 1;
+    else bool = 0;
+        result = nomeFicheiroExtensao(result, freq[buffer[atual]],bool );
+     //   strcat (result, freq[buffer[atual]]);
     }
     printf ("AQUI\n");
     printf ("%s\n", result);
@@ -216,8 +236,17 @@ char ** ler_PontoCod (FILE *fp, int valoresLidos, int * comp_cod_bloc) {    //Es
     return freq;
 } */
 
+//Eu, mas acabar
+void limpaArrayArrays(char ** coisa)
+{   
+    int i;
+    for (i = 0; *coisa[i] != '\0'; i++)
+        free(coisa[i]);
+    free(coisa);
+};
 
 //Esta main abre o ficheiro e guarda um array com a frequência de cada bloco, 1 de cada vez
+//Jorge
 int main () {
     clock_t inicio = clock();
 	FILE *fp, *fptr, *fpOrigi;
@@ -225,15 +254,14 @@ int main () {
     int tam_bloc;
     int *freq[valoresLidos];
     int i;
-	if ((fp = fopen("Shakespeare.txt.cod", "r+")) == NULL)  printf("Error! opening file");         // Program exits if file pointer returns NULL.
+  if ((fp = fopen("Shakespeare.txt.cod", "r+")) == NULL)  printf("Error! opening file");         // Program exits if file pointer returns NULL.
+//	if ((fp = fopen("aaa.txt.cod", "r+")) == NULL)  printf("Error! opening file");         // Program exits if file pointer returns NULL.
     if ((fptr = fopen("aaaM.shaf","wb")) == NULL){
        printf("Error! opening file");
        return 0;
     }
-    if ((fpOrigi = fopen("Shakespeare.txt","r")) == NULL){
-       printf("Error! opening file");
-       return 0;
-    }
+  if ((fpOrigi = fopen("Shakespeare.txt","r")) == NULL){      printf("Error! opening file");       return 0;    }
+ //if ((fpOrigi = fopen("aaa.txt","r")) == NULL){   printf("Error! opening file");      return 0;    }
     else {
 		//Ler tipo de ficheiro
         int tam_ficheiro_cod = tam_fich(fp);
@@ -286,7 +314,10 @@ int main () {
                     }
             //comp_cod_bloc += count+1; 
             char ** freq = usa_PontoCod(arr_cods[bloco_atual], valoresLidos, &tamanhos_cod[bloco_atual]);
+            
                          PontoShafa(arr_Oris[bloco_atual], fptr, freq, tam_bloc); 
+                      //   limpaArrayArrays(freq);
+                         
             bloco_atual++;
             //Guarda ficheiro original, primeiro bloco
             char buffer [tam_bloc+1];
