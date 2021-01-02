@@ -44,6 +44,8 @@ Logo a ideia passaria por aplicar Multithreading ao cálculo das frequências
 
 //A função que é executada pela thread
 void* calculoFrequenciasBlocoTHREAD(void* argsThread){
+	pthread_mutex_lock(&lock);
+
 	//Fazer o casting dos argumentos que a Thread recebe
 	ArgsThread argumentos = (struct argsThread *)argsThread;
 
@@ -101,6 +103,9 @@ void* calculoFrequenciasBlocoTHREAD(void* argsThread){
     // Libertar espaço dos buffer
     free(bufferInput);
     //libertarEspacoInfosBloco(infosBloco);
+
+
+    pthread_mutex_unlock(&lock)
     
 }
 
@@ -109,10 +114,17 @@ void* calculoFrequenciasBlocoTHREAD(void* argsThread){
 void calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForcada){
     //criação do ID das threads
     pthread_t t1, t2;  //serão usadas 2 threads, uma para os blocos pares,outra para os impares
+    				   //t1: Pares
+    				   //t2: Impares
+    pthread_mutex_t lock; 
+
 
     unsigned long long numBloco;
     unsigned long long tamanhoRLE = 0;
 	
+	//se tivermos um número par de blocos, o ciclo for é efetuado sem considerações especiais
+	//Ainda não tenho a certeza se este if é necessário!!!
+	//VERIFICAR!!!!!
     if((fInf -> numBloco)%2 == 0){
 	    for(numBloco = 0; numBloco < fInf -> numBloco; numBloco = numBloco + 2) {
     	    //uma thread para blocos pares, outra para blocos impares
@@ -121,9 +133,9 @@ void calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForca
     	   	ArgsThread argumentosPar = malloc(sizeof(struct argsThread));
 	    	ArgsThread argumentosImpar = malloc(sizeof(struct argsThread));
 
-    	    	argumentosPar-> orig = orig;
-            	argumentosPar-> fInf = fInf;
-    	    	argumentosPar-> numBloco = numBloco;
+    	    argumentosPar-> orig = orig;
+            argumentosPar-> fInf = fInf;
+    	    argumentosPar-> numBloco = numBloco;
     		argumentosPar-> compressaoForcada = compressaoForcada;
     		argumentosPar-> tamanhoRleAcumulado = &tamanhoRLE;
 	 
@@ -134,53 +146,60 @@ void calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForca
     		argumentosImpar-> tamanhoRleAcumulado = &tamanhoRLE;
         
 
-       	        pthread_create(&id, NULL, calculoFrequenciasBlocoTHREAD, &argumentos);
+       	    pthread_create(&t1, NULL, calculoFrequenciasBlocoTHREAD, &argumentosPar);
+       	    pthread_create(&t2, NULL, calculoFrequenciasBlocoTHREAD, &argumentosImpar);
 
-
-        	pthread_join(id,NULL); //Ainda não sei se será NULL; posso por a void a devolver algo....
+        	pthread_join(t1,NULL); //Ainda não sei se será NULL; posso por a void a devolver algo....
+        	pthread_join(t2,NULL);
 
 	        free(argumentosPar);
-		free(argumentosImpar);
-    	   }
-   }else{
+		    free(argumentosImpar);
+    	}
+    }else{ //Senão fazemos por partes
 	      for(numBloco = 0; numBloco < (fInf -> numBloco)-1; numBloco = numBloco + 2) {
-    	      //uma thread para blocos pares, outra para blocos impares
-    	      //CUIDADO COMO JUNTO AS INFOS!!!!!
-
-    	   	ArgsThread argumentosPar = malloc(sizeof(struct argsThread));
-	    	ArgsThread argumentosImpar = malloc(sizeof(struct argsThread));
+    	    
+      	   	    ArgsThread argumentosPar = malloc(sizeof(struct argsThread));
+	    	    ArgsThread argumentosImpar = malloc(sizeof(struct argsThread));
 
     	    	argumentosPar-> orig = orig;
             	argumentosPar-> fInf = fInf;
     	    	argumentosPar-> numBloco = numBloco;
-    		argumentosPar-> compressaoForcada = compressaoForcada;
-    		argumentosPar-> tamanhoRleAcumulado = &tamanhoRLE;
+    			argumentosPar-> compressaoForcada = compressaoForcada;
+    			argumentosPar-> tamanhoRleAcumulado = &tamanhoRLE;
 	 
-    		argumentosImpar-> orig = orig;
-    		argumentosImpar-> fInf = fInf;
-    		argumentosImpar-> numBloco = numBloco+1;
-    		argumentosImpar-> compressaoForcada = compressaoForcada;
-    		argumentosImpar-> tamanhoRleAcumulado = &tamanhoRLE;
+    			argumentosImpar-> orig = orig;
+    			argumentosImpar-> fInf = fInf;
+    			argumentosImpar-> numBloco = numBloco+1;
+    			argumentosImpar-> compressaoForcada = compressaoForcada;
+    			argumentosImpar-> tamanhoRleAcumulado = &tamanhoRLE;
         
 
-       	        pthread_create(&id, NULL, calculoFrequenciasBlocoTHREAD, &argumentos);
+       	        pthread_create(&t1, NULL, calculoFrequenciasBlocoTHREAD, &argumentosPar);
+       	        pthread_create(&t2, NULL, calculoFrequenciasBlocoTHREAD, &argumentosImpar);
 
+        		pthread_join(t1,NULL); //Ainda não sei se será NULL; posso por a void a devolver algo....
+        							   //Talvez o tamanhoRLEacumulado
+        		pthread_join(t2,NULL);
 
-        	pthread_join(id,NULL); //Ainda não sei se será NULL; posso por a void a devolver algo....
-
-	        free(argumentosPar);
-		free(argumentosImpar);
-    	     }
-	    ArgsThread argumentosPar = malloc(sizeof(struct argsThread));
+	        	free(argumentosPar);
+				free(argumentosImpar);
+    	  }
+	      ArgsThread argumentosPar = malloc(sizeof(struct argsThread));
 	    
-	    argumentosPar-> orig = orig;
-            	argumentosPar-> fInf = fInf;
-    	    	argumentosPar-> numBloco = numBloco;
-    		argumentosPar-> compressaoForcada = compressaoForcada;
-    		argumentosPar-> tamanhoRleAcumulado = &tamanhoRLE;
+	      argumentosPar-> orig = orig;
+          argumentosPar-> fInf = fInf;
+    	  argumentosPar-> numBloco = numBloco;
+    	  argumentosPar-> compressaoForcada = compressaoForcada;
+    	  argumentosPar-> tamanhoRleAcumulado = &tamanhoRLE;
 	    
-	    pthread_create(&id, NULL, calculoFrequenciasBlocoTHREAD, &argumentos);
+	      pthread_create(&t1, NULL, calculoFrequenciasBlocoTHREAD, &argumentos);
+	      pthread_join(t1,NULL);
+	      free(argumentosPar);
 	     
-	    
+	    }
 
 
+	    pthread_mutex_destroy(&lock);
+
+
+}
