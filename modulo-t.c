@@ -8,12 +8,12 @@ LISTA crialista () {
     return NULL;
 }
 
-LISTA inserecabeca ( LISTA L , int s , int f , char * c ) {
+LISTA inserecabeca ( LISTA L , int s , int f ) {
 
     LISTA novo = malloc(sizeof(struct lista));
     novo->simbolo = s;
     novo->frequ = f;
-    novo->codSF = c;
+    novo->codSF = malloc(sizeof(char));
     novo->prox = L;
 
     return novo;
@@ -66,62 +66,71 @@ FILE * escreveFile ( char * freq ) { // Função que escreve uma string num fich
     return (fp); // Retornar fp.
 }
 
-int somal ( LISTA * l , LISTA * l2 ) {
+int somal ( LISTA * l , int ai , int af ) {
     int s = 0 ;
+    int i ;
 
-    for ( ; l != l2 ; *l=(*l)->prox )
-        s += (*l)->frequ ;
+    LISTA t = *l ;
 
-    s += (*l2)->frequ ;
+    for ( i = 0 ; i < ai ; i++ , t = t->prox ) ;
+
+    for ( ; i <= af ; i++ , t = t->prox )
+        s += t->frequ ;
 
     return s ;
 }
 
-LISTA * melhordivisao ( LISTA * l , LISTA * l2 ) {
-    LISTA * div = l ;
-    LISTA * divan = l;
+int melhordivisao ( LISTA * l , int ai , int af ) {
+    int dv = ai ;
+    int i ;
     int g1 = 0 ;
-    int total = somal ( l , l2 );
+    int total = somal ( l , ai , af );
     int mindif = total ;
     int dif = total ;
 
     do {
-        g1 += (*div)->frequ ;
-        dif = abs ( 2 * g1 - total ) ;
-        if ( dif < mindif ) {
-            divan = div ;
-            *div = (*div)->prox ;
+        LISTA t = *l ;
+        for ( i = 0 ; i < dv ; i++ , t = t->prox ) ;
+        g1 = g1 + t->frequ ;
+        dif = abs( 2 * g1 - total ) ;
+        if ( dif <= mindif ) {
+            dv++ ;
             mindif = dif ;
         }
         else dif = mindif + 1 ;
-    } while ( dif != mindif ) ;
+    } while ( dif == mindif ) ;
 
-    return divan ;
+    return ( dv - 1 ) ;
 }
 
-char * addSF ( char * c , char d ) {
-    int i ;
-    
-    for ( i = 0 ; c[i] ; i++ ) ;
+void addSF ( char * c , char d ) {
+    int i = 0 ;
 
+    for ( ; c[i] ; i++ ) ;
+
+    c = realloc ( c , (i+1)*sizeof(char) ) ;
     c[i] = d ;
 
-    return c ;
 }
 
-void ShannonFannon ( LISTA * l ,  LISTA * l2 ) {
-    LISTA * lfix = l ;
-    LISTA * ldiv = l ;
+void ShannonFannon ( LISTA * l , int ai , int af ) {
+    int i ;
 
-    if ( l != NULL ) {
-        LISTA * div = melhordivisao ( ldiv , l2 ) ;
-        for ( ; &l != &div ; *l = (*l)->prox )
-            (*l)->codSF = addSF ( (*l)->codSF , 0 );
-        for ( ; l != l2 ; *l = (*l)->prox )
-            (*l)->codSF = addSF ( (*l)->codSF , 0 );
-        
-        ShannonFannon ( lfix , div ) ;
-        ShannonFannon ( div , NULL ) ;
+    if ( ai != af ) {
+        int div = melhordivisao ( l , ai , af ) ;
+        LISTA t = *l ;
+        for ( i = 0 ; i < ai ; i++ , t = t->prox ) ;
+        for ( ; i <= div ; i++ , t = t->prox ) {
+            addSF ( t->codSF , '0' );
+        }
+        for ( ; i <= af ; i++ , t = t->prox ) {
+            addSF ( t->codSF , '1' );
+        }
+
+        ShannonFannon ( l , ai , div ) ;
+        ShannonFannon ( l , div + 1 , af ) ;
+
+        return ;
     }
 }
 
@@ -176,8 +185,8 @@ void Divisao ( LISTA source , LISTA * a , LISTA * b ) {
 } 
 
 void MergeSort ( LISTA * L , int fl ) {
-    LISTA * a = NULL ; 
-    LISTA * b = NULL; 
+    LISTA a = crialista() ; 
+    LISTA b = crialista() ; 
 
     // Caso a lista tenha 0 ou 1 elementos, fica igual
     if (( *L == NULL ) || ( (*L)->prox == NULL )) { 
@@ -185,24 +194,25 @@ void MergeSort ( LISTA * L , int fl ) {
     } 
   
     // Dividimos a lista em duas sublistas
-    Divisao ( *L , a , b ) ; 
+    Divisao ( *L , &a , &b ) ; 
   
     // Fazemos a MergeSort de cada uma das sublistas
-    MergeSort ( a , fl ) ; 
-    MergeSort ( b , fl ) ; 
+    MergeSort ( &a , fl ) ; 
+    MergeSort ( &b , fl ) ; 
   
     // No fim, fundimos as duas listas ordenadas uma com a outra
-    *L = SortedMerge ( *a , *b , fl ) ;
+    *L = SortedMerge ( a , b , fl ) ;
 
 }
 
 LISTA metenalista ( int arr[] , LISTA L ) {
     int i;
 
-    for ( i = 255 ; i >= 0 ; i-- )
-        L = inserecabeca ( L , i , arr[i] , NULL ) ;
+    for ( i = 9 ; i >= 0 ; i-- )
+        L = inserecabeca ( L , i , arr[i] ) ;
 
-    return L;
+    return L ;
+
 }
 
 int finalefree ( LISTA * L , char * final , int ii ) {
@@ -266,7 +276,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
     FILE * cod ;                                             // ficheiro final que o programa dá
     int i , ii ;                                             // índice do array frq e do final, respetivamente
-    LISTA * l ;                                              // lista onde vamos colocar as frequências e codigos SF
     char * final = NULL ;                                    // array que vai dar origem ao ficheiro cod final
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
@@ -297,20 +306,20 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         int * arr ;
         arr = freqread ( &frq[i] );
 
-        LISTA ll = crialista() ;
-        ll = metenalista ( arr , ll ) ;
+        LISTA l = crialista() ;
+        l = metenalista ( arr , l ) ;
         
         // fazer uma ordenação eficiente da lista através das frequências
-        MergeSort ( l , 1 ) ;
+        MergeSort ( &l , 1 ) ;
 
         // atribuir códigos Shannon-Fannon aos símbolos
-        ShannonFannon ( l , l ) ;
+        ShannonFannon ( &l , 0 , 225 ) ;
 
         // ordenar a lista em função dos simbolos
-        MergeSort ( l , 2 ) ;
+        MergeSort ( &l , 2 ) ;
 
         // função que mete os códigos SF no array final e dá free da lista
-        ii = finalefree ( l , final , ii ) ;
+        ii = finalefree ( &l , final , ii ) ;
 
         ii++ ;
         final[ii] = '@' ;

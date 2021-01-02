@@ -23,19 +23,19 @@ typedef struct lista {
 
 LISTA crialista () ;
 
-LISTA insere_cabeca ( LISTA L , void * valor ) ;
+LISTA inserecabeca ( LISTA L , int s , int f ) ;
 
 char * detectfreq ( char * freq ) ;
 
 FILE * escreveFile ( char * freq ) ;
 
-int somal ( LISTA * l , LISTA * l2 ) ;
+int somal ( LISTA * l , int ai , int af ) ;
 
-LISTA * melhordivisao ( LISTA * l , LISTA * l2 ) ;
+int melhordivisao ( LISTA * l , int ai , int af ) ;
 
-char * addSF ( char * c , char d ) ;
+void addSF ( char * c , char d ) ;
 
-void ShannonFannon ( LISTA * l ,  LISTA * l2 ) ;
+void ShannonFannon ( LISTA * l , int ai , int af ) ;
 
 LISTA SortedMerge ( LISTA a , LISTA b , int fl ) ;
 
