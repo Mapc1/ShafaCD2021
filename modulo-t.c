@@ -8,7 +8,7 @@ LISTA crialista () {
     return NULL;
 }
 
-LISTA inserecabeca ( LISTA L , int s , int f ) {
+LISTA inserecabeca ( LISTA L , long long s , long long int f ) {
 
     LISTA novo = malloc(sizeof(struct lista));
     novo->simbolo = s;
@@ -19,8 +19,8 @@ LISTA inserecabeca ( LISTA L , int s , int f ) {
     return novo;
 }
 
-LISTA metenalista ( int arr[] , LISTA L ) {
-    int i;
+LISTA metenalista ( long long int arr[] , LISTA L ) {
+    long long int i;
 
     for ( i = 255 ; i >= 0 ; i-- )
         L = inserecabeca ( L , i , arr[i] ) ;
@@ -76,9 +76,9 @@ void escreveFile ( char * freq ) { // Função que escreve uma string num fichei
     //return (fp); // Retornar fp.
 }
 
-int somal ( LISTA * l , int ai , int af ) {
-    int s = 0 ;
-    int i ;
+long long int somal ( LISTA * l , long long int ai , long long int af ) {
+    long long int s = 0 ;
+    long long int i ;
 
     LISTA t = *l ;
 
@@ -90,13 +90,13 @@ int somal ( LISTA * l , int ai , int af ) {
     return s ;
 }
 
-int melhordivisao ( LISTA * l , int ai , int af ) {
-    int dv = ai ;
-    int i ;
-    int g1 = 0 ;
-    int total = somal ( l , ai , af );
-    int mindif = total ;
-    int dif = total ;
+long long int melhordivisao ( LISTA * l , long long int ai , long long int af ) {
+    long long int dv = ai ;
+    long long int i ;
+    long long int g1 = 0 ;
+    long long int total = somal ( l , ai , af );
+    long long int mindif = total ;
+    long long int dif = total ;
     
 
     do {
@@ -115,7 +115,7 @@ int melhordivisao ( LISTA * l , int ai , int af ) {
 }
 
 void addSF ( char * c , char d ) {
-    int i = 0 ;
+    long long int i = 0 ;
 
     for ( ; c[i] ; i++ ) ;
 
@@ -124,11 +124,11 @@ void addSF ( char * c , char d ) {
 
 }
 
-void ShannonFannon ( LISTA * l , int ai , int af ) {
-    int i ;
+void ShannonFannon ( LISTA * l , long long int ai , long long int af ) {
+    long long int i ;
 
     if ( ai != af ) {
-        int div = melhordivisao ( l , ai , af ) ;
+        long long int div = melhordivisao ( l , ai , af ) ;
         LISTA t = *l ;
         for ( i = 0 ; i < ai ; i++ , t = t->prox ) ;
         for ( ; i <= div ; i++ , t = t->prox )
@@ -146,7 +146,7 @@ void ShannonFannon ( LISTA * l , int ai , int af ) {
 
 /* Funde duas listas ordenadas uma com a outra, formando outra lista ordenada
    Faz isso avançando em cada uma das listas e colocando elementos na lista maior  */
-LISTA SortedMerge ( LISTA a , LISTA b , int fl ) { 
+LISTA SortedMerge ( LISTA a , LISTA b , long long int fl ) { 
     LISTA result = NULL; 
   
     // Quando uma das listas é vazia
@@ -194,7 +194,7 @@ void Divisao ( LISTA source , LISTA * a , LISTA * b ) {
     l1->prox = NULL;
 } 
 
-void MergeSort ( LISTA * L , int fl ) {
+void MergeSort ( LISTA * L , long long int fl ) {
     LISTA a = crialista() ; 
     LISTA b = crialista() ; 
 
@@ -215,12 +215,12 @@ void MergeSort ( LISTA * L , int fl ) {
 
 }
 
-/*int finalefree ( LISTA * L , char * final , int ii , int sizefi ) {
-    int k ;                   // para percorrer cada codSF, que sao arrays de chars
+/*long long int finalefree ( LISTA * L , char * final , long long int ii , long long int sizefi ) {
+    long long int k ;                   // para percorrer cada codSF, que sao arrays de chars
     char * c ;
 
     printf("%d" , (*L)->frequ );
-    // perceorre a lista, colocando os codSF
+    // percorre a lista, colocando os codSF
     while ( (*L)->prox != NULL ) {
         c = (*L)->codSF ;
 
@@ -252,12 +252,12 @@ void MergeSort ( LISTA * L , int fl ) {
     return sizefi ;
 }*/
 
-int * freqread ( char * a ) {
-    int val = 1 ;
+long long int * freqread ( char * a ) {
+    long long int val = 1 ;
     char * p ;
-    int arrobacheck = 0 ;
-    int i , j ;
-    int * arr = malloc(256 * sizeof(int)) ;
+    long long int arrobacheck = 0 ;
+    long long int i , j ;
+    long long int * arr = malloc(256 * sizeof(long long int)) ;
     for ( i = 0 , j = 0 ; arrobacheck != 2 ; i++ ) {
         for ( ; a[i] == ';' || a[i] == '@' ; i++ , j++ ) {
             if ( a[i] == '@' && arrobacheck == 1 ) arrobacheck = 2 ;
@@ -273,9 +273,9 @@ int * freqread ( char * a ) {
     return arr ;
 }
 
-int counti ( int i , char * a ) {
-    int arrobacheck = 0 ;
-    int j ;
+long long int counti (long long int i , char * a ) {
+    long long int arrobacheck = 0 ;
+    long long int j ;
 
     for ( j = 0 ; arrobacheck != 1 ; j++ , i++ ) {
         if ( a[j] == '@') 
@@ -284,9 +284,9 @@ int counti ( int i , char * a ) {
     return i ;
 }
 
-int contan ( LISTA * l ) {
+long long int contan ( LISTA * l ) {
     LISTA t = *l ;
-    int n = 0 ;
+    long long int n = 0 ;
 
     for ( ; (t->frequ) != 0 ; n++ , t = t->prox ) ;
 
@@ -302,9 +302,9 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 ;[frequência_símbolo_255_bloco_2]@[…]@0
 */
 
-    int i , ii ;                                             // índice do array frq e do final, respetivamente
-    char * final = malloc ( 3 * sizeof(int) ) ;              // array que vai dar origem ao ficheiro cod final
-    int sizefi = 3 ;
+    long long int i , ii ;                                             // índice do array frq e do final, respetivamente
+    char * final = malloc ( 3 * sizeof(long long int) ) ;              // array que vai dar origem ao ficheiro cod final
+    long long int sizefi = 3 ;
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
     char * frq;
@@ -350,7 +350,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         ii++;
 
         // pegar nesta parte do array de char e transforma-la numa lista ligada de inteiros
-        int * arr ;
+        long long int * arr ;
         arr = freqread ( &frq[i] ) ;
         i = counti ( i , &frq[i+1] ) ;
 
@@ -364,7 +364,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         // fazer uma ordenação eficiente da lista através das frequências
         MergeSort ( &l , 1 ) ;
 
-        int n ;
+        long long int n ;
         n = contan ( &l ) ;
 
         // atribuir códigos Shannon-Fannon aos símbolos
@@ -376,7 +376,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         // meter os códigos SF no array final e dá free da lista
         //sizefi = finalefree ( &l , final , ii , sizefi ) ;
 
-        int k ;                   // para percorrer cada codSF, que sao arrays de chars
+        long long int k ;                   // para percorrer cada codSF, que sao arrays de chars
 
         // perceorre a lista, colocando os codSF
         while ( l->prox != NULL ) {
@@ -441,7 +441,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 }
 
 
-int main() {
+long long int main() {
     char * ff = "aaa.txt.freq" ;
 
     moduleTMain ( ff ) ;
