@@ -9,8 +9,8 @@
 
 int main() {
     char nomeFicheiro[30] = "Teste/teste/Shakespeare.txt"; // Argv[1] // Aumentado devido a alguns nomes dos testes
-    char compressaoForcada = 1;  // 1 se quisermos forçar compressão, senão 0
-    unsigned long tamanhoBloco = 655360;
+    char compressaoForcada = 0;  // 1 se quisermos forçar compressão, senão 0
+    unsigned long tamanhoBloco = 5000;//8388608;
     moduloF(nomeFicheiro, compressaoForcada, tamanhoBloco);
     return 0;
 }
@@ -21,20 +21,20 @@ int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBlo
 
     // Calculo do número de blocos
     FicheiroInf fInf = NBlocos(nomeFicheiro, tamanhoBloco);
-
-    // Abertura dos ficheiros
-    FILE *orig;
-    orig = fopen(nomeFicheiro, "r"); // Ficheiro original
-
-    if (!orig) {
+    if (!fInf) {
         printf("Erro ao abrir o ficheiro!\n"); // Caso haja erro na leitura do ficheiro original, o programa termina
         exit(1);
     }
+    // Abertura do ficheiro
+    FILE *orig = fopen(nomeFicheiro, "r"); // Ficheiro original
 
     unsigned long long tamanhoRle = calculoFrequencias(orig, fInf, compressaoForcada);
 
     // Fim da contagem do tempo de execução
     clock_t fim = clock();
+
+    // Free fInf
+    freeFicheiroInf(fInf);
 
     // Informações a aparecer na consola:
     infoTerminal(fInf, tamanhoRle, inicio, fim);

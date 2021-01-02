@@ -37,6 +37,8 @@ void escritaFicheiro(FILE *f, Byte *buffer, unsigned long int tamanho);
 
 void libertarEspacoInfosBloco (InfosBloco infosBloco);
 
+void freeFicheiroInf(FicheiroInf fInf);
+
 void data();
 
 void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado);

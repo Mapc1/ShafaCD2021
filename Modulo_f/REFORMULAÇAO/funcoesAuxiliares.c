@@ -16,13 +16,18 @@ char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao) {
 }
 
 FicheiroInf NBlocos(char *nomeFicheiro, unsigned long int tamanhoBloco) { // TamanhoBloco vem em Bytes!!!
-    FicheiroInf fic = malloc(sizeof(struct ficheiroInf));
-    fic -> tamanhoBloco = tamanhoBloco;
-    fic -> nomeFicheiro = nomeFicheiro;
-    fic -> numBloco = (unsigned long long int) fsize(NULL, (unsigned char*)nomeFicheiro, &(fic -> tamanhoBloco), &(fic -> tamanhoUltimoBloco));
-    fic -> tamanhoTotal = (fic -> numBloco - 1) * (fic -> tamanhoBloco) + (fic -> tamanhoUltimoBloco);
-    fic -> ficheiros =  malloc(sizeof(struct Ficheiros));
-    return fic;
+    FicheiroInf fInf = malloc(sizeof(struct ficheiroInf));
+    fInf -> tamanhoBloco = tamanhoBloco;
+    fInf -> nomeFicheiro = nomeFicheiro;
+    long long returnFSize = fsize(NULL, (unsigned char*)nomeFicheiro, &(fInf -> tamanhoBloco), &(fInf -> tamanhoUltimoBloco));
+    if (returnFSize < 0) { // Erro na fsize
+        free(fInf);
+        return NULL;
+    }
+    fInf -> numBloco = (unsigned long long int) returnFSize;
+    fInf -> ficheiros =  malloc(sizeof(struct Ficheiros));
+    fInf -> tamanhoTotal = (fInf -> numBloco - 1) * (fInf -> tamanhoBloco) + (fInf -> tamanhoUltimoBloco);
+    return fInf;
 }
 
 unsigned long int tamanhoBloco(FicheiroInf fInf, unsigned long long numBloco) {
@@ -46,6 +51,11 @@ void libertarEspacoInfosBloco (InfosBloco infosBloco) {
     }
     free(infosBloco -> BufferFreqs);
     free(infosBloco);
+}
+
+void freeFicheiroInf(FicheiroInf fInf) {
+    free(fInf -> ficheiros);
+    free(fInf);
 }
 
 void data() {
