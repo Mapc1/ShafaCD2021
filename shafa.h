@@ -2,9 +2,9 @@
 #define __SHAFA_H__
 
 #define BUFFSIZE 1024
-#define NUMOPTS 4
 #define NSIMBOLOS 256
-#define CODE_SIZE 2
+#define NTHREADS 8
+#define BILLION  1000000000.0
 
 #define HELP "Shafa - Programa de compressão/descompressão\n\n"\
              "Comandos: shafa -m [t|f|c|d] [-b K|m|M] [-c r]\n"\
@@ -14,18 +14,19 @@
              "          -c r            Força a compressão RLE\n"
 
 typedef struct {
-  char *fileIN,  //  input file from arguments
-       *fileOUT; //  output file needs -o option otherwise fileOUT = '\0' and output is the standard
-  int modT, modD, modF, modC;
-  char optB, optC, optD; //The various possible options
+  char *fileIN,               //  input file from arguments
+       fileOUT[BUFFSIZE];              //  output file needs -o option otherwise fileOUT = '\0' and output is the standard
+  int modT, modD, modF, modC; //  Modules
+  int optB, optC, optD;       //  The various possible options
 } Options;
 
-// Parses arguments into a Options struct
+// Prints today's date
+void data();
+
+//  Parses arguments into a Options struct
 Options *getOpts(int argc, char *argv[]);
 
-//Writes a file
-void writeFile(FILE *out, void *in, int nbytes);
-
-// Remove sufx from the end of src and stores in the returned array
-char *removeSufix(char *src, char *sufx);
+//  Copies the string stored in src to dest and removes sufx from the end of dest
+//  This function returns the address to dest just like strcpy
+char *removeSufix(char *dest, char *src, char *sufx);
 #endif //__SHAFA_H__

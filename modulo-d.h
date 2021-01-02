@@ -3,6 +3,9 @@
 
 #include "shafa.h"
 #include <stdlib.h>
+#include <stdio.h>
+
+#define AUTHORS "Autores: Marco Costa: A93283  Daniel Azevedo: Axxxxx\n\n"
 
 typedef enum {
   RLE = 'R',
@@ -16,15 +19,39 @@ typedef struct abin {
 } ABin;
 
 typedef struct blockData{
-  size_t blockNum, blockSize;
-  Precomp compress;
+  int blockNum, oldSize, newSize;
   ABin *codes;
   struct blockData *next;
 } BlockData;
+
+typedef struct {
+  Precomp compress;
+  BlockData *first;
+} FileData;
+
+typedef struct blockBuff {
+  char *buffer, *decoded;
+  int blockNum, blockSize, ready, threadID;
+  struct blockBuff *next;
+} BlockBuff;
+
+typedef struct buffQueue {
+  struct args **ocupation;
+  FILE *fout;
+  int *activeThreads, *stopFlag;
+  BlockBuff *head;
+} BuffQueue;
+
+typedef struct args{
+  BlockBuff *blockBuff;
+  BlockData *block;
+  struct args **ocupation;
+} Args;
 
 // Main function to handle the d module
 void moduleDMain(Options *opts);
 
 // function responsible for decoding .rle files
-void decodeRLE(FILE *fpRLE, FILE *out);
+void decodeRLE(FILE *fpRLE, FILE *out, FileData *fileData);
+
 #endif //__MODULE_D__
