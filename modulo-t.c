@@ -329,16 +329,15 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 // @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@<0|1>*;[…];<0|1>*@[tamanho_bloco_2]@<0|1>*;[…];<0|1>*@[…]@0 
 
     }
-    
-    free(final) ;
 
     ii++;
     final[ii] = '0';
 
     //função que transforma o array de chars que temos num ficheiro
-   
-   cod = escreveFile ( final ) ;
+    cod = escreveFile ( final ) ;
     
-   return cod;
+    free(final) ;
+    
+    return cod;
     
 }
