@@ -12,11 +12,11 @@ void freqsOriginal(const Byte *bufferInput, unsigned long int tamanhoBlocoInput,
 
 void freqsRle(const Byte *bufferInput, unsigned long int tamanhoBlocoInput, unsigned long long *BufferFreqs, InfosBloco infosBloco, unsigned long long *tamanhoRleAcumulado) {
     Byte *BufferSimbolos = malloc(sizeof (Byte) * tamanhoBlocoInput);
-    unsigned long long espacoAlocado = tamanhoBlocoInput;
+    unsigned long long espacoAlocado = 8;
     unsigned long long int i = 0;
     infosBloco -> tamanhoBufferRle = 0;
     while (i < tamanhoBlocoInput) { // Analisar um símbolo de cada vez
-        if (infosBloco -> tamanhoBufferRle > espacoAlocado - 50) {
+        if (infosBloco -> tamanhoBufferRle > espacoAlocado - 4) {
             espacoAlocado *= 2;
             BufferSimbolos = (void *) realloc(BufferSimbolos, espacoAlocado*sizeof(Byte));
         }
@@ -44,7 +44,7 @@ void freqsRle(const Byte *bufferInput, unsigned long int tamanhoBlocoInput, unsi
             // Contagem do número de símbolos do ficheiro
             unsigned long long j = infosBloco -> tamanhoBufferRle;
             for (; infosBloco -> tamanhoBufferRle < j + num_repeticoes; infosBloco -> tamanhoBufferRle++) {
-                BufferSimbolos[infosBloco -> tamanhoBufferRle] = bufferInput[i-1];
+                BufferSimbolos[infosBloco -> tamanhoBufferRle] = simbolo;
             }
             BufferFreqs[simbolo] += (unsigned long long)num_repeticoes;
         }
@@ -66,10 +66,8 @@ void freqsParaEscrita(unsigned long long *BufferFreqs, unsigned long long numBlo
     for (i = 0; i < 256; i++) { // Otimizar condições!!!!!
         local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
         if (i == 255 && (BufferFreqs[i] == BufferFreqs[i - 1]));
-        else if (!i || ((BufferFreqs[i] != BufferFreqs[i - 1]))) {
-            infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i]));
-            // continue;
-        } else if (BufferFreqs[i] == BufferFreqs[i - 1]) infosBloco->tamanhoBufferFreqs += sprintf(local, ";");
+        else if (!i || ((BufferFreqs[i] != BufferFreqs[i - 1]))) infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i]));
+        else if (BufferFreqs[i] == BufferFreqs[i - 1]) infosBloco->tamanhoBufferFreqs += sprintf(local, ";");
         else if (i != 255) infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld", (BufferFreqs[i]));
         else
             infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i])); // (aux_Freqs->FicheiroOriginal[i] != aux_Freqs->FicheiroOriginal[i-1])

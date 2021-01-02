@@ -15,11 +15,11 @@ char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao) {
     return concat;
 }
 
-FicheiroInf NBlocos(FILE *f, char *nomeFicheiro, unsigned long int tamanhoBloco) { // TamanhoBloco vem em Bytes!!!
+FicheiroInf NBlocos(char *nomeFicheiro, unsigned long int tamanhoBloco) { // TamanhoBloco vem em Bytes!!!
     FicheiroInf fic = malloc(sizeof(struct ficheiroInf));
     fic -> tamanhoBloco = tamanhoBloco;
     fic -> nomeFicheiro = nomeFicheiro;
-    fic -> numBloco = (unsigned long long int) fsize(f, NULL, &(fic -> tamanhoBloco), &(fic -> tamanhoUltimoBloco));
+    fic -> numBloco = (unsigned long long int) fsize(NULL, (unsigned char*)nomeFicheiro, &(fic -> tamanhoBloco), &(fic -> tamanhoUltimoBloco));
     fic -> tamanhoTotal = (fic -> numBloco - 1) * (fic -> tamanhoBloco) + (fic -> tamanhoUltimoBloco);
     fic -> ficheiros =  malloc(sizeof(struct Ficheiros));
     return fic;
@@ -31,10 +31,8 @@ unsigned long int tamanhoBloco(FicheiroInf fInf, unsigned long long numBloco) {
 
 Byte *leituraFicheiro(FILE *f, unsigned long int tamanhoBloco) {
     //static Byte buffer[1];
-    fseek(f, 0L,SEEK_SET);
     Byte *buffer = malloc(sizeof(Byte)*tamanhoBloco);
-    int i = fread(buffer, sizeof(Byte), tamanhoBloco, f);
-    printf("%d Bytes lidos.\n", i);
+    fread(buffer, sizeof(Byte), tamanhoBloco, f);
     return buffer;
 }
 
@@ -62,4 +60,24 @@ void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado) {
     char *freqs_RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle.freq");
     if (RleEfetuado) printf("%s, %s\n", RLE, freqs_RLE);
     else printf("%s\n", freqs_Original);
+}
+
+void infoTerminal(FicheiroInf fInf,unsigned long long tamanhoRle, clock_t inicio, clock_t fim) {
+    printf("Miguel Martins, a93280, Gonçalo Soares, a93286, MIEI/CD, ");
+    data();
+    printf("Módulo: f (Cálculo das frequências dos símbolos)\n");
+    printf("Número de blocos: %llu  \n", fInf -> numBloco);
+    if (fInf -> numBloco > 1) printf("Tamanho dos blocos analisados no ficheiro original: %lu/%lu\n", fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco);
+    else printf("Tamanho do bloco analisado no ficheiro original: %lu\n", fInf -> tamanhoUltimoBloco);
+    if (!tamanhoRle) {
+        printf("Compressão RLE: Não efetuada\n");
+    } else {
+        double TaxaCompressao = (double) (tamanhoRle) / (double) fInf -> tamanhoTotal;
+        printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf->nomeFicheiro, (TaxaCompressao > 1 ? 0 : ((1 - TaxaCompressao) * 100)));
+        if (fInf -> numBloco > 1) printf("Tamanho dos blocos analisados no ficheiro RLE: %llu\n", tamanhoRle);//RleInf -> tamanhoBlocoRleAcumulado, RleInf -> tamanhoUltimoBlocoRle);
+        else printf("Tamanho do bloco analisado no ficheiro RLE: %llu\n", tamanhoRle); //RleInf -> tamanhoUltimoBlocoRle);
+    }
+    printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
+    printf("Ficheiros gerados: ");
+    ficheiros_gerados(fInf, tamanhoRle);
 }

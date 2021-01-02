@@ -27,7 +27,7 @@ typedef struct infosBloco {
 
 char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao);
 
-FicheiroInf NBlocos(FILE *f, char *nomeFicheiro, unsigned long int tamanhoBloco);
+FicheiroInf NBlocos(char *nomeFicheiro, unsigned long int tamanhoBloco);
 
 unsigned long int tamanhoBloco(FicheiroInf fInf, unsigned long long numBloco);
 
@@ -40,5 +40,7 @@ void libertarEspacoInfosBloco (InfosBloco infosBloco);
 void data();
 
 void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado);
+
+void infoTerminal(FicheiroInf fInf,unsigned long long tamanhoRle, clock_t inicio, clock_t fim);
 
 #endif //MODULO_F_FUNCOESAUXILIARES_H

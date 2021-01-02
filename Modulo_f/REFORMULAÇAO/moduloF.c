@@ -8,14 +8,20 @@
 
 
 int main() {
-    char nomeFicheiro[30] = "Teste/aaaa/aaaa.txt"; // Argv[1] // Aumentado devido a alguns nomes dos testes
+    char nomeFicheiro[30] = "Teste/teste/Shakespeare.txt"; // Argv[1] // Aumentado devido a alguns nomes dos testes
     char compressaoForcada = 1;  // 1 se quisermos forçar compressão, senão 0
-    unsigned long tamanhoBloco = 2048;
+    unsigned long tamanhoBloco = 655360;
     moduloF(nomeFicheiro, compressaoForcada, tamanhoBloco);
     return 0;
 }
 
 int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBloco) {
+    // Início da contagem do tempo de execução
+    clock_t inicio = clock();
+
+    // Calculo do número de blocos
+    FicheiroInf fInf = NBlocos(nomeFicheiro, tamanhoBloco);
+
     // Abertura dos ficheiros
     FILE *orig;
     orig = fopen(nomeFicheiro, "r"); // Ficheiro original
@@ -25,35 +31,13 @@ int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBlo
         exit(1);
     }
 
-    // Início da contagem do tempo de execução
-    clock_t inicio = clock();
-
-    // Calculo do número de blocos
-    FicheiroInf fInf = NBlocos(orig, nomeFicheiro, tamanhoBloco);
-
     unsigned long long tamanhoRle = calculoFrequencias(orig, fInf, compressaoForcada);
 
     // Fim da contagem do tempo de execução
     clock_t fim = clock();
 
     // Informações a aparecer na consola:
-    printf("Miguel Martins, a93280, Gonçalo Soares, a93286, MIEI/CD, ");
-    data();
-    printf("Módulo: f (Cálculo das frequências dos símbolos)\n");
-    printf("Número de blocos: %llu  \n", fInf -> numBloco);
-    if (fInf -> numBloco > 1) printf("Tamanho dos blocos analisados no ficheiro original: %lu/%lu\n", fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco);
-    else printf("Tamanho do bloco analisado no ficheiro original: %lu\n", fInf -> tamanhoUltimoBloco);
-    if (!tamanhoRle) {
-        printf("Compressão RLE: Não efetuada\n");
-    } else {
-        double TaxaCompressao = (double) (tamanhoRle) / (double) fInf -> tamanhoTotal;
-        printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf->nomeFicheiro, (TaxaCompressao > 1 ? 0 : ((1 - TaxaCompressao) * 100)));
-        if (fInf -> numBloco > 1) printf("Tamanho dos blocos analisados no ficheiro RLE: %llu\n", tamanhoRle);//RleInf -> tamanhoBlocoRleAcumulado, RleInf -> tamanhoUltimoBlocoRle);
-        else printf("Tamanho do bloco analisado no ficheiro RLE: %llu\n", tamanhoRle); //RleInf -> tamanhoUltimoBlocoRle);
-    }
-    printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
-    printf("Ficheiros gerados: ");
-    ficheiros_gerados(fInf, tamanhoRle);
+    infoTerminal(fInf, tamanhoRle, inicio, fim);
 
     fclose(orig);
     return 0;
@@ -64,6 +48,7 @@ unsigned long long int calculoFrequencias(FILE *orig, FicheiroInf fInf, char com
     unsigned long long numBloco;
     unsigned long long tamanhoRLE = 0;
     unsigned long long *tamanhoRLEPointer = &tamanhoRLE;
+
     for(numBloco = 0; numBloco < fInf -> numBloco; numBloco++) {
         calculoFrequenciasBloco(orig, fInf, numBloco, compressaoForcada, &tamanhoRLEPointer);
     }
