@@ -5,8 +5,7 @@ typedef struct argsThread {
     FILE *orig;
     FicheiroInf fInf;
 	unsigned long long numBloco;
-	char compressaoForcada;
-	unsigned long long *tamanhoRleAcumulado;    
+	unsigned long long *tamanhoRleAcumulado; //se for NULL nao é feito RLE 
 } *ArgsThread;
 
 
