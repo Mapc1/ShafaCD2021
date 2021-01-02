@@ -219,7 +219,6 @@ void MergeSort ( LISTA * L , long long int fl ) {
     long long int k ;                   // para percorrer cada codSF, que sao arrays de chars
     char * c ;
 
-    printf("%d" , (*L)->frequ );
     // percorre a lista, colocando os codSF
     while ( (*L)->prox != NULL ) {
         c = (*L)->codSF ;
@@ -329,7 +328,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     final[ii] = '@' ;
 
     i = ii ;
-    printf("1.   ii: %d   i: %d      sizefi: %d\n%s\n\n", ii , i , sizefi , final) ;
 
     // este while serve para vermos um bloco de cada vez. Ele acaba quando temos "@0"
     while ( frq[i+1] != '0' ) {
@@ -345,7 +343,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
             }
             final[ii] = frq[i] ;
         }
-        printf("2.   ii: %d   i: %d      sizefi: %d\n%s\n\n", ii , i , sizefi , final ) ;
         final[ii] = '@' ;
         ii++;
 
@@ -353,8 +350,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         long long int * arr ;
         arr = freqread ( &frq[i] ) ;
         i = counti ( i , &frq[i+1] ) ;
-
-        printf("3.   ii: %d   i: %d      sizefi: %d\n%s\n\n", ii , i ,sizefi , final ) ;
 
         LISTA l = crialista() ;
         l = metenalista ( arr , l ) ;
@@ -409,16 +404,12 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
             }
         }
         //ii = strlen ( final ) ;
-        //printf("%d\n%s\n", ii , final ) ;
-
-        printf("4.   ii: %d   i: %d      sizefi: %d\n%s\n\n", ii , i , sizefi , final ) ;
 
         if ( ii >= sizefi ) {
             sizefi *= 2 ;
             final = realloc ( final , sizefi * sizeof(char) ) ;
         }
         final[ii] = '@' ;
-        printf("5.   ii: %d   i: %d      sizefi: %d    %c\n%s\n\n", ii , i , sizefi , final[ii] , final ) ;
         
 // @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@<0|1>*;[…];<0|1>*@[tamanho_bloco_2]@<0|1>*;[…];<0|1>*@[…]@0 
 
@@ -428,8 +419,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
     ii++;
     final[ii] = '0';
-
-    printf("6.   ii: %d   i: %d      sizefi: %d    %c\n%s\n\n", ii , i , sizefi , final[ii] , final ) ;
 
     //função que transforma o array de chars que temos num ficheiro
     escreveFile ( final ) ;
