@@ -18,7 +18,7 @@ void freqsRle(const Byte *bufferInput, unsigned long int tamanhoBlocoInput, unsi
     while (i < tamanhoBlocoInput) { // Analisar um símbolo de cada vez
         if (infosBloco -> tamanhoBufferRle > espacoAlocado - 50) {
             espacoAlocado *= 2;
-            BufferSimbolos = realloc(BufferSimbolos, espacoAlocado);
+            BufferSimbolos = (void *) realloc(BufferSimbolos, espacoAlocado*sizeof(Byte));
         }
         Byte num_repeticoes = 1;
         Byte simbolo = bufferInput[i];
@@ -35,21 +35,18 @@ void freqsRle(const Byte *bufferInput, unsigned long int tamanhoBlocoInput, unsi
             Byte padraoRLE[3] = {0, simbolo, num_repeticoes};// {0}{simbolo}{número_de_repetições}
             int k = 0;
             unsigned long long j = infosBloco -> tamanhoBufferRle;
-            for (; infosBloco -> tamanhoBufferRle < j + 3; infosBloco -> tamanhoBufferRle++) BufferSimbolos[infosBloco -> tamanhoBufferRle - 1] = padraoRLE[k++];
+            for (; infosBloco -> tamanhoBufferRle < j + 3; infosBloco -> tamanhoBufferRle++) BufferSimbolos[infosBloco -> tamanhoBufferRle] = padraoRLE[k++];
             // Contagem das frequências dos símbolos do ficheiro RLE
             BufferFreqs[0]++;
             BufferFreqs[simbolo]++;
             BufferFreqs[num_repeticoes]++;
-            // Contagem do número de símbolos do ficheiro
-            *tamanhoRleAcumulado += 3;
-            infosBloco -> tamanhoBufferRle += 3;
         } else { // O símbolo não se repete pelo menos 4 vezes, logo não aplicamos o padrão RLE
             // Contagem do número de símbolos do ficheiro
             unsigned long long j = infosBloco -> tamanhoBufferRle;
-            for (; infosBloco -> tamanhoBufferRle <= j + num_repeticoes; infosBloco -> tamanhoBufferRle++) BufferSimbolos[infosBloco -> tamanhoBufferRle - 1] = bufferInput[i-1];
+            for (; infosBloco -> tamanhoBufferRle < j + num_repeticoes; infosBloco -> tamanhoBufferRle++) {
+                BufferSimbolos[infosBloco -> tamanhoBufferRle] = bufferInput[i-1];
+            }
             BufferFreqs[simbolo] += (unsigned long long)num_repeticoes;
-            *tamanhoRleAcumulado += num_repeticoes;
-            infosBloco -> tamanhoBufferRle += num_repeticoes;
         }
     }
     infosBloco -> BufferSimbolos = BufferSimbolos;
@@ -57,18 +54,19 @@ void freqsRle(const Byte *bufferInput, unsigned long int tamanhoBlocoInput, unsi
 }
 
 void freqsParaEscrita(unsigned long long *BufferFreqs, unsigned long long numBloco, FicheiroInf fInf, InfosBloco infosBloco) {
-    infosBloco -> BufferFreqs = malloc(sizeof (Byte) * 256000); ///uhswishsunwijswihswihswhswsjswhjswnj
+    infosBloco -> BufferFreqs = malloc(sizeof (Byte) * 256);
     unsigned long long espacoAlocado = 256;
     infosBloco -> tamanhoBufferFreqs = 0;
     unsigned int i;
     Byte *local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
 
-    if (!numBloco) infosBloco -> tamanhoBufferFreqs += sprintf(local, "@%c@%lld", !(infosBloco -> BufferSimbolos) ? 'N': 'R',fInf -> numBloco);
+    if (!numBloco) infosBloco -> tamanhoBufferFreqs += sprintf(local, "@%c@%lld", !(infosBloco -> BufferSimbolos) ? 'N': 'R', fInf -> numBloco);
     local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
     infosBloco -> tamanhoBufferFreqs += sprintf(local, "@%llu@", !(infosBloco -> BufferSimbolos) ? tamanhoBloco(fInf, numBloco): infosBloco -> tamanhoBufferRle);
     for (i = 0; i < 256; i++) { // Otimizar condições!!!!!
         local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
-        if (!i || ((BufferFreqs[i] != BufferFreqs[i - 1]))) {
+        if (i == 255 && (BufferFreqs[i] == BufferFreqs[i - 1]));
+        else if (!i || ((BufferFreqs[i] != BufferFreqs[i - 1]))) {
             infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i]));
             // continue;
         } else if (BufferFreqs[i] == BufferFreqs[i - 1]) infosBloco->tamanhoBufferFreqs += sprintf(local, ";");
@@ -82,7 +80,7 @@ void freqsParaEscrita(unsigned long long *BufferFreqs, unsigned long long numBlo
     }
     if (numBloco == fInf -> numBloco - 1) {
         local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
-        infosBloco->tamanhoBufferFreqs += sprintf(local, "@0\n");
+        infosBloco->tamanhoBufferFreqs += sprintf(local, "@0");
     }
 }
 

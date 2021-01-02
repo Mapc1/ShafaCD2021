@@ -3,10 +3,10 @@
 
 #include "funcoesAuxiliares.h"
 
-void calculoFrequencias(FILE *orig, FicheiroInf fInf, char compressaoForcada);
+unsigned long long int calculoFrequencias(FILE *orig, FicheiroInf fInf, char compressaoForcada);
 
-int moduloF(char *nomeFicheiro, char compressaoForcada);
+int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBloco);
 
-void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long numBloco, char compressaoForcada, unsigned long long *tamanhoRleAcumulado);
+void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long numBloco, char compressaoForcada, unsigned long long **tamanhoRleAcumulado);
 
 #endif //MODULO_F_MODULOF_H

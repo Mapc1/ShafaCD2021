@@ -39,4 +39,6 @@ void libertarEspacoInfosBloco (InfosBloco infosBloco);
 
 void data();
 
+void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado);
+
 #endif //MODULO_F_FUNCOESAUXILIARES_H

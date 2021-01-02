@@ -34,8 +34,6 @@ Byte *leituraFicheiro(FILE *f, unsigned long int tamanhoBloco) {
     fseek(f, 0L,SEEK_SET);
     Byte *buffer = malloc(sizeof(Byte)*tamanhoBloco);
     int i = fread(buffer, sizeof(Byte), tamanhoBloco, f);
-    int er = ferror(f);
-    int eop = feof(f);
     printf("%d Bytes lidos.\n", i);
     return buffer;
 }
@@ -45,7 +43,9 @@ void escritaFicheiro(FILE *f, Byte *buffer, unsigned long int tamanho) {
 }
 
 void libertarEspacoInfosBloco (InfosBloco infosBloco) {
-    if (infosBloco -> BufferSimbolos) free(infosBloco -> BufferFreqs);
+    if (infosBloco -> BufferSimbolos) {
+        free(infosBloco -> BufferSimbolos);
+    }
     free(infosBloco -> BufferFreqs);
     free(infosBloco);
 }
@@ -54,4 +54,12 @@ void data() {
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     printf("%02d-%02d-%d \n", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
+}
+
+void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado) {
+    char *freqs_Original = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".freq");
+    char *RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle");
+    char *freqs_RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle.freq");
+    if (RleEfetuado) printf("%s, %s\n", RLE, freqs_RLE);
+    else printf("%s\n", freqs_Original);
 }
