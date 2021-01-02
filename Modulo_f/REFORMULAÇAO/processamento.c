@@ -1,3 +1,19 @@
+/**
+ * @file processamento.c
+ * @author Miguel Martins, a93280
+ * @author Gonçalo Rodrigues, a93286
+ * @date 2 janeiro 2021
+ * @brief Ficheiro que contém as funções necessárias para processar o ficheiro de entrada .
+ *
+ * A funções deste ficheiro processam o buffer(array de "Bytes", que são
+ * unsigned chars) onde foi guardado o ficheiro de entrada.
+ * O objetivo passou por criar outros dois buffers, um onde foi guardada
+ * a informação que será colocada no ficheiro das frequências e outro
+ * onde será guardada a informação que será colocada no ficheiro RLE
+ * (se este for gerado).
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
