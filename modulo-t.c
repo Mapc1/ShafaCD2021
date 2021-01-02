@@ -241,6 +241,7 @@ int finalefree ( LISTA * L , char * final , int ii ) {
         }
     }
 
+    final = realloc ( final , ii * sizeof(char) ) ;
     return ii ;
 }
 
@@ -319,6 +320,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         MergeSort ( &l , 2 ) ;
 
         // função que mete os códigos SF no array final e dá free da lista
+        final = malloc ( ii * sizeof(char) ) ;
         ii = finalefree ( &l , final , ii ) ;
 
         ii++ ;
@@ -328,6 +330,8 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
     }
     
+    free(final) ;
+
     ii++;
     final[ii] = '0';
 
