@@ -1,3 +1,18 @@
+/**
+ * @file funcoesAuxiliares.c
+ * @author Miguel Martins, a93280
+ * @author Gonçalo Rodrigues, a93286
+ * @date 2 janeiro 2021
+ * @brief Ficheiro que contém as funções auxiliares.
+ *
+ * A funções deste ficheiro são funções que não interferem com o
+ * processamento da informação dos ficheiros, sendo funções
+ * que ajudam na correta execução do programa.
+ * Neste grupo de funções, temos, por exemplo, funções que gerem a 
+ * forma como a informação é apresentada no terminal.
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
