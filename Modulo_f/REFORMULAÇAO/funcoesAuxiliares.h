@@ -109,15 +109,13 @@ void escritaFicheiro(FILE *f, Byte *buffer, unsigned long int tamanho);
  */
 void libertarEspacoInfosBloco (InfosBloco infosBloco);
 
-<<<<<<< HEAD
+
 /**
  * @brief .
- *
+ * @param 
  */
-=======
 void freeFicheiroInf(FicheiroInf fInf);
 
->>>>>>> 65ee39796dc188ddff8e50abae07b45e54eb52b2
 void data();
 
 /**
