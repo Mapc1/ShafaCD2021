@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define AUTHORS "Autores: Marco Costa: A93283  Daniel Azevedo: Axxxxx\n\n"
+#define AUTHORS "Autores: Marco Costa: A93283  Daniel Azevedo: A93324 \n\n"
 
 typedef enum {
   RLE = 'R',
