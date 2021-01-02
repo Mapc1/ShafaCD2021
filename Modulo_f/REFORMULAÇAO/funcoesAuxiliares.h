@@ -113,9 +113,14 @@ void libertarEspacoInfosBloco (InfosBloco infosBloco);
 /**
  * @brief .
  * @param 
+ *
  */
 void freeFicheiroInf(FicheiroInf fInf);
 
+/**
+ * @brief .
+ * 
+ */
 void data();
 
 /**

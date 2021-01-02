@@ -39,6 +39,9 @@ int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBlo
     // Informações a aparecer na consola:
     infoTerminal(fInf, tamanhoRle, inicio, fim);
 
+    // Free fInf
+    freeFicheiroInf(fInf);
+
     fclose(orig);
     return 0;
 }
