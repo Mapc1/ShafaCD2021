@@ -4,7 +4,7 @@
 #define BUFFSIZE 1024
 #define NSIMBOLOS 256
 #define NTHREADS 8
-#define BILLION  1000000000.0
+#define BILLION 1000000000.0
 
 #define HELP "Shafa - Programa de compressão/descompressão\n\n"\
              "Comandos: shafa -m [t|f|c|d] [-b K|m|M] [-c r]\n"\
@@ -15,10 +15,17 @@
 
 typedef struct {
   char *fileIN,               //  input file from arguments
-       fileOUT[BUFFSIZE];              //  output file needs -o option otherwise fileOUT = '\0' and output is the standard
+       fileOUT[BUFFSIZE],     //  output file needs -o option otherwise fileOUT = '\0' and output is the standard
+       fileCOD[BUFFSIZE],     //  cod file to be opened
+       fileRLE[BUFFSIZE];     //  rle file to be opened
   int modT, modD, modF, modC; //  Modules
   int optB, optC, optD;       //  The various possible options
 } Options;
+
+typedef enum {
+  READ,
+  WRITE
+} Flag;
 
 // Prints today's date
 void data();
@@ -28,5 +35,9 @@ Options *getOpts(int argc, char *argv[]);
 
 //  Copies the string stored in src to dest and removes sufx from the end of dest
 //  This function returns the address to dest just like strcpy
-char *removeSufix(char *dest, char *src, char *sufx);
+char *removeSufix(char *dest, char *src);
+
+FILE *getFile(char *dest, char *fileName, char *mode, char *sufx);
+
+void errorOpenFile (char *fileName, Flag flag, FILE *fpSF, FILE *fpRLE, FILE *fpCOD, FILE *fpOut);
 #endif //__SHAFA_H__

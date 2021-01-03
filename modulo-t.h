@@ -3,9 +3,9 @@
 
 /*
 typedef struct Parcelas {
-    int simbolo;
-    int frequ;
-    int codSF;
+    long long int simbolo;
+    long long int frequ;
+    long long int codSF;
 } Parcela ;
 
 typedef struct lista {
@@ -15,40 +15,42 @@ typedef struct lista {
 */
 
 typedef struct lista {
-    int simbolo;
-    int frequ;
+    long long int simbolo;
+    long long int frequ;
     char * codSF;
     struct lista * prox;
 } *LISTA;
 
 LISTA crialista () ;
 
-LISTA inserecabeca ( LISTA L , int s , int f ) ;
+LISTA inserecabeca ( LISTA L , long long int s , long long int f ) ;
 
 char * detectfreq ( char * freq ) ;
 
-FILE * escreveFile ( char * freq ) ;
+void escreveFile ( char * freq ) ;
 
-int somal ( LISTA * l , int ai , int af ) ;
+long long int somal ( LISTA * l , long long int ai , long long int af ) ;
 
-int melhordivisao ( LISTA * l , int ai , int af ) ;
+long long int melhordivisao ( LISTA * l , long long int ai , long long int af ) ;
 
 void addSF ( char * c , char d ) ;
 
-void ShannonFannon ( LISTA * l , int ai , int af ) ;
+void ShannonFannon ( LISTA * l , long long int ai , long long int af ) ;
 
-LISTA SortedMerge ( LISTA a , LISTA b , int fl ) ;
+LISTA SortedMerge ( LISTA a , LISTA b , long long int fl ) ;
 
 void Divisao ( LISTA source , LISTA * a , LISTA * b ) ;
 
-void MergeSort ( LISTA * L , int fl ) ;
+void MergeSort ( LISTA * L , long long int fl ) ;
 
-LISTA metenalista ( int * arr , LISTA L ) ;
+LISTA metenalista ( long long int * arr , LISTA L ) ;
 
-int finalefree ( LISTA * L , char * final , int ii ) ;
+//long long int finalefree ( LISTA * L , char * final , long long int ii , long long int sizefi ) ;
 
-int * freqread ( char * aa ) ;
+long long int * freqread ( char * aa ) ;
 
-FILE * moduleTMain ( char * ff ) ;
+long long int contan ( LISTA * l ) ;
+
+void moduleTMain ( char * ff ) ;
 
 #endif

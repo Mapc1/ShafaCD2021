@@ -11,7 +11,7 @@ void readRLECode(FILE *fpRLE, unsigned char *symbol, unsigned char *repetitions)
   fread(repetitions, 1, 1, fpRLE);
 }
 
-void decodeRLE(FILE *fpRLE, FILE *fout, FileData *fileData){
+void decodeRLE(FILE *fpRLE, FILE *fpOut, FileData *fileData){
   int i = 0, writeFlag = 1, curSize = 0, counter = 0;
   unsigned char repetitions;
   unsigned char symbol, buffer[BUFFSIZE] = "\0";
@@ -27,13 +27,15 @@ void decodeRLE(FILE *fpRLE, FILE *fout, FileData *fileData){
     if (writeFlag){
       counter++;
       repetitions = 1;
-      if(symbol == 0)
+      if(symbol == 0){
         readRLECode(fpRLE, &symbol, &repetitions);
+        counter += 2;
+      }
       curSize += repetitions;
       for(; repetitions > 0 && i < BUFFSIZE; i++, repetitions--)
         buffer[i] = symbol;
       if(i >= BUFFSIZE){
-        fwrite(buffer, 1, i, fout);
+        fwrite(buffer, 1, i, fpOut);
         i = 0;
         if(repetitions > 0){
           for(; repetitions > 0; i++, repetitions--)
@@ -42,13 +44,13 @@ void decodeRLE(FILE *fpRLE, FILE *fout, FileData *fileData){
       }
     }
     if(block != NULL && counter == block->newSize){
-      fprintf(stdout, "Tamanho antes/depois a descodificação RLE (bloco %d): %d/%d\n", block->blockNum + 1, block->newSize, curSize);
+      fprintf(stdout, "Tamanho antes/depois da descodificação RLE (bloco %d): %d/%d\n", block->blockNum + 1, block->newSize, curSize);
       counter = 0;
       curSize = 0;
       block = block->next;
     }
   }
-  fwrite(buffer, 1, i, fout);
+  fwrite(buffer, 1, i, fpOut);
 }
 
 int readSection(FILE *fp, char *str){
@@ -179,13 +181,9 @@ void *decodeSFBlock(void *arg){
   return arg;
 }
 
-BuffQueue *initBuffQueue(Args **ocupation, int *activeThreads, int *stopFlag, FILE *fout){
+BuffQueue *initBuffQueue(){
   BuffQueue *queue = malloc(sizeof(BuffQueue));
-  queue->ocupation = ocupation;
-  queue->fout = fout;
   queue->head = NULL;
-  queue->activeThreads = activeThreads;
-  queue->stopFlag = stopFlag;
   return queue;
 }
 
@@ -224,30 +222,10 @@ int getFreeThread(Args **ocupation){
   return -1;
 }
 
-void *writeBlock(void *voidQueue){
-  BuffQueue *queue = (BuffQueue *) voidQueue;
-  while(1){
-      if(queue->head != NULL && queue->head->ready){
-        fprintf(stdout, "Tamanho antes/depois da descodificação Shanon-Fano (bloco %d): %d/%d\n",
-                queue->ocupation[queue->head->threadID]->block->blockNum + 1,
-                queue->ocupation[queue->head->threadID]->block->oldSize,
-                queue->ocupation[queue->head->threadID]->block->newSize
-                );
-        fwrite(queue->head->decoded, 1, queue->head->blockSize, queue->fout);
-        free(queue->ocupation[queue->head->threadID]);
-        queue->ocupation[queue->head->threadID] = NULL;
-        clearHead(queue);
-        *(queue->activeThreads) -= 1;
-      }
-    }
-  return queue;
-}
-
-FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
-  FileData *fileData;
+FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
   BlockData *block;
   char sectionBuffer[BUFFSIZE];
-  int activeThreads = 0, stopFlag = 0;
+  int activeThreads = 0, id;
   Args *ocupation[NTHREADS];
   pthread_t threads[NTHREADS];
   Args *args;
@@ -257,17 +235,14 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
   for(int i = 0; i < NTHREADS; i++) 
     ocupation[i] = NULL;
 
-  fileData = readCOD(fpCOD);
-  queue = initBuffQueue(ocupation, &activeThreads, &stopFlag, fout);
+  queue = initBuffQueue();
 
   fseek(fpSF,1,SEEK_SET);
   readSection(fpSF, sectionBuffer);
 
   block = fileData->first;
-  pthread_create(&threads[0], NULL, writeBlock, queue);
-  activeThreads++;
 
-  while(block != NULL || activeThreads > 1){
+  while(block != NULL || activeThreads > 0){
     while(activeThreads < NTHREADS - 1 && block != NULL){
       args = malloc(sizeof(Args));
       args->block = block;
@@ -281,27 +256,39 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fout){
       fread(curr->buffer, 1, args->block->oldSize, fpSF);
       fseek(fpSF, 1, SEEK_CUR);
 
-      args->blockBuff->threadID = getFreeThread(ocupation);
-      ocupation[args->blockBuff->threadID] = args;
-      pthread_create(&threads[args->blockBuff->threadID], NULL, decodeSFBlock, args);
+      id = getFreeThread(ocupation);
+      args->blockBuff->threadID = id;
+      ocupation[id] = args;
+      pthread_create(&threads[id], NULL, decodeSFBlock, args);
 
       activeThreads++;
       block = block->next;
     }
+    if(queue->head != NULL && queue->head->ready){
+      id = queue->head->threadID;
+      fprintf(stdout, "Tamanho antes/depois da descodificação Shanon-Fano (bloco %d): %d/%d\n",
+              ocupation[id]->block->blockNum + 1,
+              ocupation[id]->block->oldSize,
+              ocupation[id]->block->newSize
+              );
+      fwrite(queue->head->decoded, 1, queue->head->blockSize, fpOut);
+      free(ocupation[id]);
+      ocupation[id] = NULL;
+      clearHead(queue);
+      activeThreads--;
+    }
   }
-  stopFlag = 1;
   free(queue);
   return fileData;
 }
 
 void moduleDMain(Options *opts){
-  char codNAME[BUFFSIZE], decodedSF[BUFFSIZE];
-  FILE *fout, *fpDecodedSF, *fin, *fin2;
+  FILE *fpOut, *fpSF, *fpCOD, *fpRLE;
   FileData *fileData;
   struct timespec begin, end;
   int elapsed;
 
-  fin = fopen(opts->fileIN, "rb");
+  fpOut = fpSF = fpCOD = fpRLE = NULL;
 
   printf(AUTHORS);
   printf("Inicio da compressão: ");
@@ -312,53 +299,78 @@ void moduleDMain(Options *opts){
 
   switch(opts->optD){
     case 's':
-      if (opts->fileOUT[0] == '\0')
-        removeSufix(opts->fileOUT, opts->fileIN, ".shaf"); 
-      fout = fopen(opts->fileOUT, "wb"); 
-      removeSufix(codNAME, opts->fileIN, ".shaf");
-      strcat(codNAME, ".cod");
-      fin2 = fopen(codNAME,"rb");
-      decodeShafa(fin, fin2, fout); 
-      fclose(fout);
+      fpSF = fopen(opts->fileIN, "rb");
+      if(!fpSF)
+        errorOpenFile(opts->fileIN, READ, fpSF, fpRLE, fpCOD, fpOut);
+
+      fpCOD = getFile(opts->fileCOD, opts->fileIN, "rb", ".cod");
+      if(!fpCOD)
+        errorOpenFile(opts->fileCOD, READ, fpSF, fpRLE, fpCOD, fpOut);
+
+      fileData = readCOD(fpCOD);
+      fpOut = getFile(opts->fileOUT, opts->fileIN, "wb", "\0");
+      if(!fpOut)
+        errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+
+      decodeShafa(fpSF, fpCOD, fpOut, fileData); 
       break;
     
     case 'r':
-      if(opts->fileOUT[0] == '\0')
-        removeSufix(opts->fileOUT, opts->fileIN, ".rle");
-      fout = fopen(opts->fileOUT, "wb");
-      if(!opts->optB) 
-      decodeRLE(fin, fout, NULL);
-      fclose(fout);
+      fpRLE = fopen(opts->fileIN, "rb");
+      if(!fpRLE)
+        errorOpenFile(opts->fileRLE, READ, fpSF, fpRLE, fpCOD, fpOut);
+
+      fpOut = getFile(opts->fileOUT, opts->fileIN, "wb", "\0");
+      if(!fpOut)
+        errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+
+      decodeRLE(fpRLE, fpOut, NULL);
       break;
 
-    case '\0':      
-      removeSufix(codNAME, opts->fileIN, ".shaf");
-      strcat(codNAME, ".cod");
-      fin2 = fopen(codNAME,"rb");
-      removeSufix(decodedSF, codNAME, ".cod");
-      fpDecodedSF = fopen(decodedSF, "wb+");
-      fileData = decodeShafa(fin, fin2, fpDecodedSF); 
+    case '\0':
+      fpSF = fopen(opts->fileIN, "rb");
+      if (!fpSF)
+        errorOpenFile(opts->fileIN, READ, fpSF, fpRLE, fpCOD, fpOut);
+
+      fpCOD = getFile(opts->fileCOD, opts->fileIN, "rb", ".cod");
+      if(!fpCOD)
+        errorOpenFile(opts->fileCOD, READ, fpSF, fpRLE, fpCOD, fpOut);
+
+      fileData = readCOD(fpCOD);
       if(fileData->compress == RLE){
+        fpRLE = getFile(opts->fileRLE, opts->fileIN, "wb+", "\0");
+        if(!fpRLE)
+          errorOpenFile(opts->fileRLE, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+
+        decodeShafa(fpSF, fpCOD, fpRLE, fileData); 
+
+        fpOut = getFile(opts->fileOUT, opts->fileRLE, "wb", "\0");
+        if(!fpOut)
+          errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+
         fprintf(stdout, "A executar a descodifcação RLE...\n");
-        fseek(fpDecodedSF, 0, SEEK_SET);
-        if(opts->fileOUT[0] == '\0')
-          removeSufix(opts->fileOUT, decodedSF, ".rle");
-        fout = fopen(opts->fileOUT, "wb");
-        decodeRLE(fpDecodedSF, fout, fileData);
-        fclose(fout);
+        decodeRLE(fpRLE, fpOut, fileData);
       }
-      else if(opts->fileOUT[0] != '\0')
-        rename(decodedSF, opts->fileOUT);
-      else strcpy(opts->fileOUT, decodedSF);
+
+      else {
+        fpOut = getFile(opts->fileOUT, opts->fileIN, "wb", "\0");
+        if(!fpOut)
+          errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+
+        decodeShafa(fpSF, fpCOD, fpOut, fileData); 
+      }
       break;
 
     default: fprintf(stderr, "Erro!! Esta opção não existe!\n");
   }
   clock_gettime(CLOCK_MONOTONIC, &end);
-  elapsed = ((end.tv_sec - begin.tv_sec) + (end.tv_nsec - begin.tv_nsec) / 1000000000.0) * 1000;
+  elapsed = ((end.tv_sec - begin.tv_sec) + (end.tv_nsec - begin.tv_nsec) / BILLION) * 1000;
 
   fprintf(stdout, "Tempo de execução do módulo (milissegundos): %d\n", elapsed);
   fprintf(stdout, "Ficheiro gerado: %s\n", opts->fileOUT);
 
-  fclose(fin);
+  if(fpSF)  fclose(fpSF);
+  if(fpRLE) fclose(fpRLE);
+  if(fpCOD) fclose(fpCOD);
+  if(fpOut) fclose(fpOut);
 }

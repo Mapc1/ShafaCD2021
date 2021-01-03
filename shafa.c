@@ -56,15 +56,39 @@ void data() {
     printf("%02d-%02d-%d  %02d:%02d:%02d\n", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900, tm.tm_hour, tm.tm_min, tm.tm_hour);
 }
 
-char *removeSufix(char *dest, char *src, char *sufx){
-  int i, j;
+void errorOpenFile (char *fileName, Flag flag, FILE *fpSF, FILE *fpRLE, FILE *fpCOD, FILE *fpOut){
+  if(flag == READ)
+    fprintf(stderr, "ERRO!!!\nNão foi possível abrir o ficheiro %s! -.-\n", fileName);
+  else
+    fprintf(stderr, "ERRO!!!\nNão foi possível criar o ficheiro %s! -.-\n", fileName);
+
+  if(fpSF)  fclose(fpSF);
+  if(fpRLE) fclose(fpRLE);
+  if(fpCOD) fclose(fpCOD);
+  if(fpOut) fclose(fpOut);
+  
+  exit(1);
+}
+
+FILE *getFile(char *dest, char *fileName, char * mode, char *sufx){
+  FILE *fp;
+
+  if(dest[0] == '\0'){
+    removeSufix(dest, fileName);
+    strcat(dest, sufx);
+  }
+  fp = fopen(dest, mode);
+  return fp;
+}
+
+char *removeSufix(char *dest, char *src){
+  int i;
   strcpy(dest, src);
 
   for(i = 0; src[i+1] != '\0'; i++);
-  for(j = 0; sufx[j] != '\0'; j++);
-  for(; i > 0 && j > 0; i--, j--)
-      dest[i] = '\0';
+  for(; dest[i] != '.'; i--);
 
+  dest[i] = '\0';
   return dest;
 }
 
