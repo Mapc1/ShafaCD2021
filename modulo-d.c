@@ -243,7 +243,7 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
   block = fileData->first;
 
   while(block != NULL || activeThreads > 0){
-    while(activeThreads < NTHREADS - 1 && block != NULL){
+    while(activeThreads < NTHREADS && block != NULL){
       args = malloc(sizeof(Args));
       args->block = block;
 

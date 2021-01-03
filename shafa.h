@@ -17,9 +17,10 @@ typedef struct {
   char *fileIN,               //  input file from arguments
        fileOUT[BUFFSIZE],     //  output file needs -o option otherwise fileOUT = '\0' and output is the standard
        fileCOD[BUFFSIZE],     //  cod file to be opened
-       fileRLE[BUFFSIZE];     //  rle file to be opened
+       fileRLE[BUFFSIZE],
+       fileFREQ[BUFFSIZE];    //  rle file to be opened
   int modT, modD, modF, modC; //  Modules
-  int optB, optC, optD;       //  The various possible options
+  char optB, optC, optD;       //  The various possible options
 } Options;
 
 typedef enum {

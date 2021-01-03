@@ -1,7 +1,13 @@
+#ifdef linux
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#endif
+
+#ifdef _WIN32
+#endif
+
 #include "modulo-d.h"
 #include "shafa.h"
 #include "Modulo_f/moduloF.h"
@@ -15,7 +21,7 @@ int initOpts(Options *opts){
   opts->modD = 0;
   opts->modF = 0;
   opts->modC = 0;
-  opts->optB = 65536;
+  opts->optB = 0;
   opts->optD = 0;
   opts->optC = 0;
   return 1;
