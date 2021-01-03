@@ -4,7 +4,7 @@
 #include <time.h>
 #include "modulo-d.h"
 #include "shafa.h"
-#include "Modulo_f/REFORMULAÇAO/moduloF.h"
+#include "Modulo_f/moduloF.h"
 
 int initOpts(Options *opts){
   if(!opts) return 0;

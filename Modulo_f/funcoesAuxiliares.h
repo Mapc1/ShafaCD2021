@@ -18,6 +18,8 @@
 #ifndef __FUNCOESAUXILIARES__
 #define __FUNCOESAUXILIARES__
 
+#include "../shafa.h"
+
 /**
  * @brief Definido somente para não ter de escrever inúmeras vezes "unsigned char"
  *
@@ -68,7 +70,7 @@ typedef struct infosBloco {
  * @param String com o tipo da extensão.
  * 
  */
-char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao);
+char *nomeFicheiroExtensao(const char *nomeFicheiro,const char *extensao);
 
 /**
  * @brief Função que gera a struct com a informação do ficheiro original.

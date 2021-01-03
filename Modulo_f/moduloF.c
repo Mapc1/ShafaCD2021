@@ -5,7 +5,7 @@
 #include "moduloF.h"
 #include "funcoesAuxiliares.h"
 #include "processamento.h"
-#include "../../shafa.h"
+#include "../shafa.h"
 
 
 void moduleFMain(Options *opts) {

@@ -1,14 +1,13 @@
 #ifndef __MODULO_F__
 #define __MODULO_F__
 
-#include "../../shafa.h"
+#include "../shafa.h"
+#include "funcoesAuxiliares.h"
 
 #define K 655360
 #define m 8388608
 #define M 67108864
 #define r 1
-
-#include "funcoesAuxiliares.h"
 
 void moduleFMain(Options *opts);
 

@@ -19,6 +19,7 @@
 #include <time.h>
 #include "funcoesAuxiliares.h"
 #include "fsize.h"
+#include "../shafa.h"
 
 
 char *nomeFicheiroExtensao(const char *nomeFicheiro, const char *extensao) {

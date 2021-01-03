@@ -70,7 +70,7 @@ void freqsRle(const Byte *bufferInput, unsigned long int tamanhoBlocoInput, unsi
 }
 
 void freqsParaEscrita(unsigned long long *BufferFreqs, unsigned long long numBloco, FicheiroInf fInf, InfosBloco infosBloco) {
-    unsigned long long espacoAlocado = 256;
+    unsigned long long espacoAlocado = 396800; //256*1550 //?
     infosBloco -> BufferFreqs = malloc(sizeof (Byte) * espacoAlocado);
     infosBloco -> tamanhoBufferFreqs = 0;
     unsigned int i;
@@ -89,10 +89,10 @@ void freqsParaEscrita(unsigned long long *BufferFreqs, unsigned long long numBlo
         else if (i != 255) infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld", (BufferFreqs[i]));
         else
             infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i])); // (aux_Freqs->FicheiroOriginal[i] != aux_Freqs->FicheiroOriginal[i-1])
-        if (infosBloco->tamanhoBufferRle > espacoAlocado - 20) {
+        /*if (infosBloco->tamanhoBufferRle > espacoAlocado - 20) {
             espacoAlocado *= 2;
             infosBloco->BufferFreqs = realloc(infosBloco->BufferFreqs, espacoAlocado);
-        }
+        }*/
     }
     if (numBloco == fInf -> numBloco - 1) {
         local = (char*) &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
