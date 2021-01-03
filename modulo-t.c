@@ -276,7 +276,10 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     long long int i , ii ;                                             // índice do array frq e do final, respetivamente
     char * final = malloc ( 3 * sizeof(long long int) ) ;              // array que vai dar origem ao ficheiro cod final
     long long int sizefi = 3 ;
-    long long int B = 0 ;                                              // numero de blocos
+    long long int blocos = 0;                                              // numero de blocos
+    long long int * tam_b1;
+    long long int * tam_b2;
+
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
     char * frq;
@@ -286,6 +289,9 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     final[0] = '@' ;
     final[1] = frq[1] ;
     final[2] = '@' ;
+
+    long long int * numblock = freqread (&frq[2]);
+
     for ( ii = 3 ; frq[ii] != '@' ; ii++ ) {
         if ( ii >= sizefi ) {
             sizefi *= 2 ;
@@ -306,7 +312,15 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     // este while serve para vermos um bloco de cada vez. Ele acaba quando temos "@0"
     while ( frq[i+1] != '0' ) {
 
-        B++;
+        blocos++;
+
+        if (blocos == 1) {
+            tam_b1 = freqread(&frq[i]);
+            printf ("%lld\n",tam_b1[0]);
+        }
+        if (blocos == numblock[0]) {
+                tam_b2 = freqread(&frq[i]);
+        }
 
         // avança para a informação do tamanho do bloco
         i++; ii++;
@@ -415,7 +429,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     float ttime ;
     ttime = ((double)(tfim - tinicio)) / CLOCKS_PER_SEC * 1000 ;
 
-    printf ("Inês Vicente, a93269, Tomás Francisco, a93193 MIEI/CD, 3-jan-2021\nMódulo: t (cálculo dos códigos dos símbolos)\nNúmero de blocos: %lld\nTamanho dos blocos analisados no ficheiro de símbolos: 57444/1620 bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: exemplo.txt.rle.cod\n", B , ttime ) ;
+    printf ("Inês Vicente, a93269, Tomás Francisco, a93193 MIEI/CD, 3-jan-2021\nMódulo: t (cálculo dos códigos dos símbolos)\nNúmero de blocos: %lld\nTamanho dos blocos analisados no ficheiro de símbolos: %lld/%lld bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: exemplo.txt.rle.cod\n", numblock[0] , tam_b1[0] , tam_b2[0] ,ttime ) ;
     
     //return cod;
     
