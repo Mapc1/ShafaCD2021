@@ -82,6 +82,7 @@ void freqsParaEscrita(unsigned long long *BufferFreqs, unsigned long long numBlo
     for (i = 0; i < 256; i++) { // Otimizar condições!!!!!
         local = (char*) &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
         if (i == 255 && (BufferFreqs[i] == BufferFreqs[i - 1]));
+	else if (i == 255 && (BufferFreqs[i] != BufferFreqs[i - 1])) infosBloco->tamanhoBufferFreqs += sprintf(local, "%llu", BufferFreqs[i]);
         else if (!i || ((BufferFreqs[i] != BufferFreqs[i - 1]))) {
             infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i]));
         }

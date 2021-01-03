@@ -130,7 +130,7 @@ void freeFicheiroInf(FicheiroInf fInf);
  * @param RleEfetuado Para saber se o RleEfetuado.
  *
  */
-void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado);
+void ficheiros_gerados(FicheiroInf fInf, Byte RleEfetuado);
 
 /**
  * @brief Função para escrever no terminal a informação geral sobre o Módulo.
@@ -140,6 +140,6 @@ void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado);
  * @param fim Para saber o fim do Clock.
  *
  */
-void infoTerminal(FicheiroInf fInf,unsigned long long tamanhoRle, clock_t inicio, clock_t fim);
+void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle, clock_t inicio, clock_t fim);
 
 #endif //MODULO_F_FUNCOESAUXILIARES_H

@@ -72,7 +72,7 @@ void freeFicheiroInf(FicheiroInf fInf) {
 
 
 
-void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado) {
+void ficheiros_gerados(FicheiroInf fInf, Byte RleEfetuado) {
     char *freqs_Original = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".freq");
     char *RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle");
     char *freqs_RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle.freq");
@@ -83,21 +83,27 @@ void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado) {
     free(freqs_RLE);
 }
 
-void infoTerminal(FicheiroInf fInf,unsigned long long tamanhoRle, clock_t inicio, clock_t fim) {
+void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle, clock_t inicio, clock_t fim) {
+    printf("\n%p\n", tamanhoRle);
+    printf("\n%lld\n", *tamanhoRle);
     printf("Miguel Martins, a93280, Gonçalo Soares, a93286, MIEI/CD, ");
     data();
     printf("Módulo: f (Cálculo das frequências dos símbolos)\n");
     printf("Número de blocos: %llu  \n", fInf -> numBloco);
     if (fInf -> numBloco > 1) printf("Tamanho dos blocos analisados no ficheiro original: %lu/%lu\n", fInf -> tamanhoBloco, fInf -> tamanhoUltimoBloco);
     else printf("Tamanho do bloco analisado no ficheiro original: %lu\n", fInf -> tamanhoUltimoBloco);
+    Byte rleEfetuado;
     if (!tamanhoRle) {
         printf("Compressão RLE: Não efetuada\n");
+	rleEfetuado = 0;
     } else {
-        double TaxaCompressao = (double) (tamanhoRle) / (double) fInf -> tamanhoTotal;
-        printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf->nomeFicheiro, (TaxaCompressao > 1 ? 0 : ((1 - TaxaCompressao) * 100)));
-        printf("Tamanho do ficheiro RLE: %llu\n", tamanhoRle); 
+        double TaxaCompressao = (double) (*tamanhoRle) / (double) fInf -> tamanhoTotal;
+        printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf->nomeFicheiro, TaxaCompressao); 
+        printf("Tamanho do ficheiro RLE: %llu\n", *tamanhoRle); 
+	rleEfetuado = 1;
     }
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
     printf("Ficheiros gerados: ");    
-    ficheiros_gerados(fInf, tamanhoRle);
+    printf("%u\n", rleEfetuado);
+    ficheiros_gerados(fInf, rleEfetuado);
 }

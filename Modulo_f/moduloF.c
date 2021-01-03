@@ -56,13 +56,13 @@ int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBlo
     // Abertura do ficheiro
     FILE *orig = fopen(nomeFicheiro, "rb"); // Ficheiro original
 
-    unsigned long long tamanhoRle = calculoFrequencias(orig, fInf, compressaoForcada);
-
+    unsigned long long *tamanhoRlePointer = calculoFrequencias(orig, fInf, compressaoForcada);
+    printf("%lln\n", tamanhoRlePointer);
     // Fim da contagem do tempo de execução
     clock_t fim = clock();
 
     // Informações a aparecer na consola:
-    infoTerminal(fInf, tamanhoRle, inicio, fim);
+    infoTerminal(fInf, tamanhoRlePointer, inicio, fim);
 
     // Free fInf
     freeFicheiroInf(fInf);
@@ -72,15 +72,16 @@ int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBlo
 }
 
 
-unsigned long long int calculoFrequencias(FILE *orig, FicheiroInf fInf, char compressaoForcada) {
+unsigned long long int *calculoFrequencias(FILE *orig, FicheiroInf fInf, char compressaoForcada) {
     unsigned long long numBloco;
-    unsigned long long tamanhoRLE = 0;
+    static unsigned long long tamanhoRLE = 0;
     unsigned long long *tamanhoRLEPointer = &tamanhoRLE;
 
     for(numBloco = 0; numBloco < fInf -> numBloco; numBloco++) {
         calculoFrequenciasBloco(orig, fInf, numBloco, compressaoForcada, &tamanhoRLEPointer);
     }
-    return tamanhoRLE;
+    printf("Pointer:%p", tamanhoRLEPointer);
+    return &tamanhoRLE;
 }
 
 
@@ -106,6 +107,7 @@ void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long nu
         } else {
             double TaxaCompressao = (double)**tamanhoRleAcumulado / (double)tamanhoBloco(fInf, numBloco);
             if (TaxaCompressao > 0.95) { // Nao fazemos RLE
+		printf("Nao fazemos RLE\n");
                 char *freq = nomeFicheiroExtensao(fInf->nomeFicheiro, ".freq");
                 (fInf->ficheiros)->origFreqs = fopen(freq, "w");
                 free(freq);
@@ -140,6 +142,7 @@ void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long nu
         }
         free(fInf -> ficheiros);
     }
+    printf("TAMAMAMAMAM%p", *tamanhoRleAcumulado);
     // Libertar espaço dos buffer
     free(bufferInput);
     libertarEspacoInfosBloco(infosBloco);
