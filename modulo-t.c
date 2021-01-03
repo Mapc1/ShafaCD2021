@@ -67,7 +67,7 @@ void escreveFile ( char * freq ) { // Função que escreve uma string num fichei
 
     FILE * fp;
 
-    fp = fopen("ouraaa.txt.cod","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
+    fp = fopen("ourbbb.txt.cod","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
 
     fputs (freq,fp); // fputs é uma função que irá colocar o conteúdo de uma string no ficheiro,neste caso,a string freq para o ficheiro fp.
 
@@ -215,42 +215,6 @@ void MergeSort ( LISTA * L , int fl ) {
 
 }
 
-/*long long int finalefree ( LISTA * L , char * final , long long int ii , long long int sizefi ) {
-    long long int k ;                   // para percorrer cada codSF, que sao arrays de chars
-    char * c ;
-
-    // percorre a lista, colocando os codSF
-    while ( (*L)->prox != NULL ) {
-        c = (*L)->codSF ;
-
-        // percorremos o codSF de cada nodo, colocando char a char no array final
-        // de notar que se aquele nodo não tiver codSF, não é colocado nada
-        for ( k = 0 ; c[k] ; k++ , ii++ ) {
-            if ( ii >= sizefi ) {
-                sizefi *= 2 ;
-                final = realloc ( final , sizefi * sizeof(char) ) ;
-            }
-            final[ii] = c[k] ;
-        }
-        
-        // liberta o nodo que já obtivemos a informação
-        free ((*L)->codSF) ;
-        free (*L) ;
-        *L = (*L)->prox ;
-
-        // coloca o ; no final, para separar os valores, ela só não é colocada no último
-        if ( L != NULL ) {
-            if ( ii >= sizefi ) {
-                sizefi *= 2 ;
-                final = realloc ( final , sizefi * sizeof(char) ) ;
-            }
-            final[ii] = ';' ;
-            ii++ ;
-        }
-    }
-    return sizefi ;
-}*/
-
 long long int * freqread ( char * a ) {
     long long int val = 1 ;
     char * p ;
@@ -283,11 +247,12 @@ long long int counti (long long int i , char * a ) {
     return i ;
 }
 
-int countn ( LISTA * l ) {
+int contan ( LISTA * l ) {
+
     LISTA t = *l ;
     int n = 0 ;
 
-    for ( ; (t->frequ) != 0 ; n++ , t = t->prox ) ;
+    for ( ; (t->frequ) != 0 && n < 226 ; n++ , t = t->prox ) ;
 
     return n;
 }
@@ -328,6 +293,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     final[ii] = '@' ;
 
     i = ii ;
+    //printf("1.   ii: %lld   i: %lld      sizefi: %lld\n%s\n\n", ii , i , sizefi , final) ;
 
     // este while serve para vermos um bloco de cada vez. Ele acaba quando temos "@0"
     while ( frq[i+1] != '0' ) {
@@ -343,6 +309,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
             }
             final[ii] = frq[i] ;
         }
+        //printf("2.   ii: %lld   i: %lld      sizefi: %lld\n%s\n\n", ii , i , sizefi , final ) ;
         final[ii] = '@' ;
         ii++;
 
@@ -351,20 +318,22 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         arr = freqread ( &frq[i] ) ;
         i = counti ( i , &frq[i+1] ) ;
 
+        //printf("3.   ii: %lld   i: %lld      sizefi: %lld\n%s\n\n", ii , i ,sizefi , final ) ;
+
         LISTA l = crialista() ;
         l = metenalista ( arr , l ) ;
-        
+
         free (arr) ;
         
         // fazer uma ordenação eficiente da lista através das frequências
         MergeSort ( &l , 1 ) ;
 
         int n ;
-        n = countn ( &l ) ;
+        n = contan ( &l ) ;
 
         // atribuir códigos Shannon-Fannon aos símbolos
         ShannonFannon ( &l , 0 , (n-1) ) ;
-
+        
         // ordenar a lista em função dos simbolos
         MergeSort ( &l , 2 ) ;
         
@@ -388,9 +357,10 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
             }
             
             // liberta o nodo que já obtivemos a informação
-            free (l->codSF) ;
-            free (l) ;
+            LISTA temporaria = l ;
             l = l->prox ;
+            free ( temporaria->codSF ) ;
+            free ( temporaria ) ;
 
             // coloca o ; no final, para separar os valores, ela só não é colocada no último
             if ( l != NULL ) {
@@ -404,11 +374,15 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         }
         //ii = strlen ( final ) ;
 
+        //printf("4.   ii: %lld   i: %lld      sizefi: %lld\n%s\n\n", ii , i , sizefi , final ) ;
+
         if ( ii >= sizefi ) {
             sizefi *= 2 ;
             final = realloc ( final , sizefi * sizeof(char) ) ;
         }
+        //printf("4.5.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii+1] , final ) ;
         final[ii] = '@' ;
+        //printf("5.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii+1] , final ) ;
         
 // @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@<0|1>*;[…];<0|1>*@[tamanho_bloco_2]@<0|1>*;[…];<0|1>*@[…]@0 
 
@@ -418,6 +392,8 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
     ii++;
     final[ii] = '0';
+
+    //printf("6.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii] , final ) ;
 
     //função que transforma o array de chars que temos num ficheiro
     escreveFile ( final ) ;
@@ -430,7 +406,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
 
 int main() {
-    char * ff = "aaa.txt.freq" ;
+    char * ff = "bbb.zip(1).freq" ;
 
     moduleTMain ( ff ) ;
 
