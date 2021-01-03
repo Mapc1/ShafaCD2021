@@ -25,7 +25,7 @@ typedef struct infosBloco {
     unsigned long long int tamanhoBufferFreqs;
 } *InfosBloco;
 
-char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao);
+char *nomeFicheiroExtensao(const char *nomeFicheiro, const char *extensao);
 
 FicheiroInf NBlocos(char *nomeFicheiro, unsigned long int tamanhoBloco);
 

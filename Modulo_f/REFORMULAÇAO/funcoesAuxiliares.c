@@ -6,7 +6,7 @@
 #include "fsize.h"
 
 
-char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao) {
+char *nomeFicheiroExtensao(const char *nomeFicheiro, const char *extensao) {
     size_t length = strlen(nomeFicheiro) + strlen(extensao) + 1;
     char *concat = malloc(sizeof(char) * length);
     if (!concat) return NULL; // Malloc error
@@ -35,8 +35,7 @@ unsigned long int tamanhoBloco(FicheiroInf fInf, unsigned long long numBloco) {
 }
 
 Byte *leituraFicheiro(FILE *f, unsigned long int tamanhoBloco) {
-    //static Byte buffer[1];
-    Byte *buffer = malloc(sizeof(Byte)*tamanhoBloco);
+    Byte *buffer = malloc(tamanhoBloco*sizeof(Byte));
     fread(buffer, sizeof(Byte), tamanhoBloco, f);
     return buffer;
 }
@@ -46,23 +45,16 @@ void escritaFicheiro(FILE *f, Byte *buffer, unsigned long int tamanho) {
 }
 
 void libertarEspacoInfosBloco (InfosBloco infosBloco) {
-    if (infosBloco -> BufferSimbolos) {
-        free(infosBloco -> BufferSimbolos);
-    }
+    if (infosBloco -> BufferSimbolos) free(infosBloco -> BufferSimbolos);
     free(infosBloco -> BufferFreqs);
     free(infosBloco);
 }
 
 void freeFicheiroInf(FicheiroInf fInf) {
-    free(fInf -> ficheiros);
     free(fInf);
 }
 
-void data() {
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-    printf("%02d-%02d-%d \n", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
-}
+
 
 void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado) {
     char *freqs_Original = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".freq");
@@ -70,6 +62,9 @@ void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado) {
     char *freqs_RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle.freq");
     if (RleEfetuado) printf("%s, %s\n", RLE, freqs_RLE);
     else printf("%s\n", freqs_Original);
+    free(freqs_Original);
+    free(RLE);
+    free(freqs_RLE);
 }
 
 void infoTerminal(FicheiroInf fInf,unsigned long long tamanhoRle, clock_t inicio, clock_t fim) {

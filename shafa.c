@@ -4,6 +4,7 @@
 #include <time.h>
 #include "modulo-d.h"
 #include "shafa.h"
+#include "Modulo_f/REFORMULAÇAO/moduloF.h"
 
 int initOpts(Options *opts){
   if(!opts) return 0;
@@ -14,7 +15,7 @@ int initOpts(Options *opts){
   opts->modD = 0;
   opts->modF = 0;
   opts->modC = 0;
-  opts->optB = 0;
+  opts->optB = 65536;
   opts->optD = 0;
   opts->optC = 0;
   return 1;
@@ -36,7 +37,7 @@ Options *getOpts(int argc, char *argv[]){
             case 'f': opts->modF = 1; break;
             case 'c': opts->modC = 1; break;
           }; break;
-        case 'b': opts->optB = strtol(argv[i], NULL, 10); break;
+        case 'b': opts->optB = argv[i][0]; break;
         case 'c': opts->optC = argv[i][0]; break;
         case 'd': opts->optD = argv[i][0]; break;
         case 'o': strcpy(opts->fileOUT, argv[i]); break;
@@ -73,9 +74,9 @@ int main(int argc, char *argv[]){
   if(argc == 1) fprintf(stdout, HELP);
 
   opts = getOpts(argc, argv);
+  if(opts->modF) moduleFMain(opts);
   //if(modT)
   if(opts->modD) moduleDMain(opts);
-  //if(modF)
   //if(modC)
   free(opts);
   return 0;

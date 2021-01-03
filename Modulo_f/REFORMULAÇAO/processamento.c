@@ -70,30 +70,32 @@ void freqsRle(const Byte *bufferInput, unsigned long int tamanhoBlocoInput, unsi
 }
 
 void freqsParaEscrita(unsigned long long *BufferFreqs, unsigned long long numBloco, FicheiroInf fInf, InfosBloco infosBloco) {
-    infosBloco -> BufferFreqs = malloc(sizeof (Byte) * 256);
     unsigned long long espacoAlocado = 256;
+    infosBloco -> BufferFreqs = malloc(sizeof (Byte) * espacoAlocado);
     infosBloco -> tamanhoBufferFreqs = 0;
     unsigned int i;
-    Byte *local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
+    char *local = (char*) &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
 
     if (!numBloco) infosBloco -> tamanhoBufferFreqs += sprintf(local, "@%c@%lld", !(infosBloco -> BufferSimbolos) ? 'N': 'R', fInf -> numBloco);
-    local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
+    local = (char*) &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
     infosBloco -> tamanhoBufferFreqs += sprintf(local, "@%llu@", !(infosBloco -> BufferSimbolos) ? tamanhoBloco(fInf, numBloco): infosBloco -> tamanhoBufferRle);
     for (i = 0; i < 256; i++) { // Otimizar condições!!!!!
-        local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
+        local = (char*) &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
         if (i == 255 && (BufferFreqs[i] == BufferFreqs[i - 1]));
-        else if (!i || ((BufferFreqs[i] != BufferFreqs[i - 1]))) infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i]));
+        else if (!i || ((BufferFreqs[i] != BufferFreqs[i - 1]))) {
+            infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i]));
+        }
         else if (BufferFreqs[i] == BufferFreqs[i - 1]) infosBloco->tamanhoBufferFreqs += sprintf(local, ";");
         else if (i != 255) infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld", (BufferFreqs[i]));
         else
             infosBloco->tamanhoBufferFreqs += sprintf(local, "%lld;", (BufferFreqs[i])); // (aux_Freqs->FicheiroOriginal[i] != aux_Freqs->FicheiroOriginal[i-1])
-        if (infosBloco->tamanhoBufferRle > espacoAlocado - 50) {
+        if (infosBloco->tamanhoBufferRle > espacoAlocado - 20) {
             espacoAlocado *= 2;
             infosBloco->BufferFreqs = realloc(infosBloco->BufferFreqs, espacoAlocado);
         }
     }
     if (numBloco == fInf -> numBloco - 1) {
-        local = &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
+        local = (char*) &(infosBloco -> BufferFreqs[infosBloco -> tamanhoBufferFreqs]);
         infosBloco->tamanhoBufferFreqs += sprintf(local, "@0");
     }
 }
@@ -120,6 +122,8 @@ InfosBloco processamento(Byte *bufferInput, FicheiroInf fInf, unsigned long long
     }
     // Transformar o array com as frequências num Byte * para a escrita no ficheiro freq
     freqsParaEscrita(BufferFreqs, numBloco, fInf, infosBloco);
+
+    free(BufferFreqs);
 
     return infosBloco;
 }
