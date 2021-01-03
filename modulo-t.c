@@ -227,9 +227,14 @@ long long int * freqread ( char * a ) {
             if ( a[i] == '@' && arrobacheck == 1 ) arrobacheck = 2 ;
             else {
                 if ( a[i] == '@' && arrobacheck == 0 ) arrobacheck = 1 ;
-                p = &a[i+1] ;
-                val = atoi(p);
-                arr[j] = val;
+                if ( a[i + 1] != ';') {   
+                  p = &a[i+1] ;
+                  val = atoi(p);
+                  arr[j] = val;
+                }
+                else {
+                  arr[j] = arr[j-1]; 
+                }
             }
         }
     }
