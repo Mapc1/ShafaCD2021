@@ -1,6 +1,5 @@
 #ifndef __SHAFA_H__
 #define __SHAFA_H__
-
 #define BUFFSIZE 1024
 #define NSIMBOLOS 256
 #define NTHREADS 8
@@ -40,5 +39,6 @@ char *removeSufix(char *dest, char *src);
 
 FILE *getFile(char *dest, char *fileName, char *mode, char *sufx);
 
-void errorOpenFile (char *fileName, Flag flag, FILE *fpSF, FILE *fpRLE, FILE *fpCOD, FILE *fpOut);
+void errorOpenFile (char *fileName, Flag flag, FILE *fpSF, FILE *fpRLE, FILE *fpCOD, FILE *fpFREQ, FILE *fpOut);
+
 #endif //__SHAFA_H__

@@ -1,35 +1,75 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
-#include <pthread.h>
 #include "shafa.h"
 #include "modulo-d.h"
+
+#ifdef __linux__
+  #include <time.h>
+  #include <pthread.h>
+#endif
+
+#ifdef _WIN32
+  #include <windows.h>
+#endif
+
+int readSection(FILE *fp, char *str){
+  int i;
+  for(i = 0; str[i-1] != '@'; i++)
+    fread(str+i, 1, 1, fp);
+  str[i-1] = '\0';
+  
+  return i;
+}
+
+int skipsection(FILE *fp){
+  int i;
+  char c = '\0';
+  for(i = 0; c != '@'; i++)
+    fread(&c, 1, 1, fp);
+  return i;
+}
 
 void readRLECode(FILE *fpRLE, unsigned char *symbol, unsigned char *repetitions){
   fread(symbol, 1, 1, fpRLE);
   fread(repetitions, 1, 1, fpRLE);
 }
 
-void decodeRLE(FILE *fpRLE, FILE *fpOut, FileData *fileData){
-  int i = 0, writeFlag = 1, curSize = 0, counter = 0;
+int readFreqBlockSize(FILE *fpFREQ){
+  char buffer[BUFFSIZE];
+  int blockSize = 0;
+
+  readSection(fpFREQ, buffer);
+  blockSize = strtol(buffer, NULL, 10);
+  
+  return blockSize;
+}
+
+void decodeRLE(FILE *fpRLE, FILE *fpOut, FILE *fpFREQ, FileData *fileData){
+  int i = 0, writeFlag = 1, curSize = 0, byteCounter = 0, freqSize = 0, blockTotal = 0, blockNum = 0;
   unsigned char repetitions;
   unsigned char symbol, buffer[BUFFSIZE] = "\0";
-  BlockData *block;
+  BlockData *block = NULL;
   
   if(fileData != NULL)
     block = fileData->first;
-
+  else{
+    fseek(fpFREQ, 3, SEEK_SET);
+    readSection(fpFREQ, buffer);
+    blockTotal = strtol(buffer, NULL, 10);
+    freqSize = readFreqBlockSize(fpFREQ);
+    skipsection(fpFREQ);
+  }
   fseek(fpRLE, 0, SEEK_SET);
   while(writeFlag){
     writeFlag = fread(&symbol, 1, 1, fpRLE);
     
     if (writeFlag){
-      counter++;
+      byteCounter++;
       repetitions = 1;
       if(symbol == 0){
         readRLECode(fpRLE, &symbol, &repetitions);
-        counter += 2;
+        byteCounter += 2;
       }
       curSize += repetitions;
       for(; repetitions > 0 && i < BUFFSIZE; i++, repetitions--)
@@ -43,23 +83,22 @@ void decodeRLE(FILE *fpRLE, FILE *fpOut, FileData *fileData){
         }
       }
     }
-    if(block != NULL && counter == block->newSize){
+    if(block != NULL && byteCounter == block->newSize){
       fprintf(stdout, "Tamanho antes/depois da descodificação RLE (bloco %d): %d/%d\n", block->blockNum + 1, block->newSize, curSize);
-      counter = 0;
+      byteCounter = 0;
       curSize = 0;
       block = block->next;
     }
+    else if(blockNum < blockTotal && byteCounter == freqSize){
+      fprintf(stdout, "Tamanho antes/depois da descodificação RLE (bloco %d): %d/%d\n", blockNum + 1, byteCounter, curSize);
+      byteCounter = 0;
+      curSize = 0;
+      blockNum++;
+      freqSize = readFreqBlockSize(fpFREQ);
+      skipsection(fpFREQ);
+    }
   }
   fwrite(buffer, 1, i, fpOut);
-}
-
-int readSection(FILE *fp, char *str){
-  int i;
-  for(i = 0; str[i-1] != '@'; i++)
-    fread(str+i, 1, 1, fp);
-  str[i-1] = '\0';
-  
-  return i;
 }
 
 void initFileData(FileData *data){
@@ -222,16 +261,22 @@ int getFreeThread(Args **ocupation){
   return -1;
 }
 
-FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
+FileData *decodeShafa(FILE *fpSF, FILE *fpOut, FileData *fileData){
   BlockData *block;
   char sectionBuffer[BUFFSIZE];
   int activeThreads = 0, id;
   Args *ocupation[NTHREADS];
-  pthread_t threads[NTHREADS];
   Args *args;
   BuffQueue *queue;
   BlockBuff *curr;
   
+  #ifdef __linux__
+    pthread_t threads[NTHREADS];
+  #endif
+  #ifdef _WIN32
+    HANDLE threads[NTHREADS];
+  #endif
+
   for(int i = 0; i < NTHREADS; i++) 
     ocupation[i] = NULL;
 
@@ -259,8 +304,12 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
       id = getFreeThread(ocupation);
       args->blockBuff->threadID = id;
       ocupation[id] = args;
-      pthread_create(&threads[id], NULL, decodeSFBlock, args);
-
+      #ifdef __linux__
+        pthread_create(&threads[id], NULL, decodeSFBlock, args);
+      #endif
+      #ifdef _WIN32
+        CreateThread(NULL, 0, decodeSFBlock, args, 0, NULL);
+      #endif
       activeThreads++;
       block = block->next;
     }
@@ -283,94 +332,94 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
 }
 
 void moduleDMain(Options *opts){
-  FILE *fpOut, *fpSF, *fpCOD, *fpRLE;
+  FILE *fpOut, *fpSF, *fpCOD, *fpRLE, *fpFREQ;
   FileData *fileData;
-  struct timespec begin, end;
-  int elapsed;
 
-  fpOut = fpSF = fpCOD = fpRLE = NULL;
+  fpOut = fpSF = fpCOD = fpRLE = fpFREQ = NULL;
 
   printf(AUTHORS);
   printf("Inicio da compressão: ");
   data();
   printf("Módulo: d (descodificação dum ficheiro shaf/rle)\n");
   
-  clock_gettime(CLOCK_MONOTONIC, &begin);
+  
 
   switch(opts->optD){
     case 's':
       fpSF = fopen(opts->fileIN, "rb");
       if(!fpSF)
-        errorOpenFile(opts->fileIN, READ, fpSF, fpRLE, fpCOD, fpOut);
+        errorOpenFile(opts->fileIN, READ, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
       fpCOD = getFile(opts->fileCOD, opts->fileIN, "rb", ".cod");
       if(!fpCOD)
-        errorOpenFile(opts->fileCOD, READ, fpSF, fpRLE, fpCOD, fpOut);
+         fpFREQ,
 
       fileData = readCOD(fpCOD);
       fpOut = getFile(opts->fileOUT, opts->fileIN, "wb", "\0");
       if(!fpOut)
-        errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+        errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
-      decodeShafa(fpSF, fpCOD, fpOut, fileData); 
+      decodeShafa(fpSF, fpOut, fileData); 
       break;
     
     case 'r':
       fpRLE = fopen(opts->fileIN, "rb");
       if(!fpRLE)
-        errorOpenFile(opts->fileRLE, READ, fpSF, fpRLE, fpCOD, fpOut);
+        errorOpenFile(opts->fileIN, READ, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
+
+      strcpy(opts->fileFREQ, opts->fileIN);
+      strcat(opts->fileFREQ, ".freq");
+      fpFREQ = fopen(opts->fileFREQ, "rb");
+      if(!fpFREQ)
+        errorOpenFile(opts->fileFREQ, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
       fpOut = getFile(opts->fileOUT, opts->fileIN, "wb", "\0");
       if(!fpOut)
-        errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+        errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
-      decodeRLE(fpRLE, fpOut, NULL);
+      decodeRLE(fpRLE, fpOut, fpFREQ, NULL);
       break;
 
     case '\0':
       fpSF = fopen(opts->fileIN, "rb");
       if (!fpSF)
-        errorOpenFile(opts->fileIN, READ, fpSF, fpRLE, fpCOD, fpOut);
+        errorOpenFile(opts->fileIN, READ, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
       fpCOD = getFile(opts->fileCOD, opts->fileIN, "rb", ".cod");
       if(!fpCOD)
-        errorOpenFile(opts->fileCOD, READ, fpSF, fpRLE, fpCOD, fpOut);
+        errorOpenFile(opts->fileCOD, READ, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
       fileData = readCOD(fpCOD);
       if(fileData->compress == RLE){
         fpRLE = getFile(opts->fileRLE, opts->fileIN, "wb+", "\0");
         if(!fpRLE)
-          errorOpenFile(opts->fileRLE, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+          errorOpenFile(opts->fileRLE, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
-        decodeShafa(fpSF, fpCOD, fpRLE, fileData); 
+        decodeShafa(fpSF, fpRLE, fileData); 
 
         fpOut = getFile(opts->fileOUT, opts->fileRLE, "wb", "\0");
         if(!fpOut)
-          errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+          errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
         fprintf(stdout, "A executar a descodifcação RLE...\n");
-        decodeRLE(fpRLE, fpOut, fileData);
+        decodeRLE(fpRLE, fpOut, NULL, fileData);
       }
 
       else {
         fpOut = getFile(opts->fileOUT, opts->fileIN, "wb", "\0");
         if(!fpOut)
-          errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpOut);
+          errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
-        decodeShafa(fpSF, fpCOD, fpOut, fileData); 
+        decodeShafa(fpSF, fpOut, fileData); 
       }
       break;
 
     default: fprintf(stderr, "Erro!! Esta opção não existe!\n");
   }
-  clock_gettime(CLOCK_MONOTONIC, &end);
-  elapsed = ((end.tv_sec - begin.tv_sec) + (end.tv_nsec - begin.tv_nsec) / BILLION) * 1000;
 
-  fprintf(stdout, "Tempo de execução do módulo (milissegundos): %d\n", elapsed);
-  fprintf(stdout, "Ficheiro gerado: %s\n", opts->fileOUT);
-
-  if(fpSF)  fclose(fpSF);
-  if(fpRLE) fclose(fpRLE);
-  if(fpCOD) fclose(fpCOD);
-  if(fpOut) fclose(fpOut);
+  if(fpSF)   fclose(fpSF);
+  if(fpRLE)  fclose(fpRLE);
+  if(fpCOD)  fclose(fpCOD);
+  if(fpFREQ) fclose(fpFREQ);
+  if(fpOut)  fclose(fpOut);
 }

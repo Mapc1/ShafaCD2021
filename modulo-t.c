@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "shafa.h"
 #include "modulo-t.h"
 
@@ -264,6 +265,7 @@ int contan ( LISTA * l ) {
 
 void moduleTMain ( char * ff ) { //ff é o nome fo ficheiro .freq que usamos como argumento.
 
+    clock_t tinicio = clock();
 /*
 @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@[frequência_símbolo_0_bloco_1]
 ;[frequência_símbolo_1_bloco_1];[…];[frequência_símbolo_255_bloco_1]@[tam_
@@ -274,6 +276,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     long long int i , ii ;                                             // índice do array frq e do final, respetivamente
     char * final = malloc ( 3 * sizeof(long long int) ) ;              // array que vai dar origem ao ficheiro cod final
     long long int sizefi = 3 ;
+    long long int B = 0 ;                                              // numero de blocos
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
     char * frq;
@@ -302,6 +305,8 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
     // este while serve para vermos um bloco de cada vez. Ele acaba quando temos "@0"
     while ( frq[i+1] != '0' ) {
+
+        B++;
 
         // avança para a informação do tamanho do bloco
         i++; ii++;
@@ -404,6 +409,13 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     escreveFile ( final ) ;
     
     free(final) ;
+
+    clock_t tfim = clock();
+
+    float ttime ;
+    ttime = ((double)(tfim - tinicio)) / CLOCKS_PER_SEC * 1000 ;
+
+    printf ("Inês Vicente, a93269, Tomás Francisco, a93193 MIEI/CD, 3-jan-2021\nMódulo: t (cálculo dos códigos dos símbolos)\nNúmero de blocos: %lld\nTamanho dos blocos analisados no ficheiro de símbolos: 57444/1620 bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: exemplo.txt.rle.cod\n", B , ttime ) ;
     
     //return cod;
     
