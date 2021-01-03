@@ -179,13 +179,9 @@ void *decodeSFBlock(void *arg){
   return arg;
 }
 
-BuffQueue *initBuffQueue(Args **ocupation, int *activeThreads, int *stopFlag, FILE *fpOut){
+BuffQueue *initBuffQueue(){
   BuffQueue *queue = malloc(sizeof(BuffQueue));
-  queue->ocupation = ocupation;
-  queue->fpOut = fpOut;
   queue->head = NULL;
-  queue->activeThreads = activeThreads;
-  queue->stopFlag = stopFlag;
   return queue;
 }
 
@@ -237,7 +233,7 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
   for(int i = 0; i < NTHREADS; i++) 
     ocupation[i] = NULL;
 
-  queue = initBuffQueue(ocupation, &activeThreads, &stopFlag, fpOut);
+  queue = initBuffQueue();
 
   fseek(fpSF,1,SEEK_SET);
   readSection(fpSF, sectionBuffer);
