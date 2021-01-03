@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "modulo-d.h"
+#include "Modulo_f/moduloF.h"
 #include "shafa.h"
 
 #ifdef __linux__
@@ -13,7 +14,7 @@
 #endif
 
 
-//#include "Modulo_f/moduloF.h"
+
 
 int initOpts(Options *opts){
   if(!opts) return 0;
