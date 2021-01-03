@@ -1,6 +1,5 @@
 #ifndef __MODULE_D__
 #define __MODULE_D__
-
 #include "shafa.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -49,6 +48,5 @@ typedef struct args{
 void moduleDMain(Options *opts);
 
 // function responsible for decoding .rle files
-void decodeRLE(FILE *fpRLE, FILE *out, FileData *fileData);
-
+void decodeRLE(FILE *fpRLE, FILE *out, FILE *fpFREQ, FileData *fileData);
 #endif //__MODULE_D__
