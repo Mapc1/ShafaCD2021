@@ -96,8 +96,9 @@ void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle, clock_t inic
 	rleEfetuado = 0;
     } else {
         double TaxaCompressao = (double) (*tamanhoRle) / (double) fInf -> tamanhoTotal;
-        printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf->nomeFicheiro, TaxaCompressao); 
-        printf("Tamanho do ficheiro RLE: %llu\n", *tamanhoRle); 
+        printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf->nomeFicheiro, (1-TaxaCompressao)*100); 
+	if (TaxaCompressao > 1) printf("(O ficheiro rle é maior que o ficheiro original)\n");   
+        printf("Tamanho do ficheiro RLE: %llu\n", *tamanhoRle);
 	rleEfetuado = 1;
     }
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);

@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 /**
  * @file moduloF.c
  * @author Miguel Martins, a93280
@@ -15,7 +11,10 @@
  * informação pertinente.
  *
  */
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include "moduloF.h"
 #include "funcoesAuxiliares.h"
 #include "processamento.h"
@@ -36,14 +35,13 @@ void moduleFMain(Options *opts){
         case 'M': tamanhoBloco = M; break;
         default : tamanhoBloco = 65536;  
     }
-
-    moduloF(opts ->fileIN, compressaoForcada, tamanhoBloco);
-    /*printf("%d\n", K);
-    printf("%d\n", opts-> optB);*/
+	
+    moduloF(opts ->fileIN, compressaoForcada, tamanhoBloco);   
     
 }
 
 int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBloco) {
+    printf("A processar...\n");
     // Início da contagem do tempo de execução
     clock_t inicio = clock();
 
@@ -57,7 +55,7 @@ int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBlo
     FILE *orig = fopen(nomeFicheiro, "rb"); // Ficheiro original
 
     unsigned long long *tamanhoRlePointer = calculoFrequencias(orig, fInf, compressaoForcada);
-    printf("Olá%p\n", tamanhoRlePointer);
+
     // Fim da contagem do tempo de execução
     clock_t fim = clock();
 
@@ -77,10 +75,7 @@ unsigned long long int *calculoFrequencias(FILE *orig, FicheiroInf fInf, char co
     static unsigned long long tamanhoRLE = 0;
     unsigned long long *tamanhoRLEPointer = &tamanhoRLE;
 
-    for(numBloco = 0; numBloco < fInf -> numBloco; numBloco++) {
-        calculoFrequenciasBloco(orig, fInf, numBloco, compressaoForcada, &tamanhoRLEPointer);
-		printf("Pointer:%p\n", tamanhoRLEPointer);    
-    }
+    for(numBloco = 0; numBloco < fInf -> numBloco; numBloco++) calculoFrequenciasBloco(orig, fInf, numBloco, compressaoForcada, &tamanhoRLEPointer);
     
     return tamanhoRLEPointer; 
 }
@@ -108,7 +103,6 @@ void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long nu
         } else {
             double TaxaCompressao = (double)**tamanhoRleAcumulado / (double)tamanhoBloco(fInf, numBloco);
             if (TaxaCompressao > 0.95) { // Nao fazemos RLE
-		printf("Nao fazemos RLE\n");
                 char *freq = nomeFicheiroExtensao(fInf->nomeFicheiro, ".freq");
                 (fInf->ficheiros)->origFreqs = fopen(freq, "w");
                 free(freq);
@@ -143,7 +137,7 @@ void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long nu
         }
         free(fInf -> ficheiros);
     }
-    printf("-------%p\n", *tamanhoRleAcumulado);
+    
     // Libertar espaço dos buffer
     free(bufferInput);
     libertarEspacoInfosBloco(infosBloco);
