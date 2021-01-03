@@ -47,6 +47,14 @@ typedef struct ficheiroInf {
     unsigned long long int numBloco; /**< Número de blocos do ficheiro. */
 } *FicheiroInf;
 
+
+typedef struct argsThread {
+    FILE *orig;
+    FicheiroInf fInf;
+    unsigned long long numBloco;
+    unsigned long long *tamanhoRleAcumulado; //se for NULL nao é feito RLE 
+} *ArgsThread;
+
 /**
  * @brief Struct com informações sobre cada bloco(informações para os ficheiros)
  *

@@ -10,7 +10,7 @@
 int main() {
     char nomeFicheiro[30] = "Shakespeare.txt"; // Argv[1] // Aumentado devido a alguns nomes dos testes
     char compressaoForcada = 0;  // 1 se quisermos forçar compressão, senão 0
-    unsigned long tamanhoBloco = 5000;//8388608;
+    unsigned long tamanhoBloco = 0;//8388608;
     moduloF(nomeFicheiro, compressaoForcada, tamanhoBloco);
     return 0;
 }

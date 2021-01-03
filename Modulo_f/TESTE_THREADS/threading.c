@@ -3,47 +3,53 @@
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
-#include "funcoesAuxiliares.h"
-#include "fsize.h"
 #include "threading.h"
+#include "funcoesAuxiliares.h"
 #include "processamento.h"
-#include "moduloF.h"
 
-
-
-//main do nosso programa
-/*
 
 int main() {
-    char nomeFicheiro[30] = "Teste/aaaa/aaaa.txt"; // Argv[1] // Aumentado devido a alguns nomes dos testes
+    char nomeFicheiro[30] = "Shakespeare.txt"; // Argv[1] // Aumentado devido a alguns nomes dos testes
     char compressaoForcada = 0;  // 1 se quisermos forçar compressão, senão 0
-    //unsigned long tamanhoBloco = 0;
-    moduloF(nomeFicheiro, compressaoForcada);
-
-
+    unsigned long tamanhoBloco = 0; //8388608;
+    moduloF(nomeFicheiro, compressaoForcada, tamanhoBloco);
     return 0;
 }
 
+int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBloco) {
+    // Início da contagem do tempo de execução
+    clock_t inicio = clock();
 
-*****************************************************************************
+    // Calculo do número de blocos
+    FicheiroInf fInf = NBlocos(nomeFicheiro, tamanhoBloco);
+    if (!fInf) {
+        printf("Erro ao abrir o ficheiro!\n"); // Caso haja erro na leitura do ficheiro original, o programa termina
+        exit(1);
+    }
+    // Abertura do ficheiro
+    FILE *orig = fopen(nomeFicheiro, "r"); // Ficheiro original
 
->Esta invoca a função moduloF;
+    unsigned long long tamanhoRle = calculoFrequenciasTHREAD(orig, fInf, compressaoForcada);
 
->moduloF invoca 2 funções:
-	>NBlocos
-    (Calculo do número de blocos)
-    >calculoFrequencias
-    (calcula as Frequencias)
-A segunda depende de informação da primeira. 
-Logo a ideia passaria por aplicar Multithreading ao cálculo das frequências
+    // Fim da contagem do tempo de execução
+    clock_t fim = clock();
 
 
-*****************************************************************************
-*/
+    // Informações a aparecer na consola:
+    infoTerminal(fInf, tamanhoRle, inicio, fim);
 
+    // Free fInf
+    freeFicheiroInf(fInf);
+
+    fclose(orig);
+    return 0;
+}
 
 //A função que é executada pela thread
 void* calculoFrequenciasBlocoTHREAD(void* argsThread){
+
+    pthread_mutex_t lock;
+
 	pthread_mutex_lock(&lock); 
 
 	//Fazer o casting dos argumentos que a Thread recebe
@@ -86,21 +92,30 @@ void* calculoFrequenciasBlocoTHREAD(void* argsThread){
     //libertarEspacoInfosBloco(infosBloco);
 
 
-    pthread_mutex_unlock(&lock)
+    pthread_mutex_unlock(&lock);
     
 }
 
 
 
-void calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForcada){
+unsigned long long int calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForcada){
     //criação do ID das threads
     pthread_t t1, t2;  //serão usadas 2 threads, uma para os blocos pares,outra para os impares
     				   //t1: ------
     				   //t2: ------
     pthread_mutex_t lock; 
+
+    unsigned long long numBloco = 0;
+    unsigned long long tamanhoRLE = 0;
+    unsigned long long *tamanhoRLEPointer = &tamanhoRLE;
     
     // se compr forçada tudo threading, senao primeiro do bloco 0 e depois do resto
     if(compressaoForcada){
+
+
+
+
+
         for(numBloco = 0; numBloco < fInf -> numBloco; numBloco = numBloco + 2) {
             //uma thread para blocos pares, outra para blocos impares
             //CUIDADO COMO JUNTO AS INFOS!!!!!
@@ -111,14 +126,12 @@ void calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForca
             argumentosPar-> orig = orig;
             argumentosPar-> fInf = fInf;
             argumentosPar-> numBloco = numBloco;
-            argumentosPar-> compressaoForcada = compressaoForcada;
-            argumentosPar-> tamanhoRleAcumulado = &tamanhoRLE;
+            argumentosPar-> tamanhoRleAcumulado = tamanhoRLEPointer;
      
             argumentosImpar-> orig = orig;
             argumentosImpar-> fInf = fInf;
             argumentosImpar-> numBloco = numBloco+1;
-            argumentosImpar-> compressaoForcada = compressaoForcada;
-            argumentosImpar-> tamanhoRleAcumulado = &tamanhoRLE;
+            argumentosImpar-> tamanhoRleAcumulado = tamanhoRLEPointer;
         
 
             pthread_create(&t1, NULL, calculoFrequenciasBlocoTHREAD, &argumentosPar);
@@ -133,7 +146,7 @@ void calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForca
     }else{
             unsigned long long numBloco = 0;
             unsigned long long tamanhoRLE = 0;
-            calculoFrequenciasBloco1(orig,fInf,numBloco,compressaoForcada,&tamanhoRleAcumulado);
+            calculoFrequenciasBloco1(orig,fInf,numBloco,compressaoForcada,&tamanhoRLEPointer);
             numBloco ++;
 
             for(numBloco = 1; numBloco < fInf -> numBloco; numBloco = numBloco + 2) {
@@ -146,14 +159,12 @@ void calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForca
             argumentosImpar-> orig = orig;
             argumentosImpar-> fInf = fInf;
             argumentosImpar-> numBloco = numBloco;
-            argumentosImpar-> compressaoForcada = compressaoForcada;
-            argumentosImpar-> tamanhoRleAcumulado = &tamanhoRLE;
+            argumentosImpar-> tamanhoRleAcumulado = tamanhoRLEPointer;
      
             argumentosPar-> orig = orig;
             argumentosPar-> fInf = fInf;
             argumentosPar-> numBloco = numBloco+1;
-            argumentosPar-> compressaoForcada = compressaoForcada;
-            argumentosPar-> tamanhoRleAcumulado = &tamanhoRLE;
+            argumentosPar-> tamanhoRleAcumulado = tamanhoRLEPointer;
         
 
             pthread_create(&t1, NULL, calculoFrequenciasBlocoTHREAD, &argumentosImpar);
@@ -170,6 +181,7 @@ void calculoFrequenciasTHREAD(FILE *orig, FicheiroInf fInf, char compressaoForca
     }
 
     pthread_mutex_destroy(&lock);
+    return tamanhoRLE;
 
 }
 
