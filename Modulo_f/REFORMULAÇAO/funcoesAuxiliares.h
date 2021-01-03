@@ -63,80 +63,83 @@ typedef struct infosBloco {
 } *InfosBloco;
 
 /**
- * @brief .
- * @param
- * @param
+ * @brief Função que cria uma string com a extensão concatenada ao nome do ficheiro.
+ * @param String com o nome do ficheiro.
+ * @param String com o tipo da extensão.
  * 
  */
 char *nomeFicheiroExtensao(char *nomeFicheiro, char *extensao);
 
 /**
- * @brief .
- * @param
- * @param
+ * @brief Função que gera a struct com a informação do ficheiro original.
+ * @param nomeFicheiro String com o nome do ficheiro.
+ * @param tamanhoBloco Tamanho que cada bloco(excluindo o último) vai ter.
+ * @return Struct com as informações do ficheiro original.
  *
  */
 FicheiroInf NBlocos(char *nomeFicheiro, unsigned long int tamanhoBloco);
 
 /**
- * @brief .
- * @param
- * @param
+ * @brief Função que calculo o tamanho de um bloco.
+ * @param Struct com as Informações sobre o ficheiro original.
+ * @param numBloco O número do bloco do qual se está a ver o tamanho.
+ * @return O tamanho do bloco analisado.
  * 
  */
 unsigned long int tamanhoBloco(FicheiroInf fInf, unsigned long long numBloco);
 
 /**
- * @brief .
- * @param
- * @param
+ * @brief Função que passa a informação de um bloco do ficheiro para um buffer de unsigned chars.
+ * @param f Apontador para o ficheiro.
+ * @param tamanhoBloco O tamanho solicitado para os blocos
+ * @return Array com a informação.
  */
 Byte *leituraFicheiro(FILE *f, unsigned long int tamanhoBloco);
 
 /**
- * @brief .
- * @param
- * @param
- * @param
+ * @brief Função que escreve num ficheiro o buffer.
+ * @param f Apontador para o ficheiro.
+ * @param buffer O buffer.
+ * @param tamanho Tamanho do buffer
  * 
  */
 void escritaFicheiro(FILE *f, Byte *buffer, unsigned long int tamanho);
 
 /**
- * @brief .
- * @param
+ * @brief Função que apaga a struct com as informações dos buffers de um bloco.
+ * @param infosBloco Struct com o buffers e tamanho dos mesmos, a ser apagada.
  * 
  */
 void libertarEspacoInfosBloco (InfosBloco infosBloco);
 
 
 /**
- * @brief .
- * @param 
+ * @brief Função que apaga a struct com a informação do ficheiro original.
+ * @param fInf Struct a ser apagada.
  *
  */
 void freeFicheiroInf(FicheiroInf fInf);
 
 /**
- * @brief .
+ * @brief Função que calcula o dia em que o programa é executado.
  * 
  */
 void data();
 
 /**
- * @brief .
- * @param
- * @param
+ * @brief Função que escreverá no terminal os ficheiros que foram gerados.
+ * @param fInf Struct com informações sobre o ficheiro original.
+ * @param RleEfetuado Para saber se o RleEfetuado.
  *
  */
 void ficheiros_gerados(FicheiroInf fInf, unsigned char RleEfetuado);
 
 /**
- * @brief .
- * @param
- * @param
- * @param
- * @param
+ * @brief Função para escrever no terminal a informação geral sobre o Módulo.
+ * @param fInf Struct com a informação do ficheiro original.
+ * @param tamanhoRle Tamanho do ficheiro RLE.
+ * @param inicio Para saber o inicio do Clock.
+ * @param fim Para saber o fim do Clock.
  *
  */
 void infoTerminal(FicheiroInf fInf,unsigned long long tamanhoRle, clock_t inicio, clock_t fim);

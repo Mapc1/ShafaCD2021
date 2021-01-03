@@ -103,6 +103,6 @@ void infoTerminal(FicheiroInf fInf,unsigned long long tamanhoRle, clock_t inicio
         else printf("Tamanho do bloco analisado no ficheiro RLE: %llu\n", tamanhoRle); //RleInf -> tamanhoUltimoBlocoRle);
     }
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
-    printf("Ficheiros gerados: ");
+    printf("Ficheiros gerados: ");    
     ficheiros_gerados(fInf, tamanhoRle);
 }
