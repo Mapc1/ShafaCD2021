@@ -120,11 +120,6 @@ void libertarEspacoInfosBloco (InfosBloco infosBloco);
  */
 void freeFicheiroInf(FicheiroInf fInf);
 
-/**
- * @brief Função que calcula o dia em que o programa é executado.
- * 
- */
-void data();
 
 /**
  * @brief Função que escreverá no terminal os ficheiros que foram gerados.
