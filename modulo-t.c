@@ -283,7 +283,7 @@ long long int counti (long long int i , char * a ) {
     return i ;
 }
 
-int contan ( LISTA * l ) {
+int countn ( LISTA * l ) {
     LISTA t = *l ;
     int n = 0 ;
 
@@ -360,7 +360,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         MergeSort ( &l , 1 ) ;
 
         int n ;
-        n = contan ( &l ) ;
+        n = countn ( &l ) ;
 
         // atribuir códigos Shannon-Fannon aos símbolos
         ShannonFannon ( &l , 0 , (n-1) ) ;
