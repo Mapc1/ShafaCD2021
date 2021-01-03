@@ -42,7 +42,7 @@ void decodeRLE(FILE *fpRLE, FILE *fpOut, FileData *fileData){
       }
     }
     if(block != NULL && counter == block->newSize){
-      fprintf(stdout, "Tamanho antes/depois a descodificação RLE (bloco %d): %d/%d\n", block->blockNum + 1, block->newSize, curSize);
+      fprintf(stdout, "Tamanho antes/depois da descodificação RLE (bloco %d): %d/%d\n", block->blockNum + 1, block->newSize, curSize);
       counter = 0;
       curSize = 0;
       block = block->next;
@@ -224,29 +224,10 @@ int getFreeThread(Args **ocupation){
   return -1;
 }
 
-void *writeBlock(void *voidQueue){
-  BuffQueue *queue = (BuffQueue *) voidQueue;
-  while(1){
-      if(queue->head != NULL && queue->head->ready){
-        fprintf(stdout, "Tamanho antes/depois da descodificação Shanon-Fano (bloco %d): %d/%d\n",
-                queue->ocupation[queue->head->threadID]->block->blockNum + 1,
-                queue->ocupation[queue->head->threadID]->block->oldSize,
-                queue->ocupation[queue->head->threadID]->block->newSize
-                );
-        fwrite(queue->head->decoded, 1, queue->head->blockSize, queue->fpOut);
-        free(queue->ocupation[queue->head->threadID]);
-        queue->ocupation[queue->head->threadID] = NULL;
-        clearHead(queue);
-        *(queue->activeThreads) -= 1;
-      }
-    }
-  return queue;
-}
-
 FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
   BlockData *block;
   char sectionBuffer[BUFFSIZE];
-  int activeThreads = 0, stopFlag = 0;
+  int activeThreads = 0, id;
   Args *ocupation[NTHREADS];
   pthread_t threads[NTHREADS];
   Args *args;
@@ -262,10 +243,8 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
   readSection(fpSF, sectionBuffer);
 
   block = fileData->first;
-  pthread_create(&threads[0], NULL, writeBlock, queue);
-  activeThreads++;
 
-  while(block != NULL || activeThreads > 1){
+  while(block != NULL || activeThreads > 0){
     while(activeThreads < NTHREADS - 1 && block != NULL){
       args = malloc(sizeof(Args));
       args->block = block;
@@ -279,22 +258,31 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpCOD, FILE *fpOut, FileData *fileData){
       fread(curr->buffer, 1, args->block->oldSize, fpSF);
       fseek(fpSF, 1, SEEK_CUR);
 
-      args->blockBuff->threadID = getFreeThread(ocupation);
-      ocupation[args->blockBuff->threadID] = args;
-      pthread_create(&threads[args->blockBuff->threadID], NULL, decodeSFBlock, args);
+      id = getFreeThread(ocupation);
+      args->blockBuff->threadID = id;
+      ocupation[id] = args;
+      pthread_create(&threads[id], NULL, decodeSFBlock, args);
 
       activeThreads++;
       block = block->next;
     }
+    if(queue->head != NULL && queue->head->ready){
+      id = queue->head->threadID;
+      fprintf(stdout, "Tamanho antes/depois da descodificação Shanon-Fano (bloco %d): %d/%d\n",
+              ocupation[id]->block->blockNum + 1,
+              ocupation[id]->block->oldSize,
+              ocupation[id]->block->newSize
+              );
+      fwrite(queue->head->decoded, 1, queue->head->blockSize, fpOut);
+      free(ocupation[id]);
+      ocupation[id] = NULL;
+      clearHead(queue);
+      activeThreads--;
+    }
   }
-  stopFlag = 1;
   free(queue);
   return fileData;
 }
-
-
-
-
 
 void moduleDMain(Options *opts){
   FILE *fpOut, *fpSF, *fpCOD, *fpRLE;
@@ -352,7 +340,7 @@ void moduleDMain(Options *opts){
 
       fileData = readCOD(fpCOD);
       if(fileData->compress == RLE){
-        fpRLE = getFile(opts->fileRLE, opts->fileIN, "rb+", "\0");
+        fpRLE = getFile(opts->fileRLE, opts->fileIN, "wb+", "\0");
         if(!fpRLE)
           errorOpenFile(opts->fileRLE, WRITE, fpSF, fpRLE, fpCOD, fpOut);
 
