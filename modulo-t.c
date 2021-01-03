@@ -398,7 +398,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     ii++;
     final[ii] = '0';
 
-    //printf("6.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii] , final ) ;
+    printf("6.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii] , final ) ;
 
     //função que transforma o array de chars que temos num ficheiro
     escreveFile ( final ) ;
@@ -411,7 +411,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
 
 int main() {
-    char * ff = "bbb.zip(1).freq" ;
+    char * ff = "bbb.zip.freq" ;
 
     moduleTMain ( ff ) ;
 
