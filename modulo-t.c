@@ -258,7 +258,7 @@ int countn ( LISTA * l ) {
     LISTA t = *l ;
     int n = 0 ;
 
-    for ( ; (t->frequ) != 0 && n < 226 ; n++ , t = t->prox ) ;
+    for ( ; (t->frequ) != 0 && n < 255 ; n++ , t = t->prox ) ;
 
     return n;
 }
@@ -334,7 +334,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         l = metenalista ( arr , l ) ;
 
         free (arr) ;
-        
+
         // fazer uma ordenação eficiente da lista através das frequências
         MergeSort ( &l , 1 ) ;
 
@@ -342,7 +342,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         n = countn ( &l ) ;
 
         // atribuir códigos Shannon-Fannon aos símbolos
-        ShannonFannon ( &l , 0 , (n-1) ) ;
+        ShannonFannon ( &l , 0 , n ) ;
         
         // ordenar a lista em função dos simbolos
         MergeSort ( &l , 2 ) ;
@@ -403,7 +403,7 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     ii++;
     final[ii] = '0';
 
-    printf("6.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii] , final ) ;
+    //printf("6.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii] , final ) ;
 
     //função que transforma o array de chars que temos num ficheiro
     escreveFile ( final ) ;
