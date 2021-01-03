@@ -68,7 +68,8 @@ typedef struct infosBloco {
  * @brief Função que cria uma string com a extensão concatenada ao nome do ficheiro.
  * @param String com o nome do ficheiro.
  * @param String com o tipo da extensão.
- * 
+ * @return Nova string com a extensão concatenada. 
+ *
  */
 char *nomeFicheiroExtensao(const char *nomeFicheiro,const char *extensao);
 

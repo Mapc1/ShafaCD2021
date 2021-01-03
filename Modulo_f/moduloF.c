@@ -2,6 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+/**
+ * @file moduloF.c
+ * @author Miguel Martins, a93280
+ * @author Gonçalo Rodrigues, a93286
+ * @date 2 janeiro 2021
+ * @brief Ficheiro que contém as funções principais do nosso módulo.
+ *
+ * A funções deste ficheiro usam, principalmente, funções do
+ * processamento para gerar os ficheiros necessários do
+ * nosso módulo, bem como para imprimir no terminal a
+ * informação pertinente.
+ *
+ */
+
 #include "moduloF.h"
 #include "funcoesAuxiliares.h"
 #include "processamento.h"
