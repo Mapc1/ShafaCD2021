@@ -22,8 +22,25 @@
 #include "../shafa.h"
 
 
-void moduleFMain(Options *opts) {
-    moduloF(opts -> fileIN, opts -> optC, opts -> optB);
+void moduleFMain(Options *opts){
+    int tamanhoBloco;
+
+    int compressaoForcada; 
+
+    if(opts->optC == 'r') compressaoForcada = 1;
+    else compressaoForcada = 0;
+
+    switch(opts->optB){
+        case 'K': tamanhoBloco = K; break;
+        case 'm': tamanhoBloco = m; break;
+        case 'M': tamanhoBloco = M; break;
+        default : tamanhoBloco = 0;  
+    }
+
+    moduloF(opts ->fileIN, compressaoForcada, tamanhoBloco);
+    /*printf("%d\n", K);
+    printf("%d\n", opts-> optB);*/
+    
 }
 
 int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBloco) {

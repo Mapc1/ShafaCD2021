@@ -95,8 +95,7 @@ void infoTerminal(FicheiroInf fInf,unsigned long long tamanhoRle, clock_t inicio
     } else {
         double TaxaCompressao = (double) (tamanhoRle) / (double) fInf -> tamanhoTotal;
         printf("Compressão RLE: %s.rle (%lf%% compressão)\n", fInf->nomeFicheiro, (TaxaCompressao > 1 ? 0 : ((1 - TaxaCompressao) * 100)));
-        if (fInf -> numBloco > 1) printf("Tamanho dos blocos analisados no ficheiro RLE: %llu\n", tamanhoRle);//RleInf -> tamanhoBlocoRleAcumulado, RleInf -> tamanhoUltimoBlocoRle);
-        else printf("Tamanho do bloco analisado no ficheiro RLE: %llu\n", tamanhoRle); //RleInf -> tamanhoUltimoBlocoRle);
+        printf("Tamanho do ficheiro RLE: %llu\n", tamanhoRle); 
     }
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
     printf("Ficheiros gerados: ");    
