@@ -49,7 +49,7 @@ long long int * freqread ( char * aa ) ;
 
 long long int counti (long long int i , char * a ) ;
 
-int contan ( LISTA * l ) ;
+int countn ( LISTA * l ) ;
 
 void moduleTMain ( char * ff ) ;
 
