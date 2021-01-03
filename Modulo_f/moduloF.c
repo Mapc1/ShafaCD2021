@@ -34,7 +34,7 @@ void moduleFMain(Options *opts){
         case 'K': tamanhoBloco = K; break;
         case 'm': tamanhoBloco = m; break;
         case 'M': tamanhoBloco = M; break;
-        default : tamanhoBloco = 0;  
+        default : tamanhoBloco = 65536;  
     }
 
     moduloF(opts ->fileIN, compressaoForcada, tamanhoBloco);
@@ -57,7 +57,7 @@ int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBlo
     FILE *orig = fopen(nomeFicheiro, "rb"); // Ficheiro original
 
     unsigned long long *tamanhoRlePointer = calculoFrequencias(orig, fInf, compressaoForcada);
-    printf("%lln\n", tamanhoRlePointer);
+    printf("Olá%p\n", tamanhoRlePointer);
     // Fim da contagem do tempo de execução
     clock_t fim = clock();
 
@@ -79,9 +79,10 @@ unsigned long long int *calculoFrequencias(FILE *orig, FicheiroInf fInf, char co
 
     for(numBloco = 0; numBloco < fInf -> numBloco; numBloco++) {
         calculoFrequenciasBloco(orig, fInf, numBloco, compressaoForcada, &tamanhoRLEPointer);
+		printf("Pointer:%p\n", tamanhoRLEPointer);    
     }
-    printf("Pointer:%p", tamanhoRLEPointer);
-    return &tamanhoRLE;
+    
+    return tamanhoRLEPointer; 
 }
 
 
@@ -142,7 +143,7 @@ void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long nu
         }
         free(fInf -> ficheiros);
     }
-    printf("TAMAMAMAMAM%p", *tamanhoRleAcumulado);
+    printf("-------%p\n", *tamanhoRleAcumulado);
     // Libertar espaço dos buffer
     free(bufferInput);
     libertarEspacoInfosBloco(infosBloco);

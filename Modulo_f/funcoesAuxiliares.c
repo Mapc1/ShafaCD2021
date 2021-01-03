@@ -84,8 +84,6 @@ void ficheiros_gerados(FicheiroInf fInf, Byte RleEfetuado) {
 }
 
 void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle, clock_t inicio, clock_t fim) {
-    printf("\n%p\n", tamanhoRle);
-    printf("\n%lld\n", *tamanhoRle);
     printf("Miguel Martins, a93280, Gonçalo Soares, a93286, MIEI/CD, ");
     data();
     printf("Módulo: f (Cálculo das frequências dos símbolos)\n");
@@ -104,6 +102,5 @@ void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle, clock_t inic
     }
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
     printf("Ficheiros gerados: ");    
-    printf("%u\n", rleEfetuado);
     ficheiros_gerados(fInf, rleEfetuado);
 }
