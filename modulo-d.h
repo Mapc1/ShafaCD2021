@@ -37,7 +37,7 @@ typedef struct blockBuff {
 
 typedef struct buffQueue {
   struct args **ocupation;
-  FILE *fout;
+  FILE *fpOut;
   int *activeThreads, *stopFlag;
   BlockBuff *head;
 } BuffQueue;
