@@ -27,8 +27,10 @@ void decodeRLE(FILE *fpRLE, FILE *fpOut, FileData *fileData){
     if (writeFlag){
       counter++;
       repetitions = 1;
-      if(symbol == 0)
+      if(symbol == 0){
         readRLECode(fpRLE, &symbol, &repetitions);
+        counter += 2;
+      }
       curSize += repetitions;
       for(; repetitions > 0 && i < BUFFSIZE; i++, repetitions--)
         buffer[i] = symbol;
