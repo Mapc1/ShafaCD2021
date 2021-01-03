@@ -54,7 +54,7 @@ void moduleFMain(Options *opts);
  * @return O tamanho do ficheiro RLE.
  *
  */
-unsigned long long int calculoFrequencias(FILE *orig, FicheiroInf fInf, char compressaoForcada);
+unsigned long long int *calculoFrequencias(FILE *orig, FicheiroInf fInf, char compressaoForcada);
 
 /**
  * @brief Função que realmente processa a informação da nossa "main".
