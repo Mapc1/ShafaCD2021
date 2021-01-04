@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "modulo-d.h"
+//#include "Modulo_f/moduloF.h"
 #include "shafa.h"
 
 #ifdef __linux__
@@ -13,7 +14,7 @@
 #endif
 
 
-//#include "Modulo_f/moduloF.h"
+
 
 int initOpts(Options *opts){
   if(!opts) return 0;
@@ -115,9 +116,20 @@ char *removeSufix(char *dest, char *src){
   return dest;
 }
 
+void addFilesCreated(FileCreated **fileCreated, char *newFile){
+  while(*fileCreated != NULL)
+    fileCreated = &((*fileCreated)->next);
+
+  *fileCreated = malloc(sizeof(FileCreated));
+  strcpy((*fileCreated)->fileName, newFile);
+  (*fileCreated)->next = NULL;
+}
+
 int main(int argc, char *argv[]){
   Options *opts;
+  FileCreated *list = NULL, *tmp = NULL;
   int elapsed;
+
 
   #ifdef __linux__
     struct timespec begin, end;
@@ -135,9 +147,9 @@ int main(int argc, char *argv[]){
 
   if(argc == 1) fprintf(stdout, HELP);
   opts = getOpts(argc, argv);
-  if(opts->modF) moduleFMain(opts);
+  if(opts->modF) moduleFMain(opts, &list);
   //if(modT)
-  if(opts->modD) moduleDMain(opts);
+  if(opts->modD) moduleDMain(opts, &list);
   //if(modC)
   
   #ifdef __linux__
@@ -151,7 +163,13 @@ int main(int argc, char *argv[]){
   #endif
   
   fprintf(stdout, "Tempo de execução do módulo (milissegundos): %d\n", elapsed);
-  fprintf(stdout, "Ficheiro gerado: %s\n", opts->fileOUT);
+  fprintf(stdout, "Ficheiro gerado(s):");
+  while(list != NULL){
+    fprintf(stdout, " %s", list->fileName);
+    tmp = list;
+    list = list->next;
+    free(tmp);
+  }
   free(opts);
   return 0;
 }
