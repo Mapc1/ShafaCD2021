@@ -41,9 +41,7 @@ void moduleFMain(Options *opts, FileCreated **list){
 }
 
 int moduloF(char *nomeFicheiro, char *nomeFicheiroSaida, FileCreated **list, char compressaoForcada, unsigned long tamanhoBloco) {
-    printf("A processar...\n");
-    // Início da contagem do tempo de execução
-    clock_t inicio = clock();
+    printf("A processar...\n"); 
 
     // Calculo do número de blocos
     FicheiroInf fInf = NBlocos(nomeFicheiro, nomeFicheiroSaida, tamanhoBloco);
@@ -56,11 +54,8 @@ int moduloF(char *nomeFicheiro, char *nomeFicheiroSaida, FileCreated **list, cha
 
     unsigned long long *tamanhoRlePointer = calculoFrequencias(orig, fInf, compressaoForcada);
  
-    // Fim da contagem do tempo de execução
-    clock_t fim = clock();
-
     // Informações a aparecer na consola:
-    infoTerminal(fInf, tamanhoRlePointer, inicio, fim);
+    infoTerminal(fInf, tamanhoRlePointer);
 
     // Ficheiros gerados
     ficheiros_gerados(fInf, tamanhoRlePointer, list);

@@ -46,7 +46,7 @@ typedef struct ficheiroInf {
     Fic ficheiros; /**< Struct com os ficheiros gerados. */
     unsigned long long int tamanhoTotal; /**< Tamanho total do ficheiro(em Bytes). */
     unsigned long int tamanhoBloco; /**< Tamanho de todos os blocos antes do último. */
-    long int tamanhoUltimoBloco; /**< Tamanho do último bloco. */
+    unsigned long int tamanhoUltimoBloco; /**< Tamanho do último bloco. */
     unsigned long long int numBloco; /**< Número de blocos do ficheiro. */
 } *FicheiroInf;
 
@@ -141,6 +141,6 @@ void ficheiros_gerados(FicheiroInf fInf, unsigned long long *RleEfetuado, FileCr
  * @param fim Para saber o fim do Clock.
  *
  */
-void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle, clock_t inicio, clock_t fim);
+void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle);
 
 #endif //MODULO_F_FUNCOESAUXILIARES_H
