@@ -227,15 +227,13 @@ unsigned long long int tamanho_ficheiro(char * nome)
 
 
 int moduleCMain (Options * opts, FileCreated **list) {
-    printf ("Ola\n");
-    clock_t inicio = clock();
-	FILE *fp, *fptr, *fpOrigi;
+    	FILE *fp, *fptr, *fpOrigi;
     //int valoresLidos = 257;
     int tam_bloc;
     int *cod[VALORES_ASCII];
    // int i;
     char *ficheiro_cod = nomeFicheiroExtensao(opts->fileIN, ".cod");
-	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf1"),"wb")) == NULL){
+	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf"),"wb")) == NULL){
        printf("Error! opening file");
        return 0;
     }
@@ -246,6 +244,7 @@ int moduleCMain (Options * opts, FileCreated **list) {
         char tipo;
         unsigned long long int tam_ficheiro_cod = tamanho_ficheiro(ficheiro_cod);
         if ((fp = fopen(ficheiro_cod, "r+")) == NULL)  printf("Error! opening file");         // Program exits if file pointer returns NULL.
+        strcpy((*list)->fileName, nomeFicheiroExtensao(opts->fileIN, ".shaf"));
         int bloco_atual = 0;
 		fscanf(fp, "@%c", &tipo);
 		int num_blocos;	
@@ -265,13 +264,10 @@ int moduleCMain (Options * opts, FileCreated **list) {
                        for (blocoMTAtual = 0; blocoMTAtual < num_blocos; blocoMTAtual++, bloco_atual++) { 
                            int size = 10;
                             int tamanhoBlocoMTAtual = tamanhos_cod[bloco_atual];
-                            printf ("%d %d\n", tamanhos_cod [0], tamanhos_cod[1]);
                             unsigned char *buffer= malloc ((tamanhoBlocoMTAtual + size)* sizeof(char));
                             fread(buffer, sizeof(char), tamanhoBlocoMTAtual, fpOrigi);
-                            printf ("TAMANHO -> %d\n",tamanhoBlocoMTAtual );
                             buffer[tamanhoBlocoMTAtual] = '\0';
                             char *arr_final = malloc ((tamanhoBlocoMTAtual ) * sizeof(char));
-                            printf ("AQUI!\n");
                             char fim = '?';
 
                             teste[blocoMTAtual].fim_cod = &fim;
@@ -280,7 +276,6 @@ int moduleCMain (Options * opts, FileCreated **list) {
                             teste[blocoMTAtual].arr_final = arr_final;
                             teste[blocoMTAtual].bloco_atual = bloco_atual;
                             teste[blocoMTAtual].buffer_cod = arr_cods[bloco_atual];
-                            printf ("MT / bloco atual/  MT_final: %d %d %d  \n",   num_blocos_MT, bloco_atual,num_blocos_MT_fim );
                             }
                  
                    for (bloco_atual = 0,blocoMTAtual = 0; blocoMTAtual < num_blocos;){
@@ -298,8 +293,7 @@ int moduleCMain (Options * opts, FileCreated **list) {
                    }
                     bloco_atual+= num_blocos_MT-1;
     }
-    clock_t fim = clock();
-    printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
+    printf ("\n");
     return 0;
 }
 void infoTerminalINI(int num_blocs) {
@@ -308,10 +302,7 @@ void infoTerminalINI(int num_blocs) {
     printf("Diogo Pires, a93308, Jorge Melo, a93286, MIEI/CD, ");
     printf ("Número de blocos : %d\n", num_blocs);
     data();
-  //  printf("Módulo: c (Módulo para codificação do ficheiro original/RLE)\n");
-  //  printf("Número de blocos: %d  \n", num_blocos);
         
 }
-
 
 #endif
