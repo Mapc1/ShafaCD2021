@@ -227,9 +227,7 @@ unsigned long long int tamanho_ficheiro(char * nome)
 
 
 int moduleCMain (Options * opts, FileCreated **list) {
-    printf ("Ola\n");
-    clock_t inicio = clock();
-	FILE *fp, *fptr, *fpOrigi;
+    	FILE *fp, *fptr, *fpOrigi;
     //int valoresLidos = 257;
     int tam_bloc;
     int *cod[VALORES_ASCII];
@@ -298,8 +296,6 @@ int moduleCMain (Options * opts, FileCreated **list) {
                    }
                     bloco_atual+= num_blocos_MT-1;
     }
-    clock_t fim = clock();
-    printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
     return 0;
 }
 void infoTerminalINI(int num_blocs) {
@@ -308,8 +304,6 @@ void infoTerminalINI(int num_blocs) {
     printf("Diogo Pires, a93308, Jorge Melo, a93286, MIEI/CD, ");
     printf ("Número de blocos : %d\n", num_blocs);
     data();
-  //  printf("Módulo: c (Módulo para codificação do ficheiro original/RLE)\n");
-  //  printf("Número de blocos: %d  \n", num_blocos);
         
 }
 
