@@ -261,7 +261,7 @@ unsigned long long int tamanho_ficheiro(char * nome)
     printf("Aqui\n \n \n");
     return total;*/ 
     int tam = 0;
-    char c; 
+    //char c; 
     FILE* fp = fopen(nome, "rb");
     while (!feof(fp))
         {
