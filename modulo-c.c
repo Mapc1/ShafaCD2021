@@ -313,5 +313,4 @@ void infoTerminalINI(int num_blocs) {
         
 }
 
-
 #endif
