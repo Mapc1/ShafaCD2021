@@ -110,7 +110,7 @@ int melhordivisao ( LISTA * l , int ai , int af ) {
         LISTA t = *l ;
         for ( i = 0 ; i < dv ; i++ , t = t->prox ) ;
         g1 = g1 + t->frequ ;
-        dif = abs( 2 * g1 - total ) ;
+        dif = llabs( 2 * g1 - total ) ;
         if ( dif <= mindif ) {
             dv++ ;
             mindif = dif ;
