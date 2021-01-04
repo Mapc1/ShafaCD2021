@@ -28,7 +28,14 @@ struct thread_data{
     int bloco_atual;
 } ;
 */
+char *nomeFicheiroExtensao(const char *nomeFicheiro, const char *extensao) {
+    size_t length = strlen(nomeFicheiro) + strlen(extensao) + 1;
+    char *concat = malloc(sizeof(char) * length);
+    if (!concat) return NULL; // Malloc error
+    snprintf(concat, length, "%s%s", nomeFicheiro, extensao);
 
+    return concat;
+}
 //Converte [01110101101] num valor entre 0 e 257
 char converte_Para_Byte (char *byte) {
     unsigned char devolve = 0;
