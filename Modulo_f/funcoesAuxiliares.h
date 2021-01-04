@@ -5,7 +5,7 @@
  * @date 2 janeiro 2021
  * @brief Ficheiro que contém as funções e structs auxiliares.
  *
- * A funções deste ficheiro são funções que não interferem com o
+ * A funções deste ficheiro são funções que não interferem diretamente com o
  * processamento da informação dos ficheiros, sendo funções
  * que ajudam na correta execução do programa.
  * Neste grupo de funções, temos, por exemplo, funções que gerem a 
