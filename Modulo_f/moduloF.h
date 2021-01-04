@@ -42,6 +42,7 @@
 /**
  * @brief Função "main" do módulo f.
  * @param opts Apontador para a struct com as informações necessárias para executar o módulo.
+ * @param list Apontador para o apontador de uma lista ligada que posteriormente vai imprimir os ficheiros gerados.
  * 
  */
 void moduleFMain(Options *opts, FileCreated **list);
@@ -59,6 +60,8 @@ unsigned long long int *calculoFrequencias(FILE *orig, FicheiroInf fInf, char co
 /**
  * @brief Função que realmente processa a informação da nossa "main".
  * @param nomeFicheiro Nome do ficheiro a ser processado.
+ * @param nomeFicheiroSaida Nome do ficheiro de saída
+ * @param list Apontador para o apontador de uma lista ligada que posteriormente vai imprimir os ficheiros gerados.
  * @param compressaoForcada Para saber se a compressão foi ou não forçada.
  * @param tamanhoBloco O tamanho que terão os blocos, aquando da divisão do ficheiro.
  * @return 0 se foi executada até ao final.
