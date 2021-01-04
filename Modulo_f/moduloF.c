@@ -36,17 +36,17 @@ void moduleFMain(Options *opts){
         default : tamanhoBloco = 65536;  
     }
 	
-    moduloF(opts ->fileIN, compressaoForcada, tamanhoBloco);   
+    moduloF(opts -> fileIN, opts -> fileOUT, compressaoForcada, tamanhoBloco);   
     
 }
 
-int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBloco) {
+int moduloF(char *nomeFicheiro, char *nomeFicheiroSaida, char compressaoForcada, unsigned long tamanhoBloco) {
     printf("A processar...\n");
     // Início da contagem do tempo de execução
     clock_t inicio = clock();
 
     // Calculo do número de blocos
-    FicheiroInf fInf = NBlocos(nomeFicheiro, tamanhoBloco);
+    FicheiroInf fInf = NBlocos(nomeFicheiro, nomeFicheiroSaida, tamanhoBloco);
     if (!fInf) {
         printf("Erro ao abrir o ficheiro!\n"); // Caso haja erro na leitura do ficheiro original, o programa termina
         exit(1);
@@ -55,7 +55,7 @@ int moduloF(char *nomeFicheiro, char compressaoForcada, unsigned long tamanhoBlo
     FILE *orig = fopen(nomeFicheiro, "rb"); // Ficheiro original
 
     unsigned long long *tamanhoRlePointer = calculoFrequencias(orig, fInf, compressaoForcada);
-
+ 
     // Fim da contagem do tempo de execução
     clock_t fim = clock();
 
@@ -89,13 +89,13 @@ void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long nu
     // Calculamos as frequências do rle ou do original?
     // Calculamos a compressão rle do primeiro bloco
     // Se tamanhoBlocoRle / tamanhoBlocoOriginal < 0.95, efetuamos a compressao rle
-
+    //
     // Primeiro bloco
     if (!numBloco) {
         infosBloco = processamento(bufferInput, fInf, numBloco, *tamanhoRleAcumulado);
         if (compressaoForcada) {
-            char *rle = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle");
-            char *rlefreq = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle.freq");
+            char *rle = nomeFicheiroExtensao(fInf -> nomeFicheiroSaida, ".rle");
+            char *rlefreq = nomeFicheiroExtensao(fInf -> nomeFicheiroSaida, ".rle.freq");
             (fInf -> ficheiros) -> rle = fopen(rle, "wb");
             (fInf -> ficheiros) -> rleFreqs = fopen(rlefreq, "w");
             free(rle);
@@ -103,14 +103,14 @@ void calculoFrequenciasBloco(FILE *orig, FicheiroInf fInf, unsigned long long nu
         } else {
             double TaxaCompressao = (double)**tamanhoRleAcumulado / (double)tamanhoBloco(fInf, numBloco);
             if (TaxaCompressao > 0.95) { // Nao fazemos RLE
-                char *freq = nomeFicheiroExtensao(fInf->nomeFicheiro, ".freq");
+                char *freq = nomeFicheiroExtensao(fInf->nomeFicheiroSaida, ".freq");
                 (fInf->ficheiros)->origFreqs = fopen(freq, "w");
                 free(freq);
                 *tamanhoRleAcumulado = NULL;
                 infosBloco = processamento(bufferInput, fInf, numBloco, *tamanhoRleAcumulado);
             } else {
-                char *rle = nomeFicheiroExtensao(fInf->nomeFicheiro, ".rle");
-                char *rlefreq = nomeFicheiroExtensao(fInf->nomeFicheiro, ".rle.freq");
+                char *rle = nomeFicheiroExtensao(fInf->nomeFicheiroSaida, ".rle");
+                char *rlefreq = nomeFicheiroExtensao(fInf->nomeFicheiroSaida, ".rle.freq");
                 (fInf->ficheiros)->rle = fopen(rle, "wb");
                 (fInf->ficheiros)->rleFreqs = fopen(rlefreq, "w");
                 free(rle);

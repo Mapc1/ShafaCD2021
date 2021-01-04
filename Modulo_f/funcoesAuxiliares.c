@@ -31,10 +31,11 @@ char *nomeFicheiroExtensao(const char *nomeFicheiro, const char *extensao) {
     return concat;
 }
 
-FicheiroInf NBlocos(char *nomeFicheiro, unsigned long int tamanhoBloco) { // TamanhoBloco vem em Bytes!!!
+FicheiroInf NBlocos(char *nomeFicheiro, char *nomeFicheiroSaida, unsigned long int tamanhoBloco) { // TamanhoBloco vem em Bytes!!!
     FicheiroInf fInf = malloc(sizeof(struct ficheiroInf));
-    fInf -> tamanhoBloco = tamanhoBloco;
     fInf -> nomeFicheiro = nomeFicheiro;
+    fInf -> nomeFicheiroSaida = (!strlen(nomeFicheiroSaida)) ? nomeFicheiro:nomeFicheiroSaida;
+    fInf -> tamanhoBloco = tamanhoBloco;
     long long returnFSize = fsize(NULL, (unsigned char*)nomeFicheiro, &(fInf -> tamanhoBloco), &(fInf -> tamanhoUltimoBloco));
     if (returnFSize < 0) { // Erro na fsize
         free(fInf);
@@ -73,9 +74,9 @@ void freeFicheiroInf(FicheiroInf fInf) {
 
 
 void ficheiros_gerados(FicheiroInf fInf, Byte RleEfetuado) {
-    char *freqs_Original = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".freq");
-    char *RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle");
-    char *freqs_RLE = nomeFicheiroExtensao(fInf -> nomeFicheiro, ".rle.freq");
+    char *freqs_Original = nomeFicheiroExtensao(fInf -> nomeFicheiroSaida, ".freq");
+    char *RLE = nomeFicheiroExtensao(fInf -> nomeFicheiroSaida, ".rle");
+    char *freqs_RLE = nomeFicheiroExtensao(fInf -> nomeFicheiroSaida, ".rle.freq");
     if (RleEfetuado) printf("%s, %s\n", RLE, freqs_RLE);
     else printf("%s\n", freqs_Original);
     free(freqs_Original);
@@ -101,7 +102,5 @@ void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle, clock_t inic
         printf("Tamanho do ficheiro RLE: %llu\n", *tamanhoRle);
 	rleEfetuado = 1;
     }
-    printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
-    printf("Ficheiros gerados: ");    
     ficheiros_gerados(fInf, rleEfetuado);
 }

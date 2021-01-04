@@ -42,6 +42,7 @@ typedef struct Ficheiros {
  */
 typedef struct ficheiroInf {
     char *nomeFicheiro;
+    char *nomeFicheiroSaida;
     Fic ficheiros; /**< Struct com os ficheiros gerados. */
     unsigned long long int tamanhoTotal; /**< Tamanho total do ficheiro(em Bytes). */
     unsigned long int tamanhoBloco; /**< Tamanho de todos os blocos antes do último. */
@@ -80,7 +81,7 @@ char *nomeFicheiroExtensao(const char *nomeFicheiro,const char *extensao);
  * @return Struct com as informações do ficheiro original.
  *
  */
-FicheiroInf NBlocos(char *nomeFicheiro, unsigned long int tamanhoBloco);
+FicheiroInf NBlocos(char *nomeFicheiro, char *nomeFicheiroSaida, unsigned long int tamanhoBloco);
 
 /**
  * @brief Função que calculo o tamanho de um bloco.
