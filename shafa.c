@@ -5,7 +5,7 @@
 #include "modulo-d.h"
 #include "Modulo_f/moduloF.h"
 #include "modulo-t.h"
-#include "modulo-c.h"
+//#include "modulo-c.h"
 
 #ifdef __linux__
   #include <time.h>
@@ -154,7 +154,7 @@ int main(int argc, char *argv[]){
   #ifdef __linux__
   if(opts->modT) moduleTMain(opts, &list);
   #endif
-  if(opts->modC) moduleCMain(opts, &list);
+  /*if(opts->modC) moduleCMain(opts, &list);*/
   
   #ifdef __linux__
     clock_gettime(CLOCK_MONOTONIC, &end);
