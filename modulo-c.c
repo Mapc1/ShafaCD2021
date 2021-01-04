@@ -233,7 +233,7 @@ int moduleCMain (Options * opts, FileCreated **list) {
     int *cod[VALORES_ASCII];
    // int i;
     char *ficheiro_cod = nomeFicheiroExtensao(opts->fileIN, ".cod");
-	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf"),"wb")) == NULL){
+	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf1"),"wb")) == NULL){
        printf("Error! opening file");
        return 0;
     }
@@ -264,13 +264,10 @@ int moduleCMain (Options * opts, FileCreated **list) {
                        for (blocoMTAtual = 0; blocoMTAtual < num_blocos; blocoMTAtual++, bloco_atual++) { 
                            int size = 10;
                             int tamanhoBlocoMTAtual = tamanhos_cod[bloco_atual];
-                            printf ("%d %d\n", tamanhos_cod [0], tamanhos_cod[1]);
                             unsigned char *buffer= malloc ((tamanhoBlocoMTAtual + size)* sizeof(char));
                             fread(buffer, sizeof(char), tamanhoBlocoMTAtual, fpOrigi);
-                            printf ("TAMANHO -> %d\n",tamanhoBlocoMTAtual );
                             buffer[tamanhoBlocoMTAtual] = '\0';
                             char *arr_final = malloc ((tamanhoBlocoMTAtual ) * sizeof(char));
-                            printf ("AQUI!\n");
                             char fim = '?';
 
                             teste[blocoMTAtual].fim_cod = &fim;
@@ -279,7 +276,6 @@ int moduleCMain (Options * opts, FileCreated **list) {
                             teste[blocoMTAtual].arr_final = arr_final;
                             teste[blocoMTAtual].bloco_atual = bloco_atual;
                             teste[blocoMTAtual].buffer_cod = arr_cods[bloco_atual];
-                            printf ("MT / bloco atual/  MT_final: %d %d %d  \n",   num_blocos_MT, bloco_atual,num_blocos_MT_fim );
                             }
                  
                    for (bloco_atual = 0,blocoMTAtual = 0; blocoMTAtual < num_blocos;){
