@@ -13,26 +13,30 @@
   #include <windows.h>
 #endif
 
-int readSection(FILE *fp, char *str){
+long readSection(FILE *fp, char *str){
+  long bytesRead = 0;
   int i;
   for(i = 0; str[i-1] != '@'; i++)
-    fread(str+i, 1, 1, fp);
+    bytesRead = fread(str+i, 1, 1, fp);
   str[i-1] = '\0';
   
-  return i;
+  return bytesRead;
 }
 
-int skipsection(FILE *fp){
+long skipsection(FILE *fp){
   int i;
+  long bytesRead;
   char c = '\0';
   for(i = 0; c != '@'; i++)
-    fread(&c, 1, 1, fp);
-  return i;
+    bytesRead = fread(&c, 1, 1, fp);
+  return bytesRead;
 }
 
-void readRLECode(FILE *fpRLE, unsigned char *symbol, unsigned char *repetitions){
-  fread(symbol, 1, 1, fpRLE);
-  fread(repetitions, 1, 1, fpRLE);
+long readRLECode(FILE *fpRLE, unsigned char *symbol, unsigned char *repetitions){
+  long bytesRead = 0;
+  bytesRead = fread(symbol, 1, 1, fpRLE);
+  bytesRead += fread(repetitions, 1, 1, fpRLE);
+  return bytesRead;
 }
 
 int readFreqBlockSize(FILE *fpFREQ){
@@ -46,7 +50,7 @@ int readFreqBlockSize(FILE *fpFREQ){
 }
 
 void decodeRLE(FILE *fpRLE, FILE *fpOut, FILE *fpFREQ, FileData *fileData){
-  int i = 0, writeFlag = 1, curSize = 0, byteCounter = 0, freqSize = 0, blockTotal = 0, blockNum = 0;
+  int i = 0, writeFlag = 1, curSize = 0, byteCounter = 0, freqSize = 0, blockTotal = 0, blockNum = 0, bytesRead;
   unsigned char repetitions;
   unsigned char symbol, buffer[BUFFSIZE] = "\0";
   BlockData *block = NULL;
@@ -55,8 +59,8 @@ void decodeRLE(FILE *fpRLE, FILE *fpOut, FILE *fpFREQ, FileData *fileData){
     block = fileData->first;
   else{
     fseek(fpFREQ, 3, SEEK_SET);
-    readSection(fpFREQ, buffer);
-    blockTotal = strtol(buffer, NULL, 10);
+    readSection(fpFREQ, (char *) buffer);
+    blockTotal = strtol((char *) buffer, NULL, 10);
     freqSize = readFreqBlockSize(fpFREQ);
     skipsection(fpFREQ);
   }
@@ -68,7 +72,11 @@ void decodeRLE(FILE *fpRLE, FILE *fpOut, FILE *fpFREQ, FileData *fileData){
       byteCounter++;
       repetitions = 1;
       if(symbol == 0){
-        readRLECode(fpRLE, &symbol, &repetitions);
+        bytesRead = readRLECode(fpRLE, &symbol, &repetitions);
+        if(!bytesRead){
+          fprintf(stderr, "Erro!!!\nO bloco %d está corrompido O.o\n", fileData == NULL ? blockNum + 1: block->blockNum + 1);
+          exit(2);
+        }
         byteCounter += 2;
       }
       curSize += repetitions;
@@ -127,13 +135,18 @@ ABin *createNode(){
 
 void getCodes(FILE *fpCOD, BlockData *block){
   ABin **tmp;
+  long bytesRead;
   unsigned char bit, gotCode = 0;
 
   block->codes = createNode();
 
   for(int symbol = 0; symbol < NSIMBOLOS; symbol++){
     tmp = &(block->codes);
-    fread(&bit, 1, 1, fpCOD);
+    bytesRead = fread(&bit, 1, 1, fpCOD);
+    if(!bytesRead){
+      fprintf(stderr, "Erro!!!\nNão foi possível obter os códigos do ficheiro cod para o bloco %d", block->blockNum + 1);
+      exit(2);
+    }
     while(bit != ';' && bit != '@'){
       if(bit == '1'){
           tmp = &((*tmp)->right);
@@ -145,7 +158,11 @@ void getCodes(FILE *fpCOD, BlockData *block){
           if(!(*tmp))
               *tmp = createNode();
       }
-      fread(&bit, 1, 1, fpCOD);
+      bytesRead = fread(&bit, 1, 1, fpCOD);
+      if(!bytesRead){
+        fprintf(stderr, "Erro!!!\nNão foi possível obter os códigos do ficheiro cod para o bloco %d", block->blockNum + 1);
+        exit(2);
+      }
       gotCode = 1;
     }
     if (gotCode){
@@ -271,7 +288,8 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpOut, FileData *fileData){
   Args *args;
   BuffQueue *queue;
   BlockBuff *curr;
-  
+  long bytesRead;
+
   #ifdef __linux__
     pthread_t threads[NTHREADS];
   #endif
@@ -297,7 +315,11 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpOut, FileData *fileData){
       curr = addQueue(queue, args->block);
       args->blockBuff = curr;
 
-      fread(curr->buffer, 1, args->block->oldSize, fpSF);
+      bytesRead = fread(curr->buffer, 1, args->block->oldSize, fpSF);
+      if(!bytesRead){
+        fprintf(stderr, "Erro!!!\nO ficheiro shafa está corrompido no bloco %d O.o\n", block->blockNum + 1);
+        exit(2);
+      }
       fseek(fpSF, 1, SEEK_CUR);
 
       id = getFreeThread(ocupation);
