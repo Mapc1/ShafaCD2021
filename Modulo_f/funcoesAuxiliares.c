@@ -73,12 +73,14 @@ void freeFicheiroInf(FicheiroInf fInf) {
 
 
 
-void ficheiros_gerados(FicheiroInf fInf, Byte RleEfetuado) {
+void ficheiros_gerados(FicheiroInf fInf, unsigned long long *RleEfetuado, FileCreated **list) {
     char *freqs_Original = nomeFicheiroExtensao(fInf -> nomeFicheiroSaida, ".freq");
     char *RLE = nomeFicheiroExtensao(fInf -> nomeFicheiroSaida, ".rle");
     char *freqs_RLE = nomeFicheiroExtensao(fInf -> nomeFicheiroSaida, ".rle.freq");
-    if (RleEfetuado) printf("%s, %s\n", RLE, freqs_RLE);
-    else printf("%s\n", freqs_Original);
+    if (RleEfetuado) {
+	    addFilesCreated(list, RLE);
+	    addFilesCreated(list, freqs_RLE);
+    } else addFilesCreated(list, freqs_Original);
     free(freqs_Original);
     free(RLE);
     free(freqs_RLE);
@@ -102,5 +104,4 @@ void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle, clock_t inic
         printf("Tamanho do ficheiro RLE: %llu\n", *tamanhoRle);
 	rleEfetuado = 1;
     }
-    ficheiros_gerados(fInf, rleEfetuado);
 }

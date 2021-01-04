@@ -44,7 +44,7 @@
  * @param opts Apontador para a struct com as informações necessárias para executar o módulo.
  * 
  */
-void moduleFMain(Options *opts);
+void moduleFMain(Options *opts, FileCreated **list);
 
 /**
  * @brief Função para calcular as frequências.
@@ -64,7 +64,7 @@ unsigned long long int *calculoFrequencias(FILE *orig, FicheiroInf fInf, char co
  * @return 0 se foi executada até ao final.
  *
  */
-int moduloF(char *nomeFicheiro, char *nomeFicheiroSaida, char compressaoForcada, unsigned long tamanhoBloco);
+int moduloF(char *nomeFicheiro, char *nomeFicheiroSaida, FileCreated **list, char compressaoForcada, unsigned long tamanhoBloco);
 
 /**
  * @brief Função para calcular as frequências de cada bloco

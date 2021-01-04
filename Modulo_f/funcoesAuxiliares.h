@@ -131,7 +131,7 @@ void freeFicheiroInf(FicheiroInf fInf);
  * @param RleEfetuado Para saber se o RleEfetuado.
  *
  */
-void ficheiros_gerados(FicheiroInf fInf, Byte RleEfetuado);
+void ficheiros_gerados(FicheiroInf fInf, unsigned long long *RleEfetuado, FileCreated **list);
 
 /**
  * @brief Função para escrever no terminal a informação geral sobre o Módulo.
