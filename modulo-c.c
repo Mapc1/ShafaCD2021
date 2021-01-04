@@ -28,7 +28,7 @@ struct thread_data{
     int bloco_atual;
 } ;
 */
-char *nomeFicheiroExtensao(const char *nomeFicheiro, const char *extensao) {
+char *nomeFicheiroExtensao1(const char *nomeFicheiro, const char *extensao) {
     size_t length = strlen(nomeFicheiro) + strlen(extensao) + 1;
     char *concat = malloc(sizeof(char) * length);
     if (!concat) return NULL; // Malloc error
@@ -280,8 +280,8 @@ int moduleCMain (Options * opts, FileCreated **list) {
     int tam_bloc;
     int *cod[VALORES_ASCII];
    // int i;
-    char *ficheiro_cod = nomeFicheiroExtensao(opts->fileIN, ".cod");
-	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf"),"wb")) == NULL){
+    char *ficheiro_cod = nomeFicheiroExtensao1(opts->fileIN, ".cod");
+	 if ((fptr = fopen(nomeFicheiroExtensao1(opts->fileIN, ".shaf"),"wb")) == NULL){
        printf("Error! opening file");
        return 0;
     }
