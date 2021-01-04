@@ -59,8 +59,8 @@ typedef struct ficheiroInf {
  *
  */
 typedef struct infosBloco {
-    Byte *BufferSimbolos; /**< Buffer com os símbolos da compressão RLE(NULL se a mesma não for efetuada. */
-    Byte *BufferFreqs; /**< Buffer com as frequências(ou é do ficheiro original, ou é do ficheiro RLE. */
+    Byte *BufferSimbolos; /**< Buffer com os símbolos da compressão RLE(NULL se a mesma não for efetuada). */
+    Byte *BufferFreqs; /**< Buffer com as frequências(ou é do ficheiro original, ou é do ficheiro RLE). */
     unsigned long long int tamanhoBufferRle; /**< Tamanho do buffer da compressão RLE. */
     unsigned long long int tamanhoBufferFreqs; /**< Tamanho do buffer das frequências. */
 } *InfosBloco;
@@ -77,6 +77,7 @@ char *nomeFicheiroExtensao(const char *nomeFicheiro,const char *extensao);
 /**
  * @brief Função que gera a struct com a informação do ficheiro original.
  * @param nomeFicheiro String com o nome do ficheiro.
+ * @param nomeFicheiroSaida String com o nome do ficheiro de saída
  * @param tamanhoBloco Tamanho que cada bloco(excluindo o último) vai ter.
  * @return Struct com as informações do ficheiro original.
  *
@@ -84,7 +85,7 @@ char *nomeFicheiroExtensao(const char *nomeFicheiro,const char *extensao);
 FicheiroInf NBlocos(char *nomeFicheiro, char *nomeFicheiroSaida, unsigned long int tamanhoBloco);
 
 /**
- * @brief Função que calculo o tamanho de um bloco.
+ * @brief Função que calcula o tamanho de um bloco.
  * @param Struct com as Informações sobre o ficheiro original.
  * @param numBloco O número do bloco do qual se está a ver o tamanho.
  * @return O tamanho do bloco analisado.
@@ -110,7 +111,7 @@ Byte *leituraFicheiro(FILE *f, unsigned long int tamanhoBloco);
 void escritaFicheiro(FILE *f, Byte *buffer, unsigned long int tamanho);
 
 /**
- * @brief Função que apaga a struct com as informações dos buffers de um bloco.
+ * @brief Função que apaga a struct com as informações dos buffers de um bloco, libertando o espaço nesta.
  * @param infosBloco Struct com o buffers e tamanho dos mesmos, a ser apagada.
  * 
  */
@@ -118,7 +119,7 @@ void libertarEspacoInfosBloco (InfosBloco infosBloco);
 
 
 /**
- * @brief Função que apaga a struct com a informação do ficheiro original.
+ * @brief Função que apaga a struct com a informação do ficheiro original, libertando o espaço nesta.
  * @param fInf Struct a ser apagada.
  *
  */
@@ -126,7 +127,7 @@ void freeFicheiroInf(FicheiroInf fInf);
 
 
 /**
- * @brief Função que escreverá no terminal os ficheiros que foram gerados.
+ * @brief Função que adiciona à lista os nomes dos ficheiros que foram gerados.
  * @param fInf Struct com informações sobre o ficheiro original.
  * @param RleEfetuado Para saber se o RleEfetuado.
  *
@@ -137,8 +138,6 @@ void ficheiros_gerados(FicheiroInf fInf, unsigned long long *RleEfetuado, FileCr
  * @brief Função para escrever no terminal a informação geral sobre o Módulo.
  * @param fInf Struct com a informação do ficheiro original.
  * @param tamanhoRle Tamanho do ficheiro RLE.
- * @param inicio Para saber o inicio do Clock.
- * @param fim Para saber o fim do Clock.
  *
  */
 void infoTerminal(FicheiroInf fInf, unsigned long long *tamanhoRle);
