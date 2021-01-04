@@ -239,18 +239,11 @@ void *decodeSFBlock(void *arg){
   return arg;
 }
 
-BuffQueue *initBuffQueue(){
-  BuffQueue *queue = malloc(sizeof(BuffQueue));
-  queue->head = NULL;
-  return queue;
-}
-
 BlockBuff *addQueue(BuffQueue *queue, BlockData *block) {
   BlockBuff **tmp, *blockBuff = malloc(sizeof(BlockBuff));
 
   blockBuff->buffer = malloc(block->oldSize);
   blockBuff->decoded = malloc(block->newSize);
-  blockBuff->blockNum = block->blockNum;
   blockBuff->blockSize = block->newSize;
   blockBuff->ready = 0;
   blockBuff->next = NULL;
@@ -268,6 +261,7 @@ void clearHead(BuffQueue *queue){
   BlockBuff *tmp = queue->head;
 
   queue->head = queue->head->next;
+  free(tmp->buffer);
   free(tmp->decoded);
   free(tmp);
 }
@@ -280,10 +274,17 @@ int getFreeThread(Args **ocupation){
   return -1;
 }
 
+BuffQueue *initBuffQueue(){
+  BuffQueue *queue = malloc(sizeof(BuffQueue));
+  queue->head = NULL;
+  return queue;
+}
+
+
 FileData *decodeShafa(FILE *fpSF, FILE *fpOut, FileData *fileData){
   BlockData *block;
   char sectionBuffer[BUFFSIZE];
-  int activeThreads = 0, id;
+  int activeThreads = 0, id, blockNum = 0;
   Args *ocupation[NTHREADS];
   Args *args;
   BuffQueue *queue;
@@ -336,8 +337,9 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpOut, FileData *fileData){
     }
     if(queue->head != NULL && queue->head->ready){
       id = queue->head->threadID;
+      blockNum++;
       fprintf(stdout, "Tamanho antes/depois da descodificação Shanon-Fano (bloco %d): %d/%d\n",
-              ocupation[id]->block->blockNum + 1,
+              blockNum,
               ocupation[id]->block->oldSize,
               ocupation[id]->block->newSize
               );

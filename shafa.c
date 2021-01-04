@@ -149,12 +149,12 @@ int main(int argc, char *argv[]){
 
   if(argc == 1) fprintf(stdout, HELP);
   opts = getOpts(argc, argv);
+  if(opts->modD) moduleDMain(opts, &list);
   if(opts->modF) moduleFMain(opts, &list);
   #ifdef __linux__
   if(opts->modT) moduleTMain(opts, &list);
   #endif
   if(opts->modC) moduleCMain(opts, &list);
-  //if(modC)
   
   #ifdef __linux__
     clock_gettime(CLOCK_MONOTONIC, &end);
