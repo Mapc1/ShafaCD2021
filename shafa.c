@@ -4,6 +4,7 @@
 #include "modulo-d.h"
 //#include "Modulo_f/moduloF.h"
 #include "shafa.h"
+#include "modulo-c.h"
 
 #ifdef __linux__
   #include <time.h>
@@ -147,9 +148,9 @@ int main(int argc, char *argv[]){
 
   if(argc == 1) fprintf(stdout, HELP);
   opts = getOpts(argc, argv);
-  if(opts->modF) moduleFMain(opts, &list);
+ // if(opts->modF) moduleFMain(opts, &list);
   //if(modT)
-  if(opts->modD) moduleDMain(opts, &list);
+  if(opts->modC) moduleCMain(opts, &list);
   //if(modC)
   
   #ifdef __linux__
