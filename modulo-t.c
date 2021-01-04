@@ -67,11 +67,11 @@ char * detectfreq ( char * freq ) { // Função que lê o conteúdo do ficheiro 
     return buffer;
 }
 
-void escreveFile ( char * freq , char * file , FileCreated ** list , int r ) { // Função que escreve uma string num ficheiro.
+void escreveFile ( char * freq , char * file , FileCreated ** list , int rr ) { // Função que escreve uma string num ficheiro.
 
     FILE * fp;
 
-    if ( r == 0 )
+    if ( rr == 0 )
         fp = fopen("codificacoesShannonFannon.txt.cod","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
     else fp = fopen("codificacoesShannonFannon.rle.cod","w");
     addFilesCreated ( list , file ) ;
@@ -409,7 +409,7 @@ void moduleTMain ( Options * opts , FileCreated ** list ) { //ff é o nome fo fi
     final[ii] = '0';
 
     //função que transforma o array de chars que temos num ficheiro
-    escreveFile ( final , opts->fileIN , list , r ) ;
+    escreveFile ( final , opts->fileIN , list , rr ) ;
     
     free(final) ;
 
