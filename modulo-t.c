@@ -420,7 +420,7 @@ void moduleTMain ( Options * opts , FileCreated ** list ) { //ff é o nome fo fi
     ttime = ((double)(tfim - tinicio)) / CLOCKS_PER_SEC * 1000 ;
 
     if ( tam_b1 && tam_b2 ) {
-        if ( r == 0 )
+        if ( rr == 0 )
         printf ("Inês Vicente, a93269, Tomás Francisco, a93193 MIEI/CD, 3-jan-2021\nMódulo: t (cálculo dos códigos dos símbolos)\nNúmero de blocos: %lld\nTamanho dos blocos analisados no ficheiro de símbolos: %lld/%lld bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: codificacoesShannonFannon.txt.cod \n", numblock[0] , tam_b1[0] , tam_b2[0] ,ttime ) ;
         else printf ("Inês Vicente, a93269, Tomás Francisco, a93193 MIEI/CD, 3-jan-2021\nMódulo: t (cálculo dos códigos dos símbolos)\nNúmero de blocos: %lld\nTamanho dos blocos analisados no ficheiro de símbolos: %lld/%lld bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: codificacoesShannonFannon.rle.cod \n", numblock[0] , tam_b1[0] , tam_b2[0] ,ttime ) ;
     } else printf ("erro: o ficheiro freq não tem nenhum bloco de codificação.\n") ;
