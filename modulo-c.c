@@ -233,7 +233,7 @@ int moduleCMain (Options * opts, FileCreated **list) {
     int *cod[VALORES_ASCII];
    // int i;
     char *ficheiro_cod = nomeFicheiroExtensao(opts->fileIN, ".cod");
-	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf1"),"wb")) == NULL){
+	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf"),"wb")) == NULL){
        printf("Error! opening file");
        return 0;
     }
