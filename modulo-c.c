@@ -11,7 +11,7 @@
 #include <pthread.h>
 #include "shafa.h"
 #include "modulo-c.h"
-//#include "Modulo_f/funcoesAuxiliares.c"
+#include "Modulo_f/funcoesAuxiliares.c"
 
 //#include "fsize.h"
 /*
@@ -28,14 +28,7 @@ struct thread_data{
     int bloco_atual;
 } ;
 */
-char *nomeFicheiroExtensao1(const char *nomeFicheiro, const char *extensao) {
-    size_t length = strlen(nomeFicheiro) + strlen(extensao) + 1;
-    char *concat = malloc(sizeof(char) * length);
-    if (!concat) return NULL; // Malloc error
-    snprintf(concat, length, "%s%s", nomeFicheiro, extensao);
 
-    return concat;
-}
 //Converte [01110101101] num valor entre 0 e 257
 char converte_Para_Byte (char *byte) {
     unsigned char devolve = 0;
@@ -261,7 +254,7 @@ unsigned long long int tamanho_ficheiro(char * nome)
     printf("Aqui\n \n \n");
     return total;*/ 
     int tam = 0;
-    //char c; 
+    char c; 
     FILE* fp = fopen(nome, "rb");
     while (!feof(fp))
         {
@@ -280,8 +273,8 @@ int moduleCMain (Options * opts, FileCreated **list) {
     int tam_bloc;
     int *cod[VALORES_ASCII];
    // int i;
-    char *ficheiro_cod = nomeFicheiroExtensao1(opts->fileIN, ".cod");
-	 if ((fptr = fopen(nomeFicheiroExtensao1(opts->fileIN, ".shaf"),"wb")) == NULL){
+    char *ficheiro_cod = nomeFicheiroExtensao(opts->fileIN, ".cod");
+	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf1"),"wb")) == NULL){
        printf("Error! opening file");
        return 0;
     }
