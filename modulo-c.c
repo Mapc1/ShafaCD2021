@@ -233,7 +233,7 @@ int moduleCMain (Options * opts, FileCreated **list) {
     int *cod[VALORES_ASCII];
    // int i;
     char *ficheiro_cod = nomeFicheiroExtensao(opts->fileIN, ".cod");
-	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf"),"wb")) == NULL){
+	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf1"),"wb")) == NULL){
        printf("Error! opening file");
        return 0;
     }
@@ -244,6 +244,7 @@ int moduleCMain (Options * opts, FileCreated **list) {
         char tipo;
         unsigned long long int tam_ficheiro_cod = tamanho_ficheiro(ficheiro_cod);
         if ((fp = fopen(ficheiro_cod, "r+")) == NULL)  printf("Error! opening file");         // Program exits if file pointer returns NULL.
+        strcpy((*list)->fileName, nomeFicheiroExtensao(opts->fileIN, ".shaf"));
         int bloco_atual = 0;
 		fscanf(fp, "@%c", &tipo);
 		int num_blocos;	
@@ -296,6 +297,7 @@ int moduleCMain (Options * opts, FileCreated **list) {
                    }
                     bloco_atual+= num_blocos_MT-1;
     }
+    printf ("\n");
     return 0;
 }
 void infoTerminalINI(int num_blocs) {
