@@ -147,7 +147,7 @@ int main(int argc, char *argv[]){
 
   if(argc == 1) fprintf(stdout, HELP);
   opts = getOpts(argc, argv);
-  //if(opts->modF) moduleFMain(opts);
+  if(opts->modF) moduleFMain(opts, &list);
   //if(modT)
   if(opts->modD) moduleDMain(opts, &list);
   //if(modC)
