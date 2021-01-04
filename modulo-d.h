@@ -45,7 +45,7 @@ typedef struct args{
 } Args;
 
 // Main function to handle the d module
-void moduleDMain(Options *opts);
+void moduleDMain(Options *opts, FileCreated **list);
 
 // function responsible for decoding .rle files
 void decodeRLE(FILE *fpRLE, FILE *out, FILE *fpFREQ, FileData *fileData);

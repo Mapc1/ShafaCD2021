@@ -136,7 +136,7 @@ int main(int argc, char *argv[]){
     clock_gettime(CLOCK_MONOTONIC, &begin);
   #endif
 
-  #ifdef WIN32
+  #ifdef _WIN32
     LARGE_INTEGER frequency;
     LARGE_INTEGER begin;
     LARGE_INTEGER end;
@@ -170,6 +170,8 @@ int main(int argc, char *argv[]){
     list = list->next;
     free(tmp);
   }
-  free(opts);
+  fprintf(stdout, "\n");
+  if(opts)
+    free(opts);
   return 0;
 }

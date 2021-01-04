@@ -27,6 +27,11 @@ typedef enum {
   WRITE
 } Flag;
 
+typedef struct fileCreated{
+  char fileName[BUFFSIZE];
+  struct fileCreated *next;  
+}FileCreated;
+
 // Prints today's date
 void data();
 
@@ -41,4 +46,5 @@ FILE *getFile(char *dest, char *fileName, char *mode, char *sufx);
 
 void errorOpenFile (char *fileName, Flag flag, FILE *fpSF, FILE *fpRLE, FILE *fpCOD, FILE *fpFREQ, FILE *fpOut);
 
+void addFilesCreated(FileCreated **fileCreated, char *newFile);
 #endif //__SHAFA_H__

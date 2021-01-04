@@ -94,8 +94,10 @@ void decodeRLE(FILE *fpRLE, FILE *fpOut, FILE *fpFREQ, FileData *fileData){
       byteCounter = 0;
       curSize = 0;
       blockNum++;
-      freqSize = readFreqBlockSize(fpFREQ);
-      skipsection(fpFREQ);
+      if(blockNum < blockTotal){
+        freqSize = readFreqBlockSize(fpFREQ);
+        skipsection(fpFREQ);
+      }
     }
   }
   fwrite(buffer, 1, i, fpOut);
@@ -273,9 +275,6 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpOut, FileData *fileData){
   #ifdef __linux__
     pthread_t threads[NTHREADS];
   #endif
-  #ifdef _WIN32
-    HANDLE threads[NTHREADS];
-  #endif
 
   for(int i = 0; i < NTHREADS; i++) 
     ocupation[i] = NULL;
@@ -308,7 +307,7 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpOut, FileData *fileData){
         pthread_create(&threads[id], NULL, decodeSFBlock, args);
       #endif
       #ifdef _WIN32
-        CreateThread(NULL, 0, decodeSFBlock, args, 0, NULL);
+        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) decodeSFBlock, args, 0, NULL);
       #endif
       activeThreads++;
       block = block->next;
@@ -331,7 +330,7 @@ FileData *decodeShafa(FILE *fpSF, FILE *fpOut, FileData *fileData){
   return fileData;
 }
 
-void moduleDMain(Options *opts){
+void moduleDMain(Options *opts, FileCreated **list){
   FILE *fpOut, *fpSF, *fpCOD, *fpRLE, *fpFREQ;
   FileData *fileData;
 
@@ -359,6 +358,7 @@ void moduleDMain(Options *opts){
       if(!fpOut)
         errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
+      addFilesCreated(list, opts->fileOUT);
       decodeShafa(fpSF, fpOut, fileData); 
       break;
     
@@ -377,6 +377,7 @@ void moduleDMain(Options *opts){
       if(!fpOut)
         errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
+      addFilesCreated(list, opts->fileOUT);
       decodeRLE(fpRLE, fpOut, fpFREQ, NULL);
       break;
 
@@ -395,12 +396,14 @@ void moduleDMain(Options *opts){
         if(!fpRLE)
           errorOpenFile(opts->fileRLE, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
+        addFilesCreated(list, opts->fileRLE);
         decodeShafa(fpSF, fpRLE, fileData); 
 
         fpOut = getFile(opts->fileOUT, opts->fileRLE, "wb", "\0");
         if(!fpOut)
           errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
+        addFilesCreated(list, opts->fileOUT);
         fprintf(stdout, "A executar a descodifcação RLE...\n");
         decodeRLE(fpRLE, fpOut, NULL, fileData);
       }
@@ -410,6 +413,7 @@ void moduleDMain(Options *opts){
         if(!fpOut)
           errorOpenFile(opts->fileOUT, WRITE, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
+        addFilesCreated(list, opts->fileOUT);
         decodeShafa(fpSF, fpOut, fileData); 
       }
       break;
