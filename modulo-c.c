@@ -11,7 +11,7 @@
 #include <pthread.h>
 #include "shafa.h"
 #include "modulo-c.h"
-#include "Modulo_f/funcoesAuxiliares.c"
+//#include "Modulo_f/funcoesAuxiliares.c"
 
 //#include "fsize.h"
 /*
