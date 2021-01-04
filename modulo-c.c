@@ -196,7 +196,8 @@ void *PontoShafa (void * testeT){
     o++;
     teste -> tam_Shaf = o;
     testeT = teste;
-    printf("\nTamanho antes/depois & taxa de compressão (bloco %d): %d/ %d / %d", bloco_atual, tam_buffer,o, tam_buffer/o);
+    float comp = (float)o / (float)tam_buffer;
+    printf("\nTamanho antes/depois & taxa de compressão (bloco %d): %d/ %d / %f", bloco_atual, tam_buffer,o, (1 - comp) * 100);
     pthread_exit(NULL);
     Limpa_Array_Arrays(cod, VALORES_ASCII);
     free(buffer_cod);
