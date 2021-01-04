@@ -42,6 +42,10 @@ void Limpa_Array_Arrays(char **array, int valoresLidos);
 //char ** -> Estrutura de dados "cod"
 char ** ler_bloco_ficheiro_cod (char * buffer, char * fim);
 
+//Função que calcula a potência. 
+//Existe uma função na "biblioteca matemática" de C, mas para evitar dar importar desnecessariamente criámos nós uma.
+// Funciona da seguinte forma: base ^expoente 
+int potencia(int base, int exp);
 
 //Função que divide um buffer, com o ficheiro .cod, e divide em blocos.
 //char * buffer -> String que contêm o ficheiro .cod integral.
@@ -69,8 +73,18 @@ char ** le_PontoCod ( int * tamanhos, FILE * fp, int num_bloc, unsigned long lon
 //Essa string é escrita no ficheiro de saída.
 //A struct guarda todos os argumentos. Esses argumentos estão caraterizados na descrição da struct.
 void *PontoShafa (void * testeT);
+
+//Função que calcula o tamanho do ficheiro a partir do seu "nome", ou endereço.
+//Tentamos usar a função do professor, mas existia um erro que não conseguimos resolver.
+//Sabemos que esta forma é pouco eficiente.
+// char * nome -> Endereço no ficheiro
+unsigned long long int tamanho_ficheiro(char * nome)
+
+//Função que imprime informações básicas do nosso módulo.
+//int num_blocos -> Número de blocos que são codificados
 void infoTerminalINI(int num_blocs);
 
+//Função main que interliga as várias funções. Esta função está melhor descrita no relatório.
 int moduleCMain (Options * opts, FileCreated **list);
 
 
