@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "shafa.h"
 #include "modulo-d.h"
 #include "Modulo_f/moduloF.h"
 #include "modulo-t.h"
-#include "shafa.h"
 #include "modulo-c.h"
 
 #ifdef __linux__
