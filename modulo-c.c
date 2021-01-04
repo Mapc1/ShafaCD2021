@@ -13,25 +13,9 @@
 #include "modulo-c.h"
 #include "Modulo_f/funcoesAuxiliares.h"
 
-//#include "fsize.h"
-/*
-struct thread_data{
-    unsigned char *buffer_cod;
-
-
-    int valoresASCII;
-    char * fim_cod;
-    unsigned char *buffer;
-    int tam;
-    int tam_Shaf;
-    unsigned char *arr_final;
-    int bloco_atual;
-} ;
-*/
 
 
 
-//Converte [01110101101] num valor entre 0 e 257
 char converte_Para_Byte (char *byte) {
     unsigned char devolve = 0;
     int teste = 0;
@@ -46,6 +30,21 @@ char converte_Para_Byte (char *byte) {
     return devolve;
 }
 
+void converteListaArray (char* array_final, char *result) {
+    int i;
+    char byte [8];
+    int k;
+    int tam = strlen (result);
+    int pos_atual = 0;
+    for (i = 0; i< tam;i++) {
+        for (k = 0; k < 8 && i < tam ; k++, i++) byte [k] = result [i]; 
+        for (; k < 8; k++) byte[k] = '0'; 
+         array_final[pos_atual] = converte_Para_Byte(byte);
+         pos_atual++;
+         if (i == tam) return;
+    }
+}
+
 void Limpa_Array_Arrays(char **array, int valoresLidos) {
     int i;
     for (i = 0; i <valoresLidos; ++i) {
@@ -54,15 +53,12 @@ void Limpa_Array_Arrays(char **array, int valoresLidos) {
     free(array);
 }
 
-//Guarda os códigos a partir de um ficheiro ASCII
 char ** ler_bloco_ficheiro_cod (char * buffer, char * fim) {
-    //[Endereços das codificações de cada char]  a codificação do 'c' cod[0] 
     char **cod = malloc ((VALORES_ASCII+1)* (sizeof (char*)));  //Endereços das codificações dos 256 valores
     int pos_atual_cod =0;  //posição atual no array das codificações
     int pos_atual_bufo = 0;
     int i;    
     char c = buffer[pos_atual_bufo];
-    //Depois alterar para ser só diferente de '@
     while((c == ';' || c == '0' || c == '1')  && pos_atual_cod < VALORES_ASCII){ //64 = @ in ASCII
         if (c != ';') {   // 59 == ;                   
             int comp_cod = pos_atual_bufo; //Guarda posição atual
@@ -70,8 +66,6 @@ char ** ler_bloco_ficheiro_cod (char * buffer, char * fim) {
             comp_cod = i - pos_atual_bufo; //Tamanho da codificação
             cod[pos_atual_cod] = malloc( comp_cod * sizeof(char));
             char bitsTalvez[comp_cod];  //Depois tens de fazer free()
-            //O array não precisa de ser char, porque só guarda 0's e 1's
-            //Guarda no array bitsTalvez a codificação
             c = buffer[pos_atual_bufo];
             for (i=0; c == '0' || c == '1' ; i++) { 
                 (bitsTalvez[i]) = c;
@@ -87,8 +81,7 @@ char ** ler_bloco_ficheiro_cod (char * buffer, char * fim) {
         c = buffer[pos_atual_bufo];
         pos_atual_cod++; 
     }
-    cod[pos_atual_cod] = fim ;
- //   *comp_cod_bloc += pos_atual_bufo+1;                     
+    cod[pos_atual_cod] = fim ;                  
     return cod;
 }
 
@@ -108,9 +101,7 @@ int potencia(int base, int exp)
 {
     int pos_at = *pos_buffer;
     int tamanho_result = pos_at;
-    //char * copia;
-//    result = malloc((257+257*257 )*  sizeof(char));
-          //  cod[pos_atual_cod] = malloc( comp_cod * sizeof(char));
+
     int copia_at = 0;
     pos_at++;
     char c = buffer[pos_at];
@@ -166,23 +157,9 @@ char ** le_PontoCod ( int * tamanhos, FILE * fp, int num_bloc, unsigned long lon
         return copias;
         
 }
-/*
-//Se for o último bloco, isto podia ser diminuido
-char ** usa_PontoCod (char * buffer, int valoresLidos) {    //Este fp é .cod
-    //int tam = valoresLidos + valoresLidos*valoresLidos;
-    //char buffer[tam];
-    //fread(&buffer, sizeof(char), tam, fp);
-    //Valor estúpido para controlar fim do array
-    char fim = '?';
-    char **cod = ler_bloco_ficheiro_cod(buffer, valoresLidos, &fim);
-   // imprime_bloco(valoresLidos, cod, &fim);
-//    guardaRLE(cod, fim); //basta pôr isto em comentário para n testar a minha função
-    return cod;
-}
-*/
+
 void *PontoShafa (void * testeT){
     struct thread_data *teste;
-    //teste = malloc (sizeof (struct thread_data));
     teste = (struct thread_data *) testeT;
     char * buffer_cod =  teste->buffer_cod; 
    // int valoresLidos = teste->valoresASCII;
@@ -195,7 +172,6 @@ void *PontoShafa (void * testeT){
     char *array_final = teste -> arr_final;
     char *result = malloc (8 * sizeof (char));
     tam_buffer--;
-    //char *new_arr = NULL;
     int k = 0, o = 0, i, j;
     unsigned char devolve;
     char *bitsTalvez = malloc (256 * sizeof(char));
@@ -213,8 +189,6 @@ void *PontoShafa (void * testeT){
         result [k] = bitsTalvez[j];
         }
     }
-    //if (k != 1) {
-     //   printf ("AQUIIIIII!!!!   k -> %d   i --> %d\n", k, i);
         for (; k < 8; k++) result [k] = '0';
         devolve = converte_Para_Byte (result);
         teste -> arr_final [o] = devolve;
@@ -267,7 +241,6 @@ int moduleCMain (Options * opts, FileCreated **list) {
     }
     addFilesCreated(list, opts->fileIN);
   if ((fpOrigi = fopen(opts->fileIN ,"r")) == NULL){      printf("Error! opening file");       return 0;    }
-  //if ((fpOrigi = fopen("aaa.txt","r")) == NULL){   printf("Error! opening file");      return 0;    }
     else {
 		//Ler tipo de ficheiro
         char tipo;
@@ -287,12 +260,8 @@ int moduleCMain (Options * opts, FileCreated **list) {
         char **arr_Oris= malloc(num_blocos_MT * sizeof (char*));
         struct thread_data teste[num_blocos];
         pthread_t threads[8];
-//            int comp_cod_bloc = ftell(fp;
-
-           //while (bloco_atual < num_blocos) {
                        int blocoMTAtual ;
                    
-            //if (num_blocos_MT * (bloco_atual+1)  > num_blocos) num_blocos_MT_fim = num_blocos-(bloco_atual*num_blocos_MT);
                        for (blocoMTAtual = 0; blocoMTAtual < num_blocos; blocoMTAtual++, bloco_atual++) { 
                            int size = 10;
                             int tamanhoBlocoMTAtual = tamanhos_cod[bloco_atual];
@@ -312,10 +281,8 @@ int moduleCMain (Options * opts, FileCreated **list) {
                             teste[blocoMTAtual].bloco_atual = bloco_atual;
                             teste[blocoMTAtual].buffer_cod = arr_cods[bloco_atual];
                             printf ("MT / bloco atual/  MT_final: %d %d %d  \n",   num_blocos_MT, bloco_atual,num_blocos_MT_fim );
-                            //arr_Oris[blocoMTAtual] = buffer;
                             }
-                    //Ciclo da thread
-
+                 
                    for (bloco_atual = 0,blocoMTAtual = 0; blocoMTAtual < num_blocos;){
                         int counter;
                         int final;
@@ -330,8 +297,6 @@ int moduleCMain (Options * opts, FileCreated **list) {
                         }
                    }
                     bloco_atual+= num_blocos_MT-1;
-                    //pthread_exit (NULL);
-       // }
     }
     clock_t fim = clock();
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
