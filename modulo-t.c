@@ -279,6 +279,7 @@ void moduleTMain ( Options * opts , FileCreated ** list ) { //ff é o nome fo fi
     long long int blocos = 0;                                              // numero de blocos
     long long int * tam_b1 = NULL ;
     long long int * tam_b2 = NULL ;
+    int rr;
 
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
@@ -290,8 +291,8 @@ void moduleTMain ( Options * opts , FileCreated ** list ) { //ff é o nome fo fi
     final[1] = frq[1] ;
     final[2] = '@' ;
 
-    if ( frq[1] == 'R' ) r = 1 ;
-    else r = 0 ;
+    if ( frq[1] == 'R' ) rr = 1 ;
+    else rr = 0 ;
     
     long long int * numblock = freqread (&frq[2]);
 
