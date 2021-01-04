@@ -78,7 +78,7 @@ void *PontoShafa (void * testeT);
 //Tentamos usar a função do professor, mas existia um erro que não conseguimos resolver.
 //Sabemos que esta forma é pouco eficiente.
 // char * nome -> Endereço no ficheiro
-unsigned long long int tamanho_ficheiro(char * nome)
+unsigned long long int tamanho_ficheiro(char * nome);
 
 //Função que imprime informações básicas do nosso módulo.
 //int num_blocos -> Número de blocos que são codificados
