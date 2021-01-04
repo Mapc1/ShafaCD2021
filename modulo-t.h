@@ -18,7 +18,7 @@ LISTA metenalista ( long long int * arr , LISTA L ) ;
 
 char * detectfreq ( char * freq ) ;
 
-void escreveFile ( char * freq , char * file , FileCreated ** list , int r ) ;
+void escreveFile ( char * freq , char * file , FileCreated ** list , int rr) ;
 
 long long int somal ( LISTA * l , int ai , int af ) ;
 
