@@ -351,7 +351,7 @@ void moduleDMain(Options *opts, FileCreated **list){
 
       fpCOD = getFile(opts->fileCOD, opts->fileIN, "rb", ".cod");
       if(!fpCOD)
-         fpFREQ,
+         errorOpenFile(opts->fileCOD, READ, fpSF, fpRLE, fpCOD, fpFREQ, fpOut);
 
       fileData = readCOD(fpCOD);
       fpOut = getFile(opts->fileOUT, opts->fileIN, "wb", "\0");
