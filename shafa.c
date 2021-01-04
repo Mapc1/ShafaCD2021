@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "modulo-d.h"
-//#include "Modulo_f/moduloF.h"
+#include "Modulo_f/moduloF.h"
+#include "modulo-t.h"
 #include "shafa.h"
 #include "modulo-c.h"
 
@@ -148,8 +149,10 @@ int main(int argc, char *argv[]){
 
   if(argc == 1) fprintf(stdout, HELP);
   opts = getOpts(argc, argv);
- // if(opts->modF) moduleFMain(opts, &list);
-  //if(modT)
+  if(opts->modF) moduleFMain(opts, &list);
+  #ifdef __linux__
+  if(opts->modT) moduleTMain(opts, &list);
+  #endif
   if(opts->modC) moduleCMain(opts, &list);
   //if(modC)
   

@@ -1,3 +1,4 @@
+#ifdef __linux__
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,7 +52,9 @@ char * detectfreq ( char * freq ) { // Função que lê o conteúdo do ficheiro 
 
     buffer = malloc((size + 1) * sizeof(*buffer)); // Usando o size,determinamos o tamanho da nossa string,ou então,buffer.Usamos para o malloc para alocar espaço e sizeof para determinar o tamanho de cada elemento do buffer.
 
-    fread ( buffer , size , 1 , fp ) ; // A partir do nosso file,iremos ler um 1 bloco de size bytes para cada incrementação de buffer.
+    size_t gg ;
+    gg = fread ( buffer , size , 1 , fp ) ; // A partir do nosso file,iremos ler um 1 bloco de size bytes para cada incrementação de buffer.
+    if ( gg == 0 ) printf ("erro: não foi possível ler o ficheiro.\n") ;
 
     buffer[size] = '\0' ; // Colocar o último elemento ('\0') no array,para indicar o final.
 
@@ -64,11 +67,14 @@ char * detectfreq ( char * freq ) { // Função que lê o conteúdo do ficheiro 
     return buffer;
 }
 
-void escreveFile ( char * freq ) { // Função que escreve uma string num ficheiro.
+void escreveFile ( char * freq , char * file , FileCreated ** list , int r ) { // Função que escreve uma string num ficheiro.
 
     FILE * fp;
 
-    fp = fopen("ourbbb.txt.cod","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
+    if ( r == 0 )
+        fp = fopen("codificacoesShannonFannon.txt.cod","w"); // Abrir o fichero para escrita(Neste caso também criamos o ficheiro se ele não existir.)
+    else fp = fopen("codificacoesShannonFannon.rle.cod","w");
+    addFilesCreated ( list , file ) ;
 
     fputs (freq,fp); // fputs é uma função que irá colocar o conteúdo de uma string no ficheiro,neste caso,a string freq para o ficheiro fp.
 
@@ -263,33 +269,30 @@ int countn ( LISTA * l ) {
     return n;
 }
 
-void moduleTMain ( char * ff ) { //ff é o nome fo ficheiro .freq que usamos como argumento.
+void moduleTMain ( Options * opts , FileCreated ** list ) { //ff é o nome fo ficheiro .freq que usamos como argumento.
 
     clock_t tinicio = clock();
-/*
-@<R|N>@[número_de_blocos]@[tamanho_bloco_1]@[frequência_símbolo_0_bloco_1]
-;[frequência_símbolo_1_bloco_1];[…];[frequência_símbolo_255_bloco_1]@[tam_
-bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
-;[frequência_símbolo_255_bloco_2]@[…]@0
-*/
 
     long long int i , ii ;                                             // índice do array frq e do final, respetivamente
     char * final = malloc ( 3 * sizeof(long long int) ) ;              // array que vai dar origem ao ficheiro cod final
     long long int sizefi = 3 ;
     long long int blocos = 0;                                              // numero de blocos
-    long long int * tam_b1;
-    long long int * tam_b2;
+    long long int * tam_b1 = NULL ;
+    long long int * tam_b2 = NULL ;
 
 
     // para começar, precisamos de uma função que transforme o FILE num array de chars, exatamente igual ao FILE.
     char * frq;
-    frq = detectfreq(ff);
+    frq = detectfreq( opts->fileIN );
 
     //coloca as informações iniciais no array final
     final[0] = '@' ;
     final[1] = frq[1] ;
     final[2] = '@' ;
 
+    if ( frq[1] == 'R' ) r = 1 ;
+    else r = 0 ;
+    
     long long int * numblock = freqread (&frq[2]);
 
     for ( ii = 3 ; frq[ii] != '@' ; ii++ ) {
@@ -307,7 +310,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     final[ii] = '@' ;
 
     i = ii ;
-    //printf("1.   ii: %lld   i: %lld      sizefi: %lld\n%s\n\n", ii , i , sizefi , final) ;
 
     // este while serve para vermos um bloco de cada vez. Ele acaba quando temos "@0"
     while ( frq[i+1] != '0' ) {
@@ -316,7 +318,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
 
         if (blocos == 1) {
             tam_b1 = freqread(&frq[i]);
-            printf ("%lld\n",tam_b1[0]);
         }
         if (blocos == numblock[0]) {
                 tam_b2 = freqread(&frq[i]);
@@ -333,7 +334,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
             }
             final[ii] = frq[i] ;
         }
-        //printf("2.   ii: %lld   i: %lld      sizefi: %lld\n%s\n\n", ii , i , sizefi , final ) ;
         final[ii] = '@' ;
         ii++;
 
@@ -341,8 +341,6 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
         long long int * arr ;
         arr = freqread ( &frq[i] ) ;
         i = counti ( i , &frq[i+1] ) ;
-
-        //printf("3.   ii: %lld   i: %lld      sizefi: %lld\n%s\n\n", ii , i ,sizefi , final ) ;
 
         LISTA l = crialista() ;
         l = metenalista ( arr , l ) ;
@@ -396,20 +394,13 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
                 ii++ ;
             }
         }
-        //ii = strlen ( final ) ;
-
-        //printf("4.   ii: %lld   i: %lld      sizefi: %lld\n%s\n\n", ii , i , sizefi , final ) ;
 
         if ( ii >= sizefi ) {
             sizefi *= 2 ;
             final = realloc ( final , sizefi * sizeof(char) ) ;
         }
-        //printf("4.5.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii+1] , final ) ;
         final[ii] = '@' ;
-        //printf("5.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii+1] , final ) ;
         
-// @<R|N>@[número_de_blocos]@[tamanho_bloco_1]@<0|1>*;[…];<0|1>*@[tamanho_bloco_2]@<0|1>*;[…];<0|1>*@[…]@0 
-
     }
 
     free (frq) ;
@@ -417,10 +408,8 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     ii++;
     final[ii] = '0';
 
-    //printf("6.   ii: %lld   i: %lld      sizefi: %lld    %c\n%s\n\n", ii , i , sizefi , final[ii] , final ) ;
-
     //função que transforma o array de chars que temos num ficheiro
-    escreveFile ( final ) ;
+    escreveFile ( final , opts->fileIN , list , r ) ;
     
     free(final) ;
 
@@ -429,17 +418,14 @@ bloco_2]@[frequência_símbolo_0_bloco_2];[frequência_símbolo_1_bloco_2];[…]
     float ttime ;
     ttime = ((double)(tfim - tinicio)) / CLOCKS_PER_SEC * 1000 ;
 
-    printf ("Inês Vicente, a93269, Tomás Francisco, a93193 MIEI/CD, 3-jan-2021\nMódulo: t (cálculo dos códigos dos símbolos)\nNúmero de blocos: %lld\nTamanho dos blocos analisados no ficheiro de símbolos: %lld/%lld bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: exemplo.txt.rle.cod\n", numblock[0] , tam_b1[0] , tam_b2[0] ,ttime ) ;
+    if ( tam_b1 && tam_b2 ) {
+        if ( r == 0 )
+        printf ("Inês Vicente, a93269, Tomás Francisco, a93193 MIEI/CD, 3-jan-2021\nMódulo: t (cálculo dos códigos dos símbolos)\nNúmero de blocos: %lld\nTamanho dos blocos analisados no ficheiro de símbolos: %lld/%lld bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: codificacoesShannonFannon.txt.cod \n", numblock[0] , tam_b1[0] , tam_b2[0] ,ttime ) ;
+        else printf ("Inês Vicente, a93269, Tomás Francisco, a93193 MIEI/CD, 3-jan-2021\nMódulo: t (cálculo dos códigos dos símbolos)\nNúmero de blocos: %lld\nTamanho dos blocos analisados no ficheiro de símbolos: %lld/%lld bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: codificacoesShannonFannon.rle.cod \n", numblock[0] , tam_b1[0] , tam_b2[0] ,ttime ) ;
+    } else printf ("erro: o ficheiro freq não tem nenhum bloco de codificação.\n") ;
     
     //return cod;
     
 }
 
-
-int main() {
-    char * ff = "bbb.zip.freq" ;
-
-    moduleTMain ( ff ) ;
-
-    return 0 ;
-}
+#endif

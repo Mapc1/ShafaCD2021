@@ -1,18 +1,7 @@
 #ifndef MODULO_T_MODULO_T_H
 #define MODULO_T_MODULO_T_H
 
-/*
-typedef struct Parcelas {
-    long long int simbolo;
-    long long int frequ;
-    long long int codSF;
-} Parcela ;
-
-typedef struct lista {
-    struct Parcelas parc;
-    struct lista * prox;
-} *LISTA;
-*/
+#include "shafa.h"
 
 typedef struct lista {
     int simbolo;
@@ -29,7 +18,7 @@ LISTA metenalista ( long long int * arr , LISTA L ) ;
 
 char * detectfreq ( char * freq ) ;
 
-void escreveFile ( char * freq ) ;
+void escreveFile ( char * freq , char * file , FileCreated ** list , int r ) ;
 
 long long int somal ( LISTA * l , int ai , int af ) ;
 
@@ -51,6 +40,6 @@ long long int counti (long long int i , char * a ) ;
 
 int countn ( LISTA * l ) ;
 
-void moduleTMain ( char * ff ) ;
+void moduleTMain ( Options * opts , FileCreated ** list ) ;
 
 #endif
