@@ -274,10 +274,12 @@ int moduleCMain (Options * opts, FileCreated **list) {
     int *cod[VALORES_ASCII];
    // int i;
     char *ficheiro_cod = nomeFicheiroExtensao(opts->fileIN, ".cod");
-	 if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf1"),"wb")) == NULL){
-       printf("Error! opening file");
-       return 0;
-    }
+	//if ((fp = fopen("aaa.txt.cod", "r+")) == NULL)  printf("Error! opening file");         // Program exits if file pointer returns NULL.
+    //if ((fptr = fopen(nomeFicheiroExtensao(opts->fileIN, ".shaf"),"wb")) == NULL){
+       //printf("Error! opening file");
+       //return 0;
+    //}
+    fptr = fopen ("aaaM.shaf", "wb");
     addFilesCreated(list, opts->fileIN);
   if ((fpOrigi = fopen(opts->fileIN ,"r")) == NULL){      printf("Error! opening file");       return 0;    }
   //if ((fpOrigi = fopen("aaa.txt","r")) == NULL){   printf("Error! opening file");      return 0;    }
@@ -296,69 +298,66 @@ int moduleCMain (Options * opts, FileCreated **list) {
         int  tamanhos_cod[num_blocos];
         int num_blocos_MT = 8;
         int num_blocos_MT_fim = num_blocos_MT;
+        printf("\n Antes le_PontoCOD %lld %p \n",tam_ficheiro_cod, fp);
         char **arr_cods =le_PontoCod (tamanhos_cod, fp, num_blocos, tam_ficheiro_cod);
         char **arr_Oris= malloc(num_blocos_MT * sizeof (char*));
         struct thread_data teste[num_blocos];
         pthread_t threads[8];
 //            int comp_cod_bloc = ftell(fp;
 
-        while (bloco_atual < num_blocos) {
+        //while (bloco_atual < num_blocos) {
                        int blocoMTAtual ;
                    
-           // if (num_blocos_MT * (bloco_atual+1)  > num_blocos) num_blocos_MT_fim = num_blocos-(bloco_atual*num_blocos_MT);
-                       for (blocoMTAtual = 0; blocoMTAtual < 8; blocoMTAtual++)
-                            { 
-                            int tamanhoBlocoMTAtual = tamanhos_cod[num_blocos_MT*bloco_atual+blocoMTAtual];
-                            unsigned char *buffer= malloc (tamanhoBlocoMTAtual * sizeof(char));
+            //if (num_blocos_MT * (bloco_atual+1)  > num_blocos) num_blocos_MT_fim = num_blocos-(bloco_atual*num_blocos_MT);
+                       for (blocoMTAtual = 0; blocoMTAtual < num_blocos; blocoMTAtual++, bloco_atual++) { 
+                           int size = 10;
+                            int tamanhoBlocoMTAtual = tamanhos_cod[bloco_atual];
+                            printf ("%d %d\n", tamanhos_cod [0], tamanhos_cod[1]);
+                            unsigned char *buffer= malloc ((tamanhoBlocoMTAtual + size)* sizeof(char));
                             fread(buffer, sizeof(char), tamanhoBlocoMTAtual, fpOrigi);
+                            printf ("TAMANHO -> %d\n",tamanhoBlocoMTAtual );
                             buffer[tamanhoBlocoMTAtual] = '\0';
-                            char *arr_final = malloc (tamanhoBlocoMTAtual * sizeof(char));
-                            
+                            char *arr_final = malloc ((tamanhoBlocoMTAtual ) * sizeof(char));
+                            printf ("AQUI!\n");
+                            char fim = '?';
+
+                            teste[blocoMTAtual].fim_cod = &fim;
                             teste[blocoMTAtual].buffer = buffer;
                             teste[blocoMTAtual].tam_Ori = tamanhoBlocoMTAtual;
                             teste[blocoMTAtual].arr_final = arr_final;
-                            arr_Oris[blocoMTAtual] = buffer;
+                            teste[blocoMTAtual].bloco_atual = bloco_atual;
+                            teste[blocoMTAtual].buffer_cod = arr_cods[bloco_atual];
+                            printf ("MT / bloco atual/  MT_final: %d %d %d  \n",   num_blocos_MT, bloco_atual,num_blocos_MT_fim );
+                            //arr_Oris[blocoMTAtual] = buffer;
                             }
                     //Ciclo da thread
 
-                   for (blocoMTAtual = 0; blocoMTAtual < 8; blocoMTAtual++){
-                        int bloc_MEMO = num_blocos_MT*bloco_atual+blocoMTAtual;
-                    teste[blocoMTAtual].buffer_cod = arr_cods[bloc_MEMO];
-                    //teste[blocoMTAtual].valoresASCII = valoresLidos;
-                    char fim = '?';
-                    teste[blocoMTAtual].fim_cod = &fim;
-
-                    teste[blocoMTAtual].bloco_atual = blocoMTAtual;
-                    int rc;
-                    //PontoShafa(arr_Oris[blocoMTAtual], fptr, cod0, tamanhos_cod[bloc_MEMO], bloco_atual);
-                    rc = pthread_create(&threads[blocoMTAtual], NULL, PontoShafa, (void *) &teste[blocoMTAtual]);
-                    if (rc) {
-                        printf("ERROR; return code from pthread_create() is %d\n", rc);
-                        exit(-1);
-                    }
-                    pthread_join (threads[blocoMTAtual], NULL);
-                    //printf ("DEPOIS_BUFFER\n");
-                    fprintf (fptr, "@%d@", teste[blocoMTAtual].tam_Shaf);
-                    //unsigned char arr_t = *teste.arr_final;
-                    int len = strlen (teste[blocoMTAtual].arr_final);
-                    //printf ("DEPOIS_FPRINTF\n");
-                    //int len = strlen (teste.arr_final);
-                    //printf ("ARRAY AGAIN -> %s\n", teste[blocoMTAtual].arr_final);
-                    fwrite (teste[blocoMTAtual].arr_final, teste[blocoMTAtual].tam_Shaf, sizeof(char), fptr);
-                  
-                    //printf ("DEPOIS_FWRITE\n");
+                   for (bloco_atual = 0,blocoMTAtual = 0; blocoMTAtual < num_blocos;){
+                        int counter;
+                        int final;
+                        if (num_blocos - blocoMTAtual > 8) final = 8;
+                        else final = num_blocos - blocoMTAtual ;
+                        for (counter = 0; counter < final; counter++,  blocoMTAtual++)  
+                            pthread_create (&threads[counter], NULL, PontoShafa, (void *) &teste[blocoMTAtual]); 
+                        for (counter = 0; counter< final; counter++, bloco_atual++) {
+                                pthread_join(threads[counter], NULL);
+                                fprintf (fptr, "@%d@", teste[bloco_atual].tam_Shaf);
+                                fwrite (teste[bloco_atual].arr_final, teste[bloco_atual].tam_Shaf, sizeof(char), fptr);
+                        }
                    }
                     bloco_atual+= num_blocos_MT-1;
-                    pthread_exit (NULL);
-        }
+                    //pthread_exit (NULL);
+       // }
     }
     clock_t fim = clock();
     printf("Tempo de execução do módulo: %f milisegundos\n", ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000);
     return 0;
 }
 void infoTerminalINI(int num_blocs) {
+
     
     printf("Diogo Pires, a93308, Jorge Melo, a93286, MIEI/CD, ");
+    printf ("Número de blocos : %d\n", num_blocs);
     data();
   //  printf("Módulo: c (Módulo para codificação do ficheiro original/RLE)\n");
   //  printf("Número de blocos: %d  \n", num_blocos);
